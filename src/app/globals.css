@@ -1,0 +1,854 @@
+@import 'tailwindcss';
+/* ===================================
+   SWADDLESHAWLS — HERITAGE LUXURY
+   Authentic Indian Baby Shawls
+   =================================== */
+
+/* ===================================
+   CSS CUSTOM PROPERTIES (VARIABLES)
+   =================================== */
+:root {
+  /* Primary — Deep Teal (from paisley accents) */
+  --henna-50: #f0f7f7;
+  --henna-100: #d9eceb;
+  --henna-200: #b3d9d8;
+  --henna-300: #7abfbe;
+  --henna-400: #4a9e9d;
+  --henna-500: #2d6a6a;
+  --henna-600: #245756;
+  --henna-700: #1c4342;
+
+  /* Warm — Terracotta / Burnt Orange (from product accents) */
+  --terra-50: #fdf5f0;
+  --terra-100: #f9e5d8;
+  --terra-200: #f0c9af;
+  --terra-300: #dfa07a;
+  --terra-400: #cf7c54;
+  --terra-500: #b5654a;
+  --terra-600: #9a4f38;
+  --terra-700: #7a3d2c;
+
+  /* Gold — Amber highlights (from paisley gold) */
+  --gold-400: #d4a84b;
+  --gold-500: #c8954c;
+  --gold-600: #a87a3a;
+
+  /* Neutral — Warm Browns */
+  --brown-50: #faf6f0;
+  --brown-100: #f3ece0;
+  --brown-200: #e4d7c4;
+  --brown-300: #c9b69a;
+  --brown-400: #a89070;
+  --brown-500: #8a7254;
+  --brown-600: #5c3d2e;
+  --brown-700: #3d2a1e;
+  --brown-800: #2c1810;
+  --brown-900: #1a0f09;
+
+  /* Background Colors */
+  --warm-cream: #faf6f0;
+  --warm-linen: #f5efe4;
+
+  /* Typography */
+  --font-heading: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-primary: 'Lato', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  /* Shadows — warmer tones */
+  --shadow-sm: 0 1px 2px 0 rgba(44, 24, 16, 0.06);
+  --shadow-md: 0 4px 6px -1px rgba(44, 24, 16, 0.08), 0 2px 4px -1px rgba(44, 24, 16, 0.04);
+  --shadow-lg: 0 10px 15px -3px rgba(44, 24, 16, 0.08), 0 4px 6px -2px rgba(44, 24, 16, 0.04);
+  --shadow-xl: 0 20px 25px -5px rgba(44, 24, 16, 0.08), 0 10px 10px -5px rgba(44, 24, 16, 0.03);
+
+  /* Transitions */
+  --transition-fast: 0.15s ease-in-out;
+  --transition-normal: 0.3s ease-in-out;
+  --transition-slow: 0.5s ease-in-out;
+}
+
+/* ===================================
+   GLOBAL STYLES
+   =================================== */
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+}
+
+body {
+  font-family: var(--font-primary);
+  line-height: 1.7;
+  color: var(--brown-700);
+  background-color: var(--warm-cream);
+}
+
+/* Serif headings globally */
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+}
+
+/* ===================================
+   CUSTOM COLOR UTILITY CLASSES
+   =================================== */
+
+/* Text colors */
+.text-henna-100 { color: var(--henna-100); }
+.text-henna-200 { color: var(--henna-200); }
+.text-henna-300 { color: var(--henna-300); }
+.text-henna-400 { color: var(--henna-400); }
+.text-henna-500 { color: var(--henna-500); }
+.text-henna-600 { color: var(--henna-600); }
+.text-henna-700 { color: var(--henna-700); }
+
+.text-terra-300 { color: var(--terra-300); }
+.text-terra-400 { color: var(--terra-400); }
+.text-terra-500 { color: var(--terra-500); }
+.text-terra-600 { color: var(--terra-600); }
+
+.text-gold-400 { color: var(--gold-400); }
+.text-gold-500 { color: var(--gold-500); }
+.text-gold-600 { color: var(--gold-600); }
+
+.text-brown-400 { color: var(--brown-400); }
+.text-brown-500 { color: var(--brown-500); }
+.text-brown-600 { color: var(--brown-600); }
+.text-brown-700 { color: var(--brown-700); }
+.text-brown-800 { color: var(--brown-800); }
+
+/* Background colors */
+.bg-henna-50 { background-color: var(--henna-50); }
+.bg-henna-100 { background-color: var(--henna-100); }
+.bg-henna-500 { background-color: var(--henna-500); }
+.bg-henna-600 { background-color: var(--henna-600); }
+.bg-henna-700 { background-color: var(--henna-700); }
+
+.bg-terra-50 { background-color: var(--terra-50); }
+.bg-terra-100 { background-color: var(--terra-100); }
+.bg-terra-500 { background-color: var(--terra-500); }
+
+.bg-gold-400 { background-color: var(--gold-400); }
+.bg-gold-500 { background-color: var(--gold-500); }
+
+.bg-brown-50 { background-color: var(--brown-50); }
+.bg-brown-100 { background-color: var(--brown-100); }
+.bg-brown-600 { background-color: var(--brown-600); }
+.bg-brown-700 { background-color: var(--brown-700); }
+.bg-brown-800 { background-color: var(--brown-800); }
+.bg-brown-900 { background-color: var(--brown-900); }
+
+.bg-warm-cream { background-color: var(--warm-cream); }
+.bg-warm-linen { background-color: var(--warm-linen); }
+
+/* Border colors */
+.border-henna-100 { border-color: var(--henna-100); }
+.border-henna-200 { border-color: var(--henna-200); }
+.border-henna-500 { border-color: var(--henna-500); }
+.border-henna-600 { border-color: var(--henna-600); }
+
+.border-terra-100 { border-color: var(--terra-100); }
+.border-terra-200 { border-color: var(--terra-200); }
+
+.border-brown-100 { border-color: var(--brown-100); }
+.border-brown-200 { border-color: var(--brown-200); }
+.border-brown-600 { border-color: var(--brown-600); }
+
+/* Hover states */
+.hover\:text-henna-200:hover { color: var(--henna-200); }
+.hover\:text-henna-300:hover { color: var(--henna-300); }
+.hover\:text-henna-400:hover { color: var(--henna-400); }
+.hover\:text-henna-500:hover { color: var(--henna-500); }
+.hover\:text-henna-600:hover { color: var(--henna-600); }
+
+.hover\:text-terra-300:hover { color: var(--terra-300); }
+.hover\:text-terra-400:hover { color: var(--terra-400); }
+.hover\:text-terra-500:hover { color: var(--terra-500); }
+
+.hover\:text-gold-400:hover { color: var(--gold-400); }
+
+.hover\:bg-henna-600:hover { background-color: var(--henna-600); }
+.hover\:bg-henna-700:hover { background-color: var(--henna-700); }
+.hover\:bg-terra-600:hover { background-color: var(--terra-600); }
+.hover\:bg-brown-50:hover { background-color: var(--brown-50); }
+.hover\:bg-brown-700:hover { background-color: var(--brown-700); }
+
+.hover\:border-henna-200:hover { border-color: var(--henna-200); }
+.hover\:border-henna-300:hover { border-color: var(--henna-300); }
+.hover\:border-terra-300:hover { border-color: var(--terra-300); }
+
+/* Focus states */
+.focus\:border-henna-500:focus { border-color: var(--henna-500); }
+.focus\:border-henna-600:focus { border-color: var(--henna-600); }
+.focus\:ring-henna-200:focus { --tw-ring-color: var(--henna-200); }
+.focus\:ring-henna-500\/20:focus { --tw-ring-color: rgba(45, 106, 106, 0.2); }
+
+/* ===================================
+   HERO SECTION BACKGROUND
+   =================================== */
+.hero-bg {
+  background-image: linear-gradient(135deg, var(--brown-800) 0%, var(--henna-700) 100%);
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+/* ===================================
+   NAVIGATION STYLES
+   =================================== */
+
+.nav-link {
+  position: relative;
+  transition: color var(--transition-fast);
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 50%;
+  background-color: var(--gold-400);
+  transition: all var(--transition-fast);
+  transform: translateX(-50%);
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+/* ===================================
+   BUTTON STYLES
+   =================================== */
+
+.cta-button {
+  display: inline-block;
+  font-weight: 600;
+  text-align: center;
+  border-radius: 0.5rem;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  letter-spacing: 0.05em;
+}
+
+.cta-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.cta-button-large {
+  display: inline-block;
+  font-weight: 600;
+  text-align: center;
+  vertical-align: middle;
+  user-select: none;
+  border: 2px solid transparent;
+  transition: all var(--transition-normal);
+  position: relative;
+  overflow: hidden;
+  transform: translateY(0);
+}
+
+.cta-button-large:hover {
+  transform: translateY(-2px);
+}
+
+.cta-button-large::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left var(--transition-slow);
+}
+
+.cta-button-large:hover::before {
+  left: 100%;
+}
+
+/* ===================================
+   CARD STYLES
+   =================================== */
+
+.benefit-card {
+  transition: all var(--transition-normal);
+  transform: translateY(0);
+}
+
+.benefit-card:hover {
+  transform: translateY(-5px);
+}
+
+.testimonial-card {
+  position: relative;
+  transition: all var(--transition-normal);
+}
+
+.testimonial-card::before {
+  content: '"';
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  font-size: 4rem;
+  color: var(--terra-500);
+  opacity: 0.3;
+  font-family: Georgia, serif;
+}
+
+/* FAQ Items */
+.faq-item {
+  transition: all var(--transition-normal);
+}
+
+.faq-item:hover {
+  transform: translateX(5px);
+}
+
+.faq-item summary {
+  transition: color var(--transition-fast);
+}
+
+.faq-item[open] summary {
+  color: var(--henna-500);
+  margin-bottom: 1rem;
+}
+
+/* Product Image */
+.product-image-placeholder {
+  transition: all var(--transition-normal);
+  background: linear-gradient(135deg, #ffffff 0%, var(--brown-50) 100%);
+}
+
+.product-image-placeholder:hover {
+  transform: scale(1.02);
+}
+
+/* Trust Badges */
+.trust-badge {
+  transition: all var(--transition-fast);
+}
+
+.trust-badge:hover {
+  transform: scale(1.05);
+}
+
+/* ===================================
+   HERITAGE DECORATIVE ELEMENTS
+   =================================== */
+
+/* Paisley-inspired section divider */
+.section-divider {
+  width: 80px;
+  height: 3px;
+  background: linear-gradient(90deg, var(--terra-500), var(--gold-400), var(--henna-500));
+  border-radius: 2px;
+  margin: 0 auto;
+}
+
+/* Heritage quote styling */
+.heritage-quote {
+  font-family: var(--font-heading);
+  font-style: italic;
+  font-size: 1.3rem;
+  color: var(--brown-600);
+  position: relative;
+  padding: 2rem 3rem;
+}
+
+.heritage-quote::before,
+.heritage-quote::after {
+  content: '"';
+  font-size: 4rem;
+  color: var(--gold-400);
+  opacity: 0.5;
+  position: absolute;
+  font-family: Georgia, serif;
+  line-height: 1;
+}
+
+.heritage-quote::before {
+  top: 0;
+  left: 0;
+}
+
+.heritage-quote::after {
+  content: '"';
+  bottom: 0;
+  right: 0;
+}
+
+/* ===================================
+   MEDIA QUERIES — MOBILE FIRST APPROACH
+   =================================== */
+
+@media (max-width: 767px) {
+  html {
+    font-size: 14px;
+  }
+
+  .hero-bg {
+    background-attachment: scroll;
+    min-height: 100vh;
+  }
+
+  #menu {
+    box-shadow: var(--shadow-lg);
+  }
+
+  .mobile-spacing {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .cta-button,
+  .cta-button-large {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 1rem;
+  }
+
+  .benefit-card {
+    margin-bottom: 2rem;
+  }
+
+  .faq-item {
+    margin-bottom: 1rem;
+  }
+
+  footer .grid {
+    gap: 2rem;
+  }
+
+  footer form {
+    flex-direction: column;
+  }
+
+  footer form input,
+  footer form button {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .heritage-quote {
+    padding: 1.5rem 2rem;
+    font-size: 1.1rem;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  html {
+    font-size: 15px;
+  }
+
+  .hero-bg {
+    background-attachment: scroll;
+  }
+
+  .nav-link {
+    padding: 0.75rem 1rem;
+  }
+
+  .tablet-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+
+  .cta-button-large {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+  }
+
+  .benefit-card {
+    padding: 2rem;
+  }
+
+  .faq-item {
+    padding: 1.5rem;
+  }
+
+  footer .grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 3rem;
+  }
+
+  footer .grid>div:last-child {
+    grid-column: span 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 16px;
+  }
+
+  .hero-bg {
+    background-attachment: fixed;
+  }
+
+  .nav-link {
+    padding: 0.5rem 0;
+    margin: 0 1rem;
+  }
+
+  .desktop-large-text {
+    font-size: 1.25rem;
+    line-height: 1.8;
+  }
+
+  .cta-button:hover,
+  .cta-button-large:hover {
+    box-shadow: var(--shadow-xl);
+  }
+
+  .benefit-card:hover {
+    box-shadow: var(--shadow-xl);
+  }
+
+  .faq-item:hover {
+    box-shadow: var(--shadow-lg);
+  }
+
+  footer .grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4rem;
+  }
+
+  footer form {
+    flex-direction: row;
+  }
+
+  footer form input {
+    flex: 1;
+    margin-right: 0.5rem;
+    margin-bottom: 0;
+  }
+
+  footer form button {
+    flex-shrink: 0;
+    margin-bottom: 0;
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    font-size: 18px;
+  }
+
+  .max-w-7xl {
+    max-width: 1400px;
+  }
+
+  .large-screen-spacing {
+    padding: 6rem 0;
+  }
+
+  .cta-button-large {
+    padding: 1.25rem 3rem;
+    font-size: 1.2rem;
+  }
+}
+
+/* ===================================
+   ACCESSIBILITY ENHANCEMENTS
+   =================================== */
+
+*:focus {
+  outline: 2px solid var(--henna-500);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+
+  .hero-bg {
+    background-attachment: scroll;
+  }
+}
+
+@media (prefers-contrast: high) {
+  :root {
+    --henna-500: #1e4a4a;
+    --henna-600: #153535;
+    --brown-800: #000000;
+  }
+
+  .cta-button,
+  .cta-button-large {
+    border: 2px solid currentColor;
+  }
+}
+
+/* ===================================
+   PRINT STYLES
+   =================================== */
+@media print {
+  header,
+  .cta-button,
+  .cta-button-large,
+  #menu-toggle,
+  footer form {
+    display: none;
+  }
+
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  section {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+}
+
+/* ===================================
+   ANIMATION KEYFRAMES
+   =================================== */
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(45, 106, 106, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(45, 106, 106, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(45, 106, 106, 0);
+  }
+}
+
+.cta-button-large:hover {
+  animation: pulse 2s infinite;
+}
+
+@keyframes paymentModalEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.payment-modal-enter {
+  animation: paymentModalEnter 0.25s ease-out forwards;
+}
+
+/* Gentle float for decorative elements */
+@keyframes gentleFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
+
+/* ===================================
+   UTILITY CLASSES
+   =================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+header {
+  z-index: 100000 !important;
+}
+
+#mobile-menu-overlay {
+  z-index: 2147483647 !important;
+  background-color: rgb(26 15 9 / 0.98) !important;
+  opacity: 1 !important;
+  display: flex !important;
+}
+
+#mobile-menu-overlay>div {
+  z-index: 2147483647 !important;
+  opacity: 1 !important;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: var(--henna-500);
+  color: white;
+  padding: 8px;
+  text-decoration: none;
+  transition: top var(--transition-fast);
+  z-index: 1000;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* Loading state */
+.loading {
+  background: linear-gradient(90deg, var(--brown-50) 25%, var(--brown-100) 50%, var(--brown-50) 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+@keyframes loading {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Newsletter Submit Button */
+.newsletter-submit {
+  transition: all var(--transition-fast) !important;
+}
+
+.newsletter-submit:hover {
+  color: white !important;
+  text-shadow: 0 0 10px var(--gold-400);
+}
+
+.newsletter-submit:active {
+  transform: scale(0.9);
+  color: var(--gold-400) !important;
+}
+
+/* ===================================
+   PORTAL & CART STYLES
+   =================================== */
+
+.portal-glass {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* Skeleton Shimmer */
+.portal-shimmer {
+  background: linear-gradient(90deg,
+      rgba(255, 255, 255, 0.05) 25%,
+      rgba(255, 255, 255, 0.10) 50%,
+      rgba(255, 255, 255, 0.05) 75%);
+  background-size: 200% 100%;
+  animation: portalShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes portalShimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Order Card Entry Animation */
+.portal-card-enter {
+  animation: portalCardEnter 0.5s ease-out both;
+}
+
+@keyframes portalCardEnter {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Cart Drawer Slide-in */
+.cart-drawer-enter {
+  animation: cartSlideIn 0.35s ease-out both;
+}
+
+@keyframes cartSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+/* Portal Form Fields */
+.portal-label {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--brown-500);
+  margin-bottom: 0.4rem;
+}
+
+.portal-input {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  background: var(--warm-cream);
+  border: 1px solid var(--brown-200);
+  border-radius: 0.75rem;
+  color: var(--brown-800);
+  font-size: 0.9rem;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.portal-input::placeholder {
+  color: var(--brown-400);
+}
+
+.portal-input:focus {
+  border-color: var(--henna-500);
+  background: #ffffff;
+  box-shadow: 0 0 0 2px rgba(45, 106, 106, 0.15);
+}
+
+/* ===================================
+   BACKWARD COMPAT: Sage aliases
+   (for any Tailwind classes still using sage)
+   =================================== */
+.text-sage-300 { color: var(--henna-300); }
+.text-sage-400 { color: var(--henna-400); }
+.text-sage-600 { color: var(--henna-500); }
+.text-sage-800 { color: var(--henna-700); }
+.bg-sage-50 { background-color: var(--brown-50); }
+.bg-sage-100 { background-color: var(--henna-100); }
+.bg-sage-500 { background-color: var(--henna-500); }
+.bg-sage-600 { background-color: var(--henna-500); }
+.bg-sage-700 { background-color: var(--henna-600); }
+.border-sage-100 { border-color: var(--henna-100); }
+.border-sage-200 { border-color: var(--henna-200); }
+.border-sage-300 { border-color: var(--henna-300); }
+.border-sage-500 { border-color: var(--henna-500); }
+.border-sage-600 { border-color: var(--henna-600); }
+.hover\:text-sage-200:hover { color: var(--henna-200); }
+.hover\:text-sage-300:hover { color: var(--henna-300); }
+.hover\:text-sage-400:hover { color: var(--gold-400); }
+.hover\:text-sage-600:hover { color: var(--henna-500); }
+.hover\:bg-sage-50:hover { background-color: var(--brown-50); }
+.hover\:bg-sage-500:hover { background-color: var(--henna-400); }
+.hover\:bg-sage-700:hover { background-color: var(--henna-600); }
+.hover\:border-sage-200:hover { border-color: var(--henna-200); }
+.hover\:border-sage-300:hover { border-color: var(--henna-300); }
+.focus\:border-sage-500:focus { border-color: var(--henna-500); }
+.focus\:border-sage-600:focus { border-color: var(--henna-500); }
+.focus\:ring-sage-200:focus { --tw-ring-color: var(--henna-200); }
+.focus\:ring-sage-500\/20:focus { --tw-ring-color: rgba(45, 106, 106, 0.2); }

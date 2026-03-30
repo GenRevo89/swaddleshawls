@@ -1,0 +1,19 @@
+{
+  "name": "solana-nad",
+  "version": "1.0.0",
+  "description": "A professional, responsive landing page for Solana NAD+ supplement.",
+  "scripts": {
+    "start": "serve ."
+  },
+  "keywords": [
+    "landing-page",
+    "solana-nad",
+    "html",
+    "css"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serve": "^14.2.4"
+  }
+}
