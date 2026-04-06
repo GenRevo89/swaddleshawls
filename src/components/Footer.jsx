@@ -5,6 +5,7 @@ import Image from "next/image";
 
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "SwaddleShawls";
 const brandEntity = process.env.NEXT_PUBLIC_BRAND_ENTITY || "SwaddleShawls";
+const isPreorder = process.env.NEXT_PUBLIC_PREORDER === "TRUE";
 
 export default function Footer() {
   return (
@@ -26,7 +27,7 @@ export default function Footer() {
             <h4 className="font-bold mb-4" style={{ color: "var(--gold-400)" }}>Navigation</h4>
             <ul className="space-y-2" style={{ color: "var(--brown-400)" }}>
               <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
-              <li><Link href="/shop" className="hover:text-white transition-colors">Shop</Link></li>
+              <li><Link href="/shop" className="hover:text-white transition-colors">{isPreorder ? "Pre-Order" : "Shop"}</Link></li>
               <li><Link href="/#heritage" className="hover:text-white transition-colors">Our Story</Link></li>
               <li><Link href="/#reviews" className="hover:text-white transition-colors">Reviews</Link></li>
               <li><Link href="/#faq" className="hover:text-white transition-colors">FAQs</Link></li>

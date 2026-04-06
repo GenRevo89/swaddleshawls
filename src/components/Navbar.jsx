@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "SwaddleShawls";
+const isPreorder = process.env.NEXT_PUBLIC_PREORDER === "TRUE";
 
 export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -35,7 +36,7 @@ export default function Navbar() {
             ? "bg-[#2c1810]/95 backdrop-blur-md border-white/10"
             : "bg-[#2c1810]/80 backdrop-blur-sm border-white/5"
         }`}
-        style={{ zIndex: 100000 }}
+        style={{ zIndex: 999 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center py-3">
           {/* Logo */}
@@ -69,7 +70,7 @@ export default function Navbar() {
           {/* Desktop Nav */}
           <nav id="menu" className="hidden md:flex items-center space-x-8">
             <Link href="/" className="nav-link text-sm font-medium hover:text-gold-400 transition-colors tracking-wide">HOME</Link>
-            <Link href="/shop" className="nav-link text-sm font-medium hover:text-gold-400 transition-colors tracking-wide">SHOP</Link>
+            <Link href="/shop" className="nav-link text-sm font-medium hover:text-gold-400 transition-colors tracking-wide">{isPreorder ? "PRE-ORDER" : "SHOP"}</Link>
             <Link href="/#heritage" className="nav-link text-sm font-medium hover:text-gold-400 transition-colors tracking-wide">OUR STORY</Link>
             <Link href="/#faq" className="nav-link text-sm font-medium hover:text-gold-400 transition-colors tracking-wide">FAQ</Link>
             <Link href="/#reviews" className="nav-link text-sm font-medium hover:text-gold-400 transition-colors tracking-wide">REVIEWS</Link>
@@ -110,7 +111,7 @@ export default function Navbar() {
 
           <nav className="flex flex-col space-y-6 text-center w-full mb-12">
             <Link href="/" onClick={closeMenu} className="text-3xl font-light text-white hover:text-gold-400 transition-colors tracking-widest uppercase" style={{ fontFamily: "var(--font-heading)" }}>Home</Link>
-            <Link href="/shop" onClick={closeMenu} className="text-3xl font-light text-white hover:text-gold-400 transition-colors tracking-widest uppercase" style={{ fontFamily: "var(--font-heading)" }}>Shop</Link>
+            <Link href="/shop" onClick={closeMenu} className="text-3xl font-light text-white hover:text-gold-400 transition-colors tracking-widest uppercase" style={{ fontFamily: "var(--font-heading)" }}>{isPreorder ? "Pre-Order" : "Shop"}</Link>
             <Link href="/#heritage" onClick={closeMenu} className="text-3xl font-light text-white hover:text-gold-400 transition-colors tracking-widest uppercase" style={{ fontFamily: "var(--font-heading)" }}>Our Story</Link>
             <Link href="/#faq" onClick={closeMenu} className="text-3xl font-light text-white hover:text-gold-400 transition-colors tracking-widest uppercase" style={{ fontFamily: "var(--font-heading)" }}>FAQ</Link>
             <Link href="/#reviews" onClick={closeMenu} className="text-3xl font-light text-white hover:text-gold-400 transition-colors tracking-widest uppercase" style={{ fontFamily: "var(--font-heading)" }}>Reviews</Link>

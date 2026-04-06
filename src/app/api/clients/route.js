@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Client from "@/models/Client";
+import { upsertContact } from "@/lib/crm";
 
 // GET — Fetch client profile by email (requires auth — called after login)
 export async function GET(req) {
@@ -54,6 +55,22 @@ export async function POST(req) {
 
         if (!client) {
             return NextResponse.json({ error: "Client not found" }, { status: 404 });
+        }
+        
+        // Push profile updates seamlessly to BasaltHQ CRM using biostack's utility
+        try {
+            const parts = updateData.name.split(" ");
+            const first_name = parts[0] || "";
+            const last_name = parts.slice(1).join(" ") || "";
+            
+            await upsertContact({
+                email: email.toLowerCase().trim(),
+                first_name,
+                last_name,
+                mobile_phone: phone || "",
+            });
+        } catch (crmError) {
+            console.error("Failed to push client profile update to CRM:", crmError);
         }
 
         return NextResponse.json(

@@ -5,6 +5,7 @@ import Link from "next/link";
 import CrmContactForm from "@/components/CrmContactForm";
 
 const brandName = process.env.NEXT_PUBLIC_BRAND_NAME || "SwaddleShawls";
+const isPreorder = process.env.NEXT_PUBLIC_PREORDER === "TRUE";
 
 const FEATURED_PRODUCTS = [
   {
@@ -85,7 +86,7 @@ export default function Home() {
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-20">
           <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-8 border"
             style={{ backgroundColor: "rgba(200,149,76,0.15)", borderColor: "rgba(200,149,76,0.3)", color: "var(--gold-400)" }}>
-            Pure Comfort from India
+            {isPreorder ? "Pre-Orders Now Open" : "Pure Comfort from India"}
           </div>
 
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-tight tracking-tight text-white drop-shadow-md"
@@ -101,7 +102,7 @@ export default function Home() {
             <Link href="/shop"
               className="text-white border-2 px-8 py-4 rounded hover:opacity-90 transition-all duration-300 shadow-xl text-lg font-bold tracking-wide uppercase"
               style={{ backgroundColor: "var(--henna-500)", borderColor: "var(--henna-500)" }}>
-              SHOP COLLECTION
+              {isPreorder ? "PRE-ORDER NOW" : "SHOP COLLECTION"}
             </Link>
             <Link href="#heritage"
               className="bg-transparent text-white border-2 border-white/40 px-8 py-4 rounded hover:bg-white hover:text-[var(--brown-800)] transition-all duration-300 shadow-xl text-lg font-bold tracking-wide uppercase">
@@ -197,13 +198,13 @@ export default function Home() {
             <div className="order-1 lg:order-2 benefit-card">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
                 <Image src="/The 'Ancients' Raw Brown Swaddle.webp" alt="Baby wrapped in SwaddleShawls" width={800} height={600} className="w-full h-auto object-cover transform hover:scale-105 transition-transform duration-700" />
-                <div className="absolute inset-0 flex flex-col justify-end p-8" style={{ background: "linear-gradient(to top, rgba(44,24,16,0.85) 0%, rgba(44,24,16,0.5) 40%, transparent 100%)" }}>
+                <div className="absolute inset-0 flex flex-col justify-end items-end p-8 text-right" style={{ background: "linear-gradient(to top, rgba(44,24,16,0.85) 0%, rgba(44,24,16,0.5) 40%, transparent 100%)" }}>
                   <h3 className="text-white text-3xl font-bold drop-shadow-md" style={{ fontFamily: "var(--font-heading)" }}>Woven with Love</h3>
                   <p className="text-xl mt-2 tracking-wide drop-shadow-sm" style={{ color: "var(--gold-400)", fontWeight: 600 }}>Since generations, from India</p>
                 </div>
               </div>
 
-              <div className="hidden lg:flex absolute -bottom-10 right-4 bg-white p-6 rounded-xl shadow-xl items-center gap-4 max-w-xs z-20" style={{ border: "1px solid var(--brown-100)" }}>
+              <div className="hidden lg:flex absolute -top-6 left-4 bg-white p-6 rounded-xl shadow-xl items-center gap-4 max-w-xs z-20" style={{ border: "1px solid var(--brown-100)" }}>
                 <div className="h-12 w-12 rounded-full flex items-center justify-center font-bold text-xl" style={{ backgroundColor: "var(--terra-50)", color: "var(--terra-600)" }}>
                   ❤
                 </div>
@@ -248,9 +249,14 @@ export default function Home() {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {FEATURED_PRODUCTS.map((product, index) => (
-              <Link key={index} href="/shop" className="group block">
-                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border" style={{ borderColor: "var(--brown-100)" }}>
-                  <div className="h-72 overflow-hidden">
+              <Link key={index} href="/shop" className="group block h-full">
+                <div className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 border h-full flex flex-col relative" style={{ borderColor: "var(--brown-100)" }}>
+                  {isPreorder && (
+                    <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-md text-xs font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
+                      10% Off Preorder Special
+                    </div>
+                  )}
+                  <div className="h-72 overflow-hidden flex-shrink-0">
                     <Image
                       src={product.image}
                       alt={product.name}
@@ -259,11 +265,11 @@ export default function Home() {
                       className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                     />
                   </div>
-                  <div className="p-6">
+                  <div className="p-6 flex flex-col flex-1">
                     <h3 className="text-lg font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{product.name}</h3>
-                    <p className="text-sm leading-relaxed" style={{ color: "var(--brown-400)" }}>{product.description}</p>
+                    <p className="text-sm leading-relaxed flex-1" style={{ color: "var(--brown-400)" }}>{product.description}</p>
                     <div className="mt-4 flex items-center gap-2 text-sm font-bold" style={{ color: "var(--henna-500)" }}>
-                      <span>View Details</span>
+                      <span>{isPreorder ? "Pre-Order" : "View Details"}</span>
                       <svg className="w-4 h-4 transform group-hover:translate-x-2 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                     </div>
                   </div>
@@ -275,7 +281,7 @@ export default function Home() {
           <div className="text-center mt-12">
             <Link href="/shop" className="inline-block text-white font-bold px-10 py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-1 transform tracking-wide uppercase"
               style={{ backgroundColor: "var(--henna-500)" }}>
-              View Full Collection
+              {isPreorder ? "View Pre-Order Collection" : "View Full Collection"}
             </Link>
           </div>
         </div>
@@ -289,7 +295,7 @@ export default function Home() {
           <h2 className="text-3xl md:text-5xl font-bold mb-4 tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>Loved by Parents Everywhere</h2>
           <div className="section-divider mb-16" style={{ background: "linear-gradient(90deg, var(--terra-400), var(--gold-400), var(--henna-400))" }}></div>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-3 gap-8 pt-10">
             <div className="p-8 rounded-2xl border hover:transition-colors shadow-2xl relative"
               style={{ backgroundColor: "var(--brown-700)", borderColor: "rgba(255,255,255,0.08)" }}>
               <div className="absolute -top-6 left-8 h-12 w-12 flex items-center justify-center rounded-lg shadow-lg text-2xl font-serif" style={{ backgroundColor: "var(--terra-500)" }}>&quot;</div>

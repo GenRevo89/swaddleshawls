@@ -13,6 +13,8 @@ function ProductIcon() {
 // CRM Contact Form — imported as shared component
 import CrmContactForm from "@/components/CrmContactForm";
 
+const isPreorder = process.env.NEXT_PUBLIC_PREORDER === "TRUE";
+
 // ── Helpers for Product Detail Modal ──
 
 // Keys to never show in the attribute table
@@ -36,7 +38,24 @@ function isDisplayable(val) {
 // ── Product Detail Modal ──
 function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const [selectedModifiers, setSelectedModifiers] = useState({});
   const pid = product._id || product.id;
+
+  useEffect(() => {
+    if (product?.modifierGroups) {
+      const initial = {};
+      product.modifierGroups.forEach(mg => {
+        if (mg.modifiers && mg.modifiers.length > 0) {
+          initial[mg.id] = mg.modifiers.slice().sort((a,b) => a.sortOrder - b.sortOrder)[0];
+        }
+      });
+      setSelectedModifiers(initial);
+    }
+  }, [product]);
+
+  const basePrice = Number(product.price);
+  const modifiersPrice = Object.values(selectedModifiers).reduce((sum, mod) => sum + (mod.priceAdjustment || 0), 0);
+  const currentTotal = basePrice + modifiersPrice;
 
   // Gather all available images (deduplicated)
   const allImages = [];
@@ -104,7 +123,12 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
 
           <div className="grid md:grid-cols-2 max-h-[90vh] overflow-y-auto">
             {/* Image Gallery Side */}
-            <div className="p-6 md:p-8 flex flex-col" style={{ backgroundColor: "var(--brown-50)" }}>
+            <div className="p-6 md:p-8 flex flex-col relative" style={{ backgroundColor: "var(--brown-50)" }}>
+              {isPreorder && (
+                <div className="absolute top-10 left-10 z-[15] px-3 py-1 rounded-md text-xs font-bold uppercase shadow-lg tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
+                  10% Off Preorder Special
+                </div>
+              )}
               {/* Main Image */}
               <div className="aspect-square rounded-xl overflow-hidden" style={{ backgroundColor: "var(--brown-100)" }}>
                 {allImages.length > 0 ? (
@@ -150,8 +174,9 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
                 {product.name}
               </h2>
 
-              <div className="text-3xl font-bold mb-5" style={{ color: "var(--brown-800)" }}>
-                ${Number(product.price).toFixed(2)}
+              <div className="text-3xl font-bold mb-5 flex items-center gap-3" style={{ color: "var(--brown-800)" }}>
+                ${currentTotal.toFixed(2)}
+                {modifiersPrice > 0 && <span className="text-sm font-normal text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Includes +${modifiersPrice.toFixed(2)} options</span>}
               </div>
 
               <p className="text-sm leading-relaxed mb-5" style={{ color: "var(--brown-500)" }}>
@@ -165,6 +190,37 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
                     <div key={key} className="flex text-sm gap-3">
                       <span className="font-bold text-xs shrink-0 pt-0.5" style={{ color: "var(--brown-400)" }}>{formatAttrKey(key)}</span>
                       <span style={{ color: "var(--brown-600)" }}>{String(value)}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Modifier Groups UI */}
+              {product.modifierGroups && product.modifierGroups.length > 0 && (
+                <div className="mb-5 space-y-4">
+                  {product.modifierGroups.slice().sort((a,b) => a.sortOrder - b.sortOrder).map(mg => (
+                    <div key={mg.id} className="rounded-xl p-4" style={{ backgroundColor: "var(--brown-50)", border: "1px solid var(--brown-100)" }}>
+                      <div className="text-sm font-bold mb-3 uppercase tracking-wider flex items-center justify-between" style={{ color: "var(--brown-700)" }}>
+                        <span>{mg.name} {mg.required && <span className="text-red-500 ml-1">*</span>}</span>
+                      </div>
+                      <div className="space-y-2">
+                        {mg.modifiers.slice().sort((a,b) => a.sortOrder - b.sortOrder).map(mod => (
+                          <label key={mod.id} className="flex items-center gap-3 cursor-pointer group">
+                            <input 
+                              type="radio" 
+                              name={mg.id} 
+                              value={mod.id} 
+                              checked={selectedModifiers[mg.id]?.id === mod.id}
+                              onChange={() => setSelectedModifiers(prev => ({ ...prev, [mg.id]: mod }))}
+                              className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                            />
+                            <span className="text-sm font-medium transition-colors group-hover:text-black" style={{ color: "var(--brown-800)" }}>
+                              {mod.name} 
+                              {mod.priceAdjustment > 0 && <span className="ml-2 text-xs font-semibold" style={{ color: "var(--brown-500)" }}>(+${mod.priceAdjustment.toFixed(2)})</span>}
+                            </span>
+                          </label>
+                        ))}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -218,7 +274,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
 
               {/* Add to Cart */}
               <button
-                onClick={() => onAddToCart(product)}
+                onClick={() => onAddToCart(product, Object.values(selectedModifiers))}
                 className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-300 shadow-lg ${
                   addedItem === pid
                     ? "bg-emerald-600 text-white scale-[0.98]"
@@ -226,7 +282,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
                 }`}
                 style={addedItem !== pid ? { backgroundColor: "var(--brown-800)" } : {}}
               >
-                {addedItem === pid ? "✓ Added to Cart" : `Add to Cart — $${Number(product.price).toFixed(2)}`}
+                {addedItem === pid ? "✓ Added to Cart" : isPreorder ? `Pre-Order — $${currentTotal.toFixed(2)}` : `Add to Cart — $${currentTotal.toFixed(2)}`}
               </button>
             </div>
           </div>
@@ -364,26 +420,46 @@ export default function Shop() {
     fetchProducts();
   }, []);
 
-  const addToCart = (product) => {
+  const addToCart = (product, rawModifiers = []) => {
     const pid = product._id || product.id;
+    // ensure modifiers map strictly to what Surge wants: `{ id, name, priceAdjustment }`
+    const modifiers = rawModifiers.map(m => ({ id: m.id, name: m.name, priceAdjustment: m.priceAdjustment || 0 }));
+    
+    // create a unique cart signature by sorting modifier IDs
+    const modifierHash = modifiers.map(m => m.id).sort().join('_');
+    const cartItemId = modifierHash ? `${pid}_${modifierHash}` : pid;
+
+    // calculate total price for this unit
+    const modifierPriceTotal = modifiers.reduce((sum, m) => sum + m.priceAdjustment, 0);
+    const unitPrice = Number(product.price) + modifierPriceTotal;
+
     setCart((prev) => {
-      const existing = prev.find((item) => item.id === pid);
+      const existing = prev.find((item) => item.cartItemId === cartItemId);
       if (existing) {
         return prev.map((item) =>
-          item.id === pid ? { ...item, quantity: item.quantity + 1 } : item
+          item.cartItemId === cartItemId ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { id: pid, name: product.name, sku: product.sku || product.name, price: Number(product.price), quantity: 1 }];
+      return [...prev, { 
+        cartItemId, 
+        productId: pid, 
+        name: product.name, 
+        sku: product.sku || product.name, 
+        price: unitPrice, 
+        basePrice: Number(product.price),
+        quantity: 1,
+        modifiers
+      }];
     });
     setAddedItem(pid);
     setTimeout(() => setAddedItem(null), 1200);
     if (!cartOpen && !selectedProduct) setCartOpen(true);
   };
 
-  const updateQuantity = (id, delta) => {
+  const updateQuantity = (cartItemId, delta) => {
     setCart((prev) =>
       prev
-        .map((item) => (item.id === id ? { ...item, quantity: item.quantity + delta } : item))
+        .map((item) => (item.cartItemId === cartItemId ? { ...item, quantity: item.quantity + delta } : item))
         .filter((item) => item.quantity > 0)
     );
   };
@@ -408,6 +484,7 @@ export default function Shop() {
             sku: item.sku,
             quantity: item.quantity,
             price: item.price,
+            modifiers: item.modifiers,
           })),
         }),
       });
@@ -464,13 +541,16 @@ export default function Shop() {
   };
 
   return (
-    <main className="flex-grow pt-32 pb-24 px-6 relative" style={{ backgroundColor: "var(--brown-50)" }}>
-      <div className="max-w-7xl mx-auto">
+    <>
+      <main className="flex-grow pt-32 pb-24 px-6 relative" style={{ backgroundColor: "var(--brown-50)" }}>
+        <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>Our Collection</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "Pre-Order Collection" : "Our Collection"}</h1>
           <div className="section-divider mb-6"></div>
           <p className="max-w-2xl mx-auto text-lg" style={{ color: "var(--brown-500)" }}>
-            Browse our handcrafted collection of authentic Indian baby shawls and swaddles.
+            {isPreorder
+              ? "Be the first to own our handcrafted collection. Reserve yours today — shipping begins soon."
+              : "Browse our handcrafted collection of authentic Indian baby shawls and swaddles."}
           </p>
         </div>
 
@@ -482,7 +562,7 @@ export default function Shop() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-emerald-900 mb-2">Payment Confirmed!</h3>
+            <h3 className="text-2xl font-bold text-emerald-900 mb-2">{isPreorder ? "Pre-Order Confirmed!" : "Payment Confirmed!"}</h3>
             <p className="text-emerald-700 mb-1">
               Your order number is <span className="font-mono font-bold text-lg">{orderResult.orderNumber}</span>
             </p>
@@ -548,18 +628,43 @@ export default function Shop() {
           </div>
         )}
 
-        {/* Product Grid — Items */}
+        {/* Product Grid — Items by Category */}
         {!loadingProducts && !productError && products.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {products.map((product) => {
-              const pid = product._id || product.id;
+          <div className="space-y-16">
+            {[
+              {
+                title: "Newborn Essentials",
+                description: "Pure, gentle swaddles crafted for your baby's first days.",
+                items: products.filter(p => !p.category || p.category === "Newborn Essentials")
+              },
+              {
+                title: "Parenthood Essentials",
+                description: "Mindfully designed essentials to support you through your parenthood journey.",
+                items: products.filter(p => p.category === "Parenthood Essentials")
+              }
+            ].map((category, idx) => {
+              if (category.items.length === 0) return null;
               return (
-                <div
+                <div key={idx}>
+                  <div className="mb-8 border-b pb-4" style={{ borderColor: "var(--brown-200)" }}>
+                    <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{category.title}</h2>
+                    <p className="text-lg" style={{ color: "var(--brown-500)" }}>{category.description}</p>
+                  </div>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {category.items.map((product) => {
+                      const pid = product._id || product.id;
+                      return (
+                        <div
                   key={pid}
-                  className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col cursor-pointer"
+                  className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col cursor-pointer relative"
                   style={{ border: "1px solid var(--brown-100)" }}
                   onClick={() => setSelectedProduct(product)}
                 >
+                  {isPreorder && (
+                    <div className="absolute top-3 left-3 z-[15] px-2 py-1 rounded-md text-[10px] font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
+                      10% Off Preorder Special
+                    </div>
+                  )}
                   {/* 1:1 Square Image */}
                   <div className="aspect-square overflow-hidden relative" style={{ backgroundColor: "var(--brown-50)" }}>
                     {product.image ? (
@@ -578,7 +683,7 @@ export default function Shop() {
                     <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
                       <span className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg"
                         style={{ color: "var(--brown-800)" }}>
-                        View Details
+                        {isPreorder ? "Pre-Order" : "View Details"}
                       </span>
                     </div>
 
@@ -610,7 +715,15 @@ export default function Shop() {
                         ${Number(product.price).toFixed(2)}
                       </span>
                       <button
-                        onClick={(e) => { e.stopPropagation(); addToCart(product); }}
+                        onClick={(e) => { 
+                          e.stopPropagation(); 
+                          const hasRequredModifiers = product.modifierGroups && product.modifierGroups.some(mg => mg.required);
+                          if (hasRequredModifiers) {
+                            setSelectedProduct(product);
+                          } else {
+                            addToCart(product); 
+                          }
+                        }}
                         className={`px-4 py-2 rounded-lg font-bold text-xs transition-all duration-300 ${
                           addedItem === pid
                             ? "bg-emerald-600 text-white scale-95"
@@ -618,9 +731,13 @@ export default function Shop() {
                         }`}
                         style={addedItem !== pid ? { backgroundColor: "var(--brown-800)" } : {}}
                       >
-                        {addedItem === pid ? "✓ Added" : "Add to Cart"}
+                        {addedItem === pid ? "✓ Added" : isPreorder ? "Pre-Order" : "Add to Cart"}
                       </button>
                     </div>
+                  </div>
+                </div>
+              );
+            })}
                   </div>
                 </div>
               );
@@ -631,6 +748,7 @@ export default function Shop() {
 
       {/* CONTACT FORM SECTION */}
       <CrmContactForm heading="Need Help Choosing?" subtitle="Our team can help you find the perfect swaddle for your little one — or create the ideal gift set." />
+      </main>
 
       {/* Floating Cart Badge */}
       {cartCount > 0 && !cartOpen && (
@@ -667,7 +785,7 @@ export default function Shop() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--henna-500)" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
                 </svg>
-                Your Cart
+                {isPreorder ? "Your Pre-Order" : "Your Cart"}
                 <span className="text-sm font-normal" style={{ color: "var(--brown-400)" }}>({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
               </h3>
               <button
@@ -692,14 +810,21 @@ export default function Shop() {
                 <>
                   <div className="space-y-4 mb-6">
                     {cart.map((item) => (
-                      <div key={item.id} className="flex items-center justify-between rounded-xl p-4" style={{ backgroundColor: "var(--brown-50)" }}>
+                      <div key={item.cartItemId} className="flex items-center justify-between rounded-xl p-4" style={{ backgroundColor: "var(--brown-50)" }}>
                         <div>
                           <h4 className="font-bold" style={{ color: "var(--brown-800)" }}>{item.name}</h4>
-                          <p className="text-sm" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)} each</p>
+                          {item.modifiers && item.modifiers.length > 0 && (
+                            <div className="text-xs mb-1 space-y-0.5" style={{ color: "var(--brown-500)" }}>
+                              {item.modifiers.map(m => (
+                                <div key={m.id}>+ {m.name}</div>
+                              ))}
+                            </div>
+                          )}
+                          <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
                         </div>
                         <div className="flex items-center gap-3">
                           <button
-                            onClick={() => updateQuantity(item.id, -1)}
+                            onClick={() => updateQuantity(item.cartItemId, -1)}
                             className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-bold transition-colors"
                             style={{ border: "1px solid var(--brown-200)", color: "var(--brown-500)" }}
                           >
@@ -707,7 +832,7 @@ export default function Shop() {
                           </button>
                           <span className="font-bold w-6 text-center" style={{ color: "var(--brown-800)" }}>{item.quantity}</span>
                           <button
-                            onClick={() => updateQuantity(item.id, 1)}
+                            onClick={() => updateQuantity(item.cartItemId, 1)}
                             className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-bold transition-colors"
                             style={{ border: "1px solid var(--brown-200)", color: "var(--brown-500)" }}
                           >
@@ -748,7 +873,7 @@ export default function Shop() {
                         className="w-full text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide"
                         style={{ backgroundColor: "var(--henna-500)" }}
                       >
-                        {submitting ? "Placing Order..." : `Place Order — $${cartTotal.toFixed(2)}`}
+                        {submitting ? "Placing Order..." : isPreorder ? `Confirm Pre-Order — $${cartTotal.toFixed(2)}` : `Place Order — $${cartTotal.toFixed(2)}`}
                       </button>
                     </form>
                   )}
@@ -767,7 +892,7 @@ export default function Shop() {
                   className="w-full text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform tracking-wide"
                   style={{ backgroundColor: "var(--brown-800)" }}
                 >
-                  Proceed to Checkout
+                  {isPreorder ? "Confirm Pre-Order" : "Proceed to Checkout"}
                 </button>
               </div>
             )}
@@ -794,6 +919,6 @@ export default function Shop() {
           onCancel={handlePaymentCancel}
         />
       )}
-    </main>
+    </>
   );
 }

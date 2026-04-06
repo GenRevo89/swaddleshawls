@@ -1,72 +1,165 @@
 "use client";
-import React, { useState } from "react";
-
-const FORM_SLUG = process.env.NEXT_PUBLIC_BRAND_FORM_SLUG || process.env.BRAND_FORM_SLUG || "contact-form";
-const API_ENDPOINT = "https://crm.basalthq.com/api/forms/submit";
-
-const INQUIRY_OPTIONS = [
-  { value: "", label: "Select Inquiry Type" },
-  { value: "product_info", label: "Product Information" },
-  { value: "bulk_wholesale", label: "Wholesale / Boutique Partnership" },
-  { value: "custom_design", label: "Custom Design Request" },
-  { value: "gift_order", label: "Gift Order" },
-  { value: "care_instructions", label: "Care & Maintenance" },
-  { value: "partnership", label: "Collaboration / Press" },
-  { value: "other", label: "Other" },
-];
+import React, { useEffect } from "react";
 
 export default function CrmContactForm({ heading, subtitle }) {
-  const [formData, setFormData] = useState({
-    full_name: "",
-    email: "",
-    phone: "",
-    company: "",
-    inquiry_type: "",
-    message: "",
-  });
-  const [status, setStatus] = useState("idle");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const handleChange = (e) => {
-    setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setStatus("submitting");
-    setErrorMsg("");
-
-    try {
-      const body = new FormData();
-      Object.entries(formData).forEach(([k, v]) => body.append(k, v));
-      body.append("form_slug", FORM_SLUG);
-      body.append("source_url", window.location.href);
-      if (document.referrer) body.append("referrer", document.referrer);
-
-      const params = new URLSearchParams(window.location.search);
-      if (params.has("utm_source")) body.append("utm_source", params.get("utm_source"));
-      if (params.has("utm_medium")) body.append("utm_medium", params.get("utm_medium"));
-      if (params.has("utm_campaign")) body.append("utm_campaign", params.get("utm_campaign"));
-
-      const res = await fetch(API_ENDPOINT, { method: "POST", body });
-      const result = await res.json();
-
-      if (result.success) {
-        setStatus("success");
-      } else {
-        setStatus("error");
-        setErrorMsg(result.error || "Submission failed. Please try again.");
+  useEffect(() => {
+    const formSlug = "contact-form-be161cec";
+    const apiEndpoint = "https://crm.basalthq.com//api/forms/submit";
+    const captchaRequired = false;
+    
+    // Theme configuration updated to match SwaddleShawls
+    const theme = {
+      primaryColor: "#A6513A", // var(--henna-500)
+      backgroundColor: "#ffffff",
+      textColor: "#4A3B32", // var(--brown-800)
+      borderColor: "#DCD0C6", // var(--brown-200)
+      borderRadius: "0.5rem",
+      fontFamily: "inherit",
+      buttonTextColor: "#ffffff",
+      labelColor: "#7A6355", // var(--brown-600)
+      inputBgColor: "#F7F5F0" // var(--warm-cream)
+    };
+    
+    const container = document.getElementById("form-" + formSlug);
+    if (!container) return;
+    
+    // Clear in case of React StrictMode double mount
+    container.innerHTML = "";
+    
+    const form = document.createElement("form");
+    form.id = "crm-form-" + formSlug;
+    form.enctype = "multipart/form-data"; // Enable file uploads
+    form.style.cssText = "width:100%;font-family:" + theme.fontFamily + ";background:" + theme.backgroundColor + ";padding:32px;border-radius:" + theme.borderRadius + ";";
+    
+    const fields = [
+      {"name":"first_name","label":"Full Name","type":"text","required":false,"placeholder":"John Doe"},
+      {"name":"email","label":"Email Address","type":"email","required":false,"placeholder":"you@example.com"},
+      {"name":"phone","label":"Contact Phone","type":"phone","required":false,"placeholder":"+1 (555) 123-4567"},
+      {"name":"company","label":"Company / Organization","type":"text","required":false,"placeholder":"Your Company Name"},
+      {"name":"inquiry_type","label":"Inquiry Type","type":"select","required":false,"placeholder":"Select Inquiry Type"},
+      {"name":"message","label":"Detailed Message","type":"textarea","required":false,"placeholder":"How can we help you?"}
+    ];
+    
+    fields.forEach(function(field) {
+      const wrapper = document.createElement("div");
+      wrapper.style.marginBottom = "20px";
+      
+      // Label
+      if (field.type !== "hidden") {
+          const label = document.createElement("label");
+          label.textContent = field.label + (field.required ? " *" : "");
+          label.style.cssText = "display:block;margin-bottom:8px;font-weight:700;color:" + theme.labelColor + ";font-size:14px;";
+          wrapper.appendChild(label);
       }
-    } catch {
-      setStatus("error");
-      setErrorMsg("Failed to connect. Please try again.");
+      
+      let input;
+      if (field.type === "textarea") {
+        input = document.createElement("textarea");
+        input.rows = 4;
+      } else if (field.type === "select") {
+         input = document.createElement("select");
+         const defaultOpt = document.createElement("option");
+         defaultOpt.value = "";
+         defaultOpt.textContent = field.placeholder || "Select an option";
+         input.appendChild(defaultOpt);
+         
+         const opts = ["Product Information", "Wholesale / Boutique Partnership", "Custom Design Request", "Gift Order", "Care & Maintenance", "Other"];
+         opts.forEach(o => {
+           const opt = document.createElement("option");
+           opt.value = o.toLowerCase().replace(/\s+/g, '_');
+           opt.textContent = o;
+           input.appendChild(opt);
+         });
+      } else {
+        input = document.createElement("input");
+        input.type = field.type === "file" ? "file" : 
+                     field.type === "email" ? "email" : 
+                     field.type === "phone" ? "tel" : "text";
+      }
+      
+      input.name = field.name;
+      input.required = field.required;
+      if (field.placeholder && field.type !== "file") input.placeholder = field.placeholder;
+      
+      // Styling
+      input.style.cssText = "width:100%;padding:12px 16px;border:1px solid " + theme.borderColor + ";outline:none;border-radius:" + theme.borderRadius + ";font-size:14px;background:" + theme.inputBgColor + ";color:" + theme.textColor + ";box-sizing:border-box;transition:all 0.2s ease-in-out;";
+      input.onfocus = function() { this.style.borderColor = theme.primaryColor; };
+      input.onblur = function() { this.style.borderColor = theme.borderColor; };
+      
+      // Wrapper append
+      wrapper.appendChild(input);
+      form.appendChild(wrapper);
+    });
+    
+    const submit = document.createElement("button");
+    submit.type = "submit";
+    submit.textContent = "Submit Request";
+    submit.style.cssText = "background:" + theme.primaryColor + ";color:" + theme.buttonTextColor + ";border:none;padding:16px 32px;border-radius:" + theme.borderRadius + ";cursor:pointer;font-size:16px;font-weight:700;width:100%;margin-top:12px;box-shadow:0 10px 15px -3px rgba(0,0,0,0.1);transition:all 0.3s ease;";
+    
+    if (captchaRequired) {
+      const turnstileWrapper = document.createElement("div");
+      turnstileWrapper.className = "cf-turnstile";
+      turnstileWrapper.dataset.sitekey = "";
+      turnstileWrapper.style.marginBottom = "16px";
+      form.appendChild(turnstileWrapper);
     }
-  };
 
-  const inputClass =
-    "w-full px-4 py-3 rounded-lg border outline-none transition-all text-sm"
-    + " bg-[var(--warm-cream)] border-[var(--brown-200)] text-[var(--brown-800)]"
-    + " focus:border-[var(--henna-500)] focus:bg-white focus:ring-2 focus:ring-[rgba(45,106,106,0.15)]";
+    form.appendChild(submit);
+    
+    // Hover effect
+    submit.onmouseover = function() { this.style.transform = "translateY(-2px)"; this.style.boxShadow = "0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04)"; };
+    submit.onmouseout = function() { this.style.transform = "none"; this.style.boxShadow = "0 10px 15px -3px rgba(0,0,0,0.1)"; };
+    
+    form.addEventListener("submit", function(e) {
+      e.preventDefault();
+      submit.disabled = true;
+      submit.textContent = "Submitting...";
+      submit.style.opacity = "0.7";
+      
+      // Use FormData for File Upload Support
+      const formData = new FormData(form);
+      
+      // Append System Fields
+      formData.append("form_slug", formSlug);
+      formData.append("source_url", window.location.href);
+      if (document.referrer) formData.append("referrer", document.referrer);
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("utm_source")) formData.append("utm_source", urlParams.get("utm_source"));
+      if (urlParams.has("utm_medium")) formData.append("utm_medium", urlParams.get("utm_medium"));
+      if (urlParams.has("utm_campaign")) formData.append("utm_campaign", urlParams.get("utm_campaign"));
+
+      if (captchaRequired) {
+          const token = form.querySelector('[name="cf-turnstile-response"]')?.value;
+          if (token) formData.append("captcha_token", token);
+      }
+      
+      fetch(apiEndpoint, {
+        method: "POST",
+        body: formData // Browser sets Content-Type: multipart/form-data with boundary
+      })
+      .then(function(r) { return r.json(); })
+      .then(function(result) {
+        if (result.success) {
+          form.innerHTML = "<div style='text-align:center;padding:40px 20px;'><div style='width:64px;height:64px;margin:0 auto 16px auto;border-radius:50%;background:#F3EAE8;display:flex;align-items:center;justify-content:center;color:" + theme.primaryColor + ";font-size:24px;'>✓</div><h3 style='font-size:20px;font-weight:700;color:" + theme.textColor + ";margin-bottom:8px;'>Thank you!</h3><p style='color:" + theme.labelColor + ";'>" + (result.message || "We've received your submission.") + "</p></div>";
+          if (result.redirect_url) window.location.href = result.redirect_url;
+        } else {
+          alert(result.error || "Submission failed");
+          submit.disabled = false;
+          submit.textContent = "Submit Request";
+          submit.style.opacity = "1";
+        }
+      })
+      .catch(function() {
+        alert("Submission failed");
+        submit.disabled = false;
+        submit.textContent = "Submit Request";
+        submit.style.opacity = "1";
+      });
+    });
+    
+    container.appendChild(form);
+  }, []);
 
   return (
     <section id="contact" className="py-24 border-t" style={{ backgroundColor: "var(--brown-50)", borderColor: "var(--brown-100)" }}>
@@ -81,78 +174,8 @@ export default function CrmContactForm({ heading, subtitle }) {
           </p>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl p-8 md:p-12" style={{ boxShadow: "var(--shadow-xl)" }}>
-          {status === "success" ? (
-            <div className="text-center py-8">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--henna-50)" }}>
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--henna-500)" }}>
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-              <h3 className="text-xl font-bold mb-2" style={{ color: "var(--brown-800)" }}>Thank you!</h3>
-              <p style={{ color: "var(--brown-500)" }}>We&apos;ve received your message and will get back to you shortly.</p>
-            </div>
-          ) : (
-            <>
-              {status === "error" && (
-                <div className="rounded-xl p-4 mb-6" style={{ backgroundColor: "var(--terra-50)", border: "1px solid var(--terra-200)" }}>
-                  <p className="text-sm text-center font-medium" style={{ color: "var(--terra-700)" }}>{errorMsg}</p>
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold mb-2" style={{ color: "var(--brown-600)" }}>Full Name *</label>
-                    <input type="text" name="full_name" required placeholder="Your Full Name"
-                      value={formData.full_name} onChange={handleChange} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-2" style={{ color: "var(--brown-600)" }}>Email Address *</label>
-                    <input type="email" name="email" required placeholder="you@example.com"
-                      value={formData.email} onChange={handleChange} className={inputClass} />
-                  </div>
-                </div>
-
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="block text-sm font-bold mb-2" style={{ color: "var(--brown-600)" }}>Contact Phone</label>
-                    <input type="tel" name="phone" placeholder="+1 (555) 123-4567"
-                      value={formData.phone} onChange={handleChange} className={inputClass} />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-bold mb-2" style={{ color: "var(--brown-600)" }}>Company / Organization</label>
-                    <input type="text" name="company" placeholder="Your Company Name"
-                      value={formData.company} onChange={handleChange} className={inputClass} />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-2" style={{ color: "var(--brown-600)" }}>Inquiry Type *</label>
-                  <select name="inquiry_type" required value={formData.inquiry_type} onChange={handleChange} className={inputClass}>
-                    {INQUIRY_OPTIONS.map((opt) => (
-                      <option key={opt.value} value={opt.value} disabled={!opt.value}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-bold mb-2" style={{ color: "var(--brown-600)" }}>Detailed Message *</label>
-                  <textarea name="message" rows={4} required
-                    placeholder="Tell us about your needs — specific designs, quantities, gift inquiries, or any questions..."
-                    value={formData.message} onChange={handleChange} className={inputClass} />
-                </div>
-
-                <button type="submit" disabled={status === "submitting"}
-                  className="w-full text-white font-bold py-4 rounded-lg transform hover:-translate-y-1 transition-all duration-300 shadow-lg disabled:opacity-50 disabled:transform-none"
-                  style={{ backgroundColor: "var(--brown-800)" }}>
-                  {status === "submitting" ? "Submitting..." : "Submit Request"}
-                </button>
-              </form>
-            </>
-          )}
+        <div className="flex justify-center">
+          <div id="form-contact-form-be161cec" className="w-full max-w-[550px] shadow-2xl rounded-2xl overflow-hidden bg-white"></div>
         </div>
       </div>
     </section>

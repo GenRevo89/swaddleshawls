@@ -22,6 +22,7 @@ export async function GET() {
             tags: item.tags || [],
             stockQty: item.stockQty ?? 0,
             attributes: item.attributes || {},
+            modifierGroups: item.modifierGroups || item.attributes?.modifierGroups || [],
         }));
 
         return NextResponse.json({ success: true, data: items }, { status: 200 });
