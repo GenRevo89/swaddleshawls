@@ -24,39 +24,65 @@ const brandUrl = process.env.NEXT_PUBLIC_BRAND_URL || "https://swaddleshawls.com
 
 export const metadata = {
   metadataBase: new URL(brandUrl),
-  title: `${brandName} | ${brandTagline}`,
-  description: `${brandName} — ${brandDesc}`,
-  icons: {
-    icon: "/SwaddleShawlsLogo.png",
-    apple: "/SwaddleShawlsLogo.png",
+  title: {
+    default: `${brandName} | ${brandTagline}`,
+    template: `%s | ${brandName}`
+  },
+  description: brandDesc,
+  keywords: ["Indian cotton swaddles", "block print baby shawls", "heritage baby blankets", "luxury swaddles"],
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: brandName,
+  },
+  formatDetection: {
+    telephone: false,
   },
   openGraph: {
-    title: `${brandName} | ${brandTagline}`,
+    title: {
+      default: `${brandName} | ${brandTagline}`,
+      template: `%s | ${brandName}`
+    },
     description: brandDesc,
     url: brandUrl,
     siteName: brandName,
-    images: [
-      {
-        url: "/hero_cover.png",
-        width: 1200,
-        height: 630,
-        alt: `${brandName} — Authentic Indian Luxury for Little Ones`,
-      },
-    ],
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${brandName} | ${brandTagline}`,
+    title: {
+      default: `${brandName} | ${brandTagline}`,
+      template: `%s | ${brandName}`
+    },
     description: brandDesc,
-    images: ["/hero_cover.png"],
+  },
+  icons: {
+    icon: "/SwaddleShawlsLogo.png",
+    shortcut: "/SwaddleShawlsLogo.png",
+    apple: "/SwaddleShawlsLogo.png",
   },
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              name: brandName,
+              url: brandUrl,
+              logo: `${brandUrl}/SwaddleShawlsLogo.png`,
+              description: brandDesc,
+            }),
+          }}
+        />
+      </head>
       <body className={`${playfair.variable} ${lato.variable} font-sans antialiased min-h-screen flex flex-col`}
         style={{ fontFamily: "var(--font-lato), var(--font-primary)", color: "var(--brown-700)", backgroundColor: "var(--warm-cream)" }}>
         <Navbar />

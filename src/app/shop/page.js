@@ -94,8 +94,32 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose, activeImageIndex, allImages.length]);
 
+  const productSchema = {
+    "@context": "https://schema.org/",
+    "@type": "Product",
+    name: product.name,
+    image: allImages.length > 0 ? allImages : ["https://swaddleshawls.com/SwaddleShawlsLogo.png"],
+    description: product.description || "Handcrafted with care using 100% pure cotton. Every piece comes with a Certificate of Authenticity.",
+    sku: product.sku || product._id || product.id,
+    brand: {
+      "@type": "Brand",
+      "name": "SwaddleShawls"
+    },
+    offers: {
+      "@type": "Offer",
+      priceCurrency: "USD",
+      price: isPreorder ? (currentTotal * 0.9).toFixed(2) : currentTotal.toFixed(2),
+      availability: "https://schema.org/InStock",
+      itemCondition: "https://schema.org/NewCondition"
+    }
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
+      />
       {/* Overlay */}
       <div
         className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-all"
@@ -567,6 +591,29 @@ export default function Shop() {
   return (
     <>
       <main className="flex-grow pt-36 pb-28 px-6 relative pattern-paisley" style={{ backgroundColor: "var(--warm-cream)" }}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "BreadcrumbList",
+              "itemListElement": [
+                {
+                  "@type": "ListItem",
+                  "position": 1,
+                  "name": "Home",
+                  "item": "https://swaddleshawls.com"
+                },
+                {
+                  "@type": "ListItem",
+                  "position": 2,
+                  "name": "Shop",
+                  "item": "https://swaddleshawls.com/shop"
+                }
+              ]
+            })
+          }}
+        />
         <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-20">
           <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wider uppercase" style={{ backgroundColor: "var(--henna-50)", color: "var(--henna-600)" }}>
