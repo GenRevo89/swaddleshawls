@@ -10,8 +10,9 @@ export default async function Image() {
   const fontUrlMatch = fontCss.match(/url\((https:\/\/[^)]+)\)/);
   const playfairData = fontUrlMatch ? await fetch(fontUrlMatch[1]).then(res => res.arrayBuffer()) : null;
 
-  const bgData = await fetch(new URL('../../../public/og/shop_bg.png', import.meta.url)).then((res) => res.arrayBuffer());
-  const logoData = await fetch(new URL('../../../public/SwaddleShawlsSymbolLogo.png', import.meta.url)).then((res) => res.arrayBuffer());
+  const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3002';
+  const bgData = await fetch(`${baseUrl}/og/shop_bg.png`).then((res) => res.arrayBuffer());
+  const logoData = await fetch(`${baseUrl}/SwaddleShawlsSymbolLogo.png`).then((res) => res.arrayBuffer());
 
   return new ImageResponse(
     (
