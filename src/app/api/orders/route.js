@@ -33,10 +33,17 @@ export async function POST(req) {
 
         try {
             const surgePayload = {
+                couponCode: body.couponCode,
                 items: items.map((item) => ({
                     sku: item.sku || item.productName,
                     qty: item.quantity,
-                    modifiers: item.modifiers ? item.modifiers.map(mod => ({ id: mod.id })) : []
+                    selectedModifiers: item.modifiers ? item.modifiers.map(mod => ({ 
+                        id: mod.modifierId || mod.id,
+                        groupId: mod.groupId || "discount",
+                        modifierId: mod.modifierId || mod.id,
+                        priceAdjustment: mod.priceAdjustment || 0,
+                        quantity: 1
+                    })) : []
                 })),
             };
 

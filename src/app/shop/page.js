@@ -175,7 +175,14 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
               </h2>
 
               <div className="text-3xl font-bold mb-5 flex items-center gap-3" style={{ color: "var(--brown-800)" }}>
-                ${currentTotal.toFixed(2)}
+                {isPreorder ? (
+                  <div className="flex flex-col">
+                    <span className="text-base line-through text-opacity-60" style={{ color: "var(--brown-400)" }}>${currentTotal.toFixed(2)}</span>
+                    <span style={{ color: "var(--henna-600)" }}>${(currentTotal * 0.9).toFixed(2)}</span>
+                  </div>
+                ) : (
+                  <span>${currentTotal.toFixed(2)}</span>
+                )}
                 {modifiersPrice > 0 && <span className="text-sm font-normal text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">Includes +${modifiersPrice.toFixed(2)} options</span>}
               </div>
 
@@ -360,8 +367,8 @@ function PaymentModal({ receiptId, paymentUrl, onSuccess, onCancel }) {
         style={{ zIndex: 10100 }}
         onClick={onCancel}
       ></div>
-      <div className="fixed inset-0 flex items-center justify-center p-4" style={{ zIndex: 10101 }}>
-        <div className="relative w-full max-w-md bg-white rounded-2xl shadow-2xl overflow-hidden payment-modal-enter">
+      <div className="fixed inset-0 flex items-center justify-center p-4 lg:p-8" style={{ zIndex: 10101 }}>
+        <div className="relative w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden payment-modal-enter transition-all duration-300">
           <button
             onClick={onCancel}
             className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
@@ -393,7 +400,7 @@ export default function Shop() {
   const [cart, setCart] = useState([]);
   const [cartOpen, setCartOpen] = useState(false);
   const [checkoutMode, setCheckoutMode] = useState(false);
-  const [formData, setFormData] = useState({ name: "", email: "" });
+  const [formData, setFormData] = useState({ name: "", email: "", couponCode: "" });
   const [submitting, setSubmitting] = useState(false);
   const [orderResult, setOrderResult] = useState(null);
   const [addedItem, setAddedItem] = useState(null);
@@ -464,7 +471,10 @@ export default function Shop() {
     );
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const cartTotal = cart.reduce((sum, item) => {
+    const activePrice = isPreorder ? item.price - (item.basePrice * 0.1) : item.price;
+    return sum + activePrice * item.quantity;
+  }, 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   const handleCheckout = async (e) => {
@@ -479,13 +489,27 @@ export default function Shop() {
         body: JSON.stringify({
           email: formData.email,
           customerName: formData.name,
-          items: cart.map((item) => ({
-            productName: item.name,
-            sku: item.sku,
-            quantity: item.quantity,
-            price: item.price,
-            modifiers: item.modifiers,
-          })),
+          couponCode: formData.couponCode || undefined,
+          items: cart.map((item) => {
+            const itemModifiers = [...item.modifiers];
+            // Automatically apply preorder discount if missing
+            if (isPreorder && !itemModifiers.find(m => m.id === "preorder-discount")) {
+               itemModifiers.push({
+                 id: "preorder-discount",
+                 groupId: "discount",
+                 modifierId: "preorder",
+                 name: "10% Pre-Order Discount",
+                 priceAdjustment: -(item.basePrice * 0.1)
+               });
+            }
+            return {
+              productName: item.name,
+              sku: item.sku,
+              quantity: item.quantity,
+              price: isPreorder ? item.price - (item.basePrice * 0.1) : item.price,
+              modifiers: itemModifiers,
+            };
+          }),
         }),
       });
       const data = await res.json();
@@ -542,12 +566,15 @@ export default function Shop() {
 
   return (
     <>
-      <main className="flex-grow pt-32 pb-24 px-6 relative" style={{ backgroundColor: "var(--brown-50)" }}>
-        <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "Pre-Order Collection" : "Our Collection"}</h1>
-          <div className="section-divider mb-6"></div>
-          <p className="max-w-2xl mx-auto text-lg" style={{ color: "var(--brown-500)" }}>
+      <main className="flex-grow pt-36 pb-28 px-6 relative pattern-paisley" style={{ backgroundColor: "var(--warm-cream)" }}>
+        <div className="max-w-7xl mx-auto relative z-10">
+        <div className="text-center mb-20">
+          <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wider uppercase" style={{ backgroundColor: "var(--henna-50)", color: "var(--henna-600)" }}>
+            {isPreorder ? "✦ Limited Pre-Orders ✦" : "✦ Handcrafted with Love ✦"}
+          </div>
+          <h1 className="text-4xl md:text-5xl font-bold mb-5" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "Pre-Order Collection" : "Our Collection"}</h1>
+          <div className="section-divider mb-8"></div>
+          <p className="max-w-2xl mx-auto text-lg leading-relaxed" style={{ color: "var(--brown-500)" }}>
             {isPreorder
               ? "Be the first to own our handcrafted collection. Reserve yours today — shipping begins soon."
               : "Browse our handcrafted collection of authentic Indian baby shawls and swaddles."}
@@ -646,18 +673,20 @@ export default function Shop() {
               if (category.items.length === 0) return null;
               return (
                 <div key={idx}>
-                  <div className="mb-8 border-b pb-4" style={{ borderColor: "var(--brown-200)" }}>
+                  <div className="mb-10 pb-5 relative" style={{ borderBottom: "2px solid var(--brown-100)" }}>
+                    <div className="inline-block px-3 py-1 rounded-full text-[10px] font-bold mb-3 tracking-wider uppercase" style={{ backgroundColor: "var(--terra-50)", color: "var(--terra-600)" }}>
+                      {category.title}
+                    </div>
                     <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{category.title}</h2>
                     <p className="text-lg" style={{ color: "var(--brown-500)" }}>{category.description}</p>
                   </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
                     {category.items.map((product) => {
                       const pid = product._id || product.id;
                       return (
                         <div
                   key={pid}
-                  className="group bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 flex flex-col cursor-pointer relative"
-                  style={{ border: "1px solid var(--brown-100)" }}
+                  className="group heritage-card bg-white rounded-2xl overflow-hidden shadow-md flex flex-col cursor-pointer relative"
                   onClick={() => setSelectedProduct(product)}
                 >
                   {isPreorder && (
@@ -671,7 +700,7 @@ export default function Shop() {
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000"
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center" style={{ color: "var(--brown-300)" }}>
@@ -680,8 +709,8 @@ export default function Shop() {
                     )}
 
                     {/* Hover overlay with "View Details" */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <span className="px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg"
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-6">
+                      <span className="px-5 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg translate-y-3 group-hover:translate-y-0 transition-transform duration-500"
                         style={{ color: "var(--brown-800)" }}>
                         {isPreorder ? "Pre-Order" : "View Details"}
                       </span>
@@ -711,9 +740,22 @@ export default function Shop() {
                       {product.description}
                     </p>
                     <div className="flex items-center justify-between mt-auto">
-                      <span className="text-xl font-bold" style={{ color: "var(--brown-800)" }}>
-                        ${Number(product.price).toFixed(2)}
-                      </span>
+                      <div className="flex flex-col items-start mt-auto">
+                        {isPreorder ? (
+                          <>
+                            <span className="text-xs line-through text-opacity-60" style={{ color: "var(--brown-400)" }}>
+                              ${Number(product.price).toFixed(2)}
+                            </span>
+                            <span className="text-xl font-bold" style={{ color: "var(--henna-600)" }}>
+                              ${(Number(product.price) * 0.9).toFixed(2)}
+                            </span>
+                          </>
+                        ) : (
+                          <span className="text-xl font-bold" style={{ color: "var(--brown-800)" }}>
+                            ${Number(product.price).toFixed(2)}
+                          </span>
+                        )}
+                      </div>
                       <button
                         onClick={(e) => { 
                           e.stopPropagation(); 
@@ -724,12 +766,11 @@ export default function Shop() {
                             addToCart(product); 
                           }
                         }}
-                        className={`px-4 py-2 rounded-lg font-bold text-xs transition-all duration-300 ${
+                        className={`btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${
                           addedItem === pid
-                            ? "bg-emerald-600 text-white scale-95"
-                            : "text-white"
+                            ? "!bg-emerald-600 scale-95"
+                            : ""
                         }`}
-                        style={addedItem !== pid ? { backgroundColor: "var(--brown-800)" } : {}}
                       >
                         {addedItem === pid ? "✓ Added" : isPreorder ? "Pre-Order" : "Add to Cart"}
                       </button>
@@ -820,7 +861,14 @@ export default function Shop() {
                               ))}
                             </div>
                           )}
-                          <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
+                          {isPreorder ? (
+                            <p className="text-sm font-medium mt-1">
+                              <span className="line-through text-xs mr-2" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)}</span>
+                              <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.basePrice * 0.1)).toFixed(2)} each</span>
+                            </p>
+                          ) : (
+                            <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
+                          )}
                         </div>
                         <div className="flex items-center gap-3">
                           <button
@@ -865,6 +913,17 @@ export default function Shop() {
                           onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                           placeholder="you@example.com"
                           className="w-full px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm"
+                          style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="checkout-coupon" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Coupon Code (Optional)</label>
+                        <input
+                          type="text" id="checkout-coupon"
+                          value={formData.couponCode}
+                          onChange={(e) => setFormData({ ...formData, couponCode: e.target.value.toUpperCase() })}
+                          placeholder="e.g. WELCOME10"
+                          className="w-full px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm uppercase"
                           style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
                         />
                       </div>
