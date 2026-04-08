@@ -390,5 +390,36 @@ Nothing between your baby and nature.
 
 ### Heritage / Culture
 ```
-#IndianHeritage #IndianTextile #ArtisanMade #HandmadeInIndia #TraditionalCraft #CulturalBaby
+# IndianHeritage #IndianTextile #ArtisanMade #HandmadeInIndia #TraditionalCraft #CulturalBaby
 ```
+
+---
+
+## 🔗 Google Ads Sitelink Extensions
+
+*Note: Google Ads Sitelink descriptions are strictly limited to exactly 35 characters maximum per line.*
+
+### Sitelink: Shop Products
+**Description Line 1:** Authentic hand block-prints. *(28 chars)*
+**Description Line 2:** 100% pure breathable cotton. *(28 chars)*
+
+### Sitelink: Register Now
+**Description Line 1:** Join our heritage newsletter. *(29 chars)*
+**Description Line 2:** Get exclusive early access. *(27 chars)*
+
+### Sitelink: Read The FAQs
+**Description Line 1:** Shipping and return details. *(28 chars)*
+**Description Line 2:** Everything you need to know. *(28 chars)*
+
+### Sitelink: Customer Reviews
+**Description Line 1:** See why mothers love them. *(26 chars)*
+**Description Line 2:** Read honest parent reviews. *(27 chars)*
+
+### Sitelink: Our Story
+**Description Line 1:** Crafted by Indian artisans. *(26 chars)*
+**Description Line 2:** A tradition of true luxury. *(27 chars)*
+
+### Sitelink: (Recommended) The Journal
+**Link Text:** Read The Journal
+**Description Line 1:** Pediatric safety protocols. *(27 chars)*
+**Description Line 2:** Our minimalist parent guides. *(29 chars)*
