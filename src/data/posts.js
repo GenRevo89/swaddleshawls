@@ -363,5 +363,103 @@ export const posts = [
 
       { type: 'ad', productId: 'inventory:DNQ3P5HA6', title: 'The Heritage Paisley Swaddle', subtitle: 'One swaddle, infinite uses. Sleep wrap, burp cloth, nursing cover, tummy time mat, and future keepsake.', image: '/The Heritage Paisley Swaddle.webp', price: '$30.00' },
     ]
+  },
+  {
+    slug: 'minimalist-hospital-bag-checklist',
+    title: 'The Hospital Bag Checklist for the Minimalist Mother',
+    category: 'Parenting Guides',
+    date: '2026-04-01',
+    description: 'Avoid the overpacking trap. A curated, practical guide to exactly what you need in your hospital bag for labor, delivery, and postpartum recovery—focusing on comfort and intention over excess.',
+    image: '/journal_hospital_bag_thumb.png',
+    readTime: '8 min read',
+    content: [
+      { type: 'p', text: 'Packing the hospital bag has become a rite of passage for expectant mothers, typically occurring somewhere around the thirty-sixth week of pregnancy. But if you consult the internet for advice on what to pack, you will likely encounter lists that span multiple pages, recommending everything from portable fans to string lights and custom birth-announcement letterboards.' },
+      { type: 'p', text: 'The reality of labor, delivery, and the immediate postpartum period is profoundly raw. It is beautiful, exhausting, and messy. In that environment, a hospital room cluttered with unnecessary items becomes a source of stress rather than comfort. The minimalist approach to the hospital bag is not about deprivation—it is about radical intentionality. It is about packing only the items that directly support your physical comfort, recovery, and the care of your newborn.' },
+
+      { type: 'h2', text: 'For the Mother: Postpartum Comfort is the Priority' },
+      { type: 'p', text: 'The most common mistake first-time mothers make is packing primarily for labor and neglecting the postpartum recovery period. Labor itself often requires very little from your bag; the hospital provides the necessary medical supplies, and your focus will be entirely internal. The days following delivery are when your thoughtfully packed items become essential.' },
+      { type: 'p', text: 'Focus on textiles that feel good intimately and accommodate a changing body. The hospital gowns are notorious for being stiff, clinical, and difficult to manage during nursing.' },
+      { type: 'image', src: '/journal_hospital_bassinet.png', alt: 'Clear acrylic hospital bassinet lined with a warm block-print cotton swaddle', caption: 'Transform the clinical hospital bassinet into a natural, comforting space with a single heritage swaddle.' },
+      
+      { type: 'list', items: [
+        'A dark-colored, lightweight maternity robe. Choose something loose and breathable. The Golden Lotus Maternity Robe is ideal for its ultra-soft cotton and full coverage for moving the halls.',
+        'A comfortable nursing cover or a large muslin swaddle if you plan to breastfeed and prefer privacy when hospital staff or visitors enter the room.',
+        'An extra-long charging cable (10-foot minimum). Hospital outlets are rarely conveniently located near the bed.',
+        'High-quality lip balm and a rich moisturizer. Hospital air conditioning is aggressively drying.',
+        'A reusable water bottle with a straw. You will be profoundly thirsty, especially if you are breastfeeding, and sitting up to drink from a standard cup is often difficult after a C-section or complicated delivery.'
+      ]},
+
+      { type: 'ad', productId: 'GLR-001', title: 'The Golden Lotus Maternity Robe', subtitle: 'The ultimate hospital bag essential. Hand-block printed, incredibly soft natural cotton that accommodates postpartum recovery beautifully.', image: '/golden_lotus_robe.png', price: '$75.00' },
+
+      { type: 'h2', text: 'For the Baby: Quality Over Quantity' },
+      { type: 'p', text: 'Your new baby requires almost nothing in the first 48 hours of life. The hospital will provide diapers, wipes, and standard receiving blankets. However, hospital blankets are often harsh on newborn skin and heavily laundered with industrial detergents.' },
+      { type: 'image', src: '/journal_hospital_packing.png', alt: 'Curated hospital bag essentials including a robe and swaddle', caption: 'The essentials stripped down: comfort, hydration, and natural textiles.' },
+      
+      { type: 'p', text: 'This is where your minimalist preparations shine. Bring one or two incredibly soft, natural-fiber items to welcome your baby into the world without overwhelming their sensory system.' },
+
+      { type: 'list', items: [
+        'Two 100% cotton muslin swaddles. Use these for swaddling, as a nursing cover, or simply as a soft layer between your baby and the clinical hospital bedding.',
+        'One "going home" outfit. Choose something practical, weather-appropriate, and easy to put on (zippers over snaps). A newborn size is usually best, but pack one 0-3 month size just in case.',
+        'An approved, properly installed infant car seat. The hospital will not legally allow you to discharge without checking this.'
+      ]},
+      { type: 'image', src: '/journal_coming_home.png', alt: 'A curated flat lay of going home newborn clothes', caption: 'The going home outfit: focused on breathability, ease of use, and soft natural fibers.' },
+
+      { type: 'quote', text: 'The first thing that touches your baby\'s skin outside the womb should not be treated with industrial chemicals. A washed, natural cotton swaddle is the closest thing to the safety they just left behind.', attribution: 'Krishna Patel, SwaddleShawls' },
+
+      { type: 'ad', productId: 'EPU39F8P3', title: "The 'Ancients' Raw Brown Swaddle", subtitle: 'Pure, unbleached open-weave cotton. The perfect first textile for the hospital bassinet.', image: "/The 'Ancients' Raw Brown Swaddle.webp", price: '$30.00' },
+
+      { type: 'h2', text: 'What to Leave at Home' },
+      { type: 'p', text: 'Knowing what not to pack is as important as knowing what to bring. You can safely remove the following from your list:' },
+      { type: 'p', text: 'Pre-pregnancy clothing (you will still be wearing maternity clothes home). An extensive makeup routine (most mothers find they have neither the energy nor the desire). Complex lighting setups or speakers (the atmosphere of labor is unpredictable). The breast pump (the hospital has industrial-grade pumps and lactation consultants on staff if you need them).' },
+      { type: 'p', text: 'Keep it simple. Keep it focused on recovery. Your hospital bag should lessen the mental burden of birth, not add to it.' },
+
+      { type: 'ad', productId: 'HNC-001', title: 'The Heritage Block-Print Nursing Cover', subtitle: 'Generous 50x50 coverage in authentic block-print. Privacy and breathability for nursing in the hospital recovery room.', image: '/nursing_cover.png', price: '$45.00' }
+    ]
+  },
+  {
+    slug: 'skin-deep-understanding-newborn-eczema',
+    title: 'Skin Deep: Understanding Newborn Eczema and Textile Dermatitis',
+    category: 'Pediatric Care',
+    date: '2026-03-31',
+    description: 'Infant skin is 30% thinner than adult skin and highly susceptible to irritation. Learn how to identify textile dermatitis, manage newborn eczema, and why the fabric you choose is your first line of defense.',
+    image: '/journal_skin_care_thumb.png',
+    readTime: '11 min read',
+    content: [
+      { type: 'p', text: 'For new parents, the sudden appearance of a rash on their newborn\'s previously flawless skin is a source of immediate alarm. While baby acne and cradle cap are common and usually resolve on their own, the rise in atopic dermatitis (eczema) and contact dermatitis in infants is a growing pediatric concern. According to the National Eczema Association, nearly 20% of children develop a form of eczema, usually within the first six months of life.' },
+      { type: 'p', text: 'While genetics play a role, environmental factors—specifically, the immediate environment surrounding the baby\'s body—are massive contributors. The most intimate and constant part of a newborn\'s environment is not the nursery room; it is the textile wrapped around them.' },
+
+      { type: 'h2', text: 'The Vulnerability of the Epidermal Barrier' },
+      { type: 'p', text: 'To understand why textiles matter so much, you must understand the anatomy of a newborn\'s skin. Infant skin is approximately 30% thinner than adult skin. Its epidermal barrier—the outermost layer that locks in moisture and keeps irritants out—is immature and highly permeable. It loses water faster and absorbs topical substances more readily than adult skin.' },
+      { type: 'p', text: 'This permeability means that whatever is on the fabric—synthetic dyes, formaldehyde finishes, fire retardants, or residual laundry detergents—is in direct contact with a compromised barrier. When harsh, non-breathable fabrics rub against this delicate surface, the friction combined with the trapped moisture creates the perfect storm for dermal irritation.' },
+
+      { type: 'h2', text: 'Textile Dermatitis: The Culprits in the Crib' },
+      { type: 'p', text: 'Contact dermatitis occurs when the skin reacts to an external irritant. In infants, this is frequently traced back to the clothing or blankets they use daily. The leading causes include:' },
+      
+      { type: 'list', items: [
+        'Polyester and Synthetic Fibers: These fabrics do not breathe. They trap body heat and sweat against the skin, causing microscopic inflammation that leads to red, itchy patches.',
+        'Azo Dyes and Disperse Dyes: Used heavily in cheap, fast-fashion baby clothing, these chemical dyes easily bleed from the fabric onto warm, moist skin, triggering allergic reactions.',
+        'Formaldehyde Resins: Often used to make clothing "wrinkle-free" or "shrink-resistant," formaldehyde is a known irritant that off-gasses and transfers to the skin.'
+      ]},
+      { type: 'image', src: '/journal_natural_fibers.png', alt: 'Macro shot showing natural cotton fibers', caption: 'The macroscopic difference: natural, open-weave cotton allows the skin barrier to breathe and heal.' },
+      
+      { type: 'ad', productId: 'JPP-001', title: 'The Jaipur Pink Peony Swaddle', subtitle: 'Dyed exclusively with natural plant extracts. Zero harsh chemicals, zero synthetic dyes. The safest choice for sensitive skin.', image: '/jaipur_pink_swaddle.png', price: '$35.00' },
+
+      { type: 'h2', text: 'The Natural Defense: Why 100% Cotton Muslin Matters' },
+      { type: 'p', text: 'Pediatric dermatologists consistently recommend 100% natural, undyed, or naturally dyed cotton for infants suffering from eczema or prone to dermatitis. The reasoning is rooted in physics and biology:' },
+      { type: 'p', text: 'Cotton is naturally hydrophilic (water-loving), meaning it wicks moisture away from the skin rather than trapping it. This prevents the maceration of the epidermal layer. Furthermore, the open weave of muslin cotton allows continuous air circulation. This active thermal regulation prevents the baby from overheating—a critical factor, as sweat is a primary trigger for eczema flare-ups.' },
+      { type: 'image', src: '/journal_serene_cotton_baby.png', alt: 'Serene newborn baby resting on natural cotton', caption: 'When the environmental triggers are removed, the skin barrier is free to stabilize and heal naturally.' },
+
+      { type: 'quote', text: 'When a baby breaks out in a rash, the first instinct is often to apply a cream. But the first step should actually be to evaluate the environment. If the baby is wrapped in polyester, the cream is only fighting the symptoms. The fabric is the root cause.', attribution: 'Krishna Patel, SwaddleShawls' },
+
+      { type: 'ad', productId: 'KMB-001', title: 'The Kerala Monsoon Bamboo Swaddle', subtitle: 'Ultra-soft, highly breathable bamboo-cotton blend designed to wick away moisture and prevent heat rash.', image: '/kerala_monsoon_swaddle.png', price: '$38.00' },
+
+      { type: 'h2', text: 'A Protocol for Healthy Infant Skin' },
+      { type: 'p', text: 'If your newborn struggles with skin sensitivities, implementing a textile protocol is just as important as your bathing routine:' },
+      { type: 'p', text: '1. Purge the Synthetics: Remove all fleece, polyester, and acrylic blankets from the sleep environment. \n2. Wash Before Wear: Always wash new linens in a fragrance-free, dye-free detergent before they touch the baby. \n3. Look for Natural Dyes: Support brands that use vegetable or plant-based dyes like madder, indigo, and turmeric, which have naturally anti-inflammatory properties. \n4. Prioritize Breathability: Opt for the open-weave structure of muslin cotton.' },
+      { type: 'image', src: '/journal_natural_wash.png', alt: 'Cotton muslin swaddles drying on a wooden rack in the sun', caption: 'Proper care is just as important: wash natural textiles with gentle, fragrance-free cleansers.' },
+      { type: 'p', text: 'Your baby\'s skin is their primary interface with the world. By surrounding them with pure, breathable, naturally processed textiles, you are giving their most vulnerable organ the exact environment it needs to thrive.' },
+
+      { type: 'ad', productId: 'SC55JFH9Z', title: 'The Sunrise Heritage Swaddle', subtitle: 'Naturally dyed with turmeric root, known in traditional Indian medicine for its anti-inflammatory skin benefits.', image: '/The Sunrise Heritage Swaddle.webp', price: '$30.00' }
+    ]
   }
 ];

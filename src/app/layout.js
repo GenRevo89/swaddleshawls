@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExitIntentModal from "@/components/ExitIntentModal";
+import { Analytics } from "@vercel/analytics/react";
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -82,6 +83,18 @@ export default function RootLayout({ children }) {
             }),
           }}
         />
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function(c,l,a,r,i,t,y){
+                  c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+                  t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+                  y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+              })(window, document, "clarity", "script", "w8d7t58q6r");
+            `
+          }}
+        />
       </head>
       <body className={`${playfair.variable} ${lato.variable} font-sans antialiased min-h-screen flex flex-col`}
         style={{ fontFamily: "var(--font-lato), var(--font-primary)", color: "var(--brown-700)", backgroundColor: "var(--warm-cream)" }}>
@@ -91,6 +104,7 @@ export default function RootLayout({ children }) {
         </div>
         <Footer />
         <ExitIntentModal />
+        <Analytics />
       </body>
     </html>
   );
