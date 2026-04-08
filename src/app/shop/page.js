@@ -564,6 +564,20 @@ export default function Shop() {
   };
 
   const handlePaymentSuccess = async (receiptId) => {
+    // Fire Google Ads Purchase Conversion
+    try {
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag('event', 'conversion', {
+            'send_to': 'AW-18072236543/TOJ3CIzm8ZccEP_jwalD',
+            'value': cartTotal,
+            'currency': 'USD',
+            'transaction_id': receiptId
+        });
+      }
+    } catch (e) {
+      console.error("GTM Conversion failed:", e);
+    }
+
     setPaymentModal(null);
     setOrderResult({
       orderNumber: paymentModal?.orderNumber || "—",
