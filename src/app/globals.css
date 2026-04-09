@@ -89,6 +89,8 @@
 html {
   scroll-behavior: smooth;
   font-size: 16px;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Custom scrollbar */
@@ -111,7 +113,9 @@ body {
   line-height: 1.7;
   color: var(--brown-700);
   background-color: var(--warm-cream);
-  overflow-x: hidden;
+  /* overflow-x moved to html — on body it blocks scroll on iPad/tablets */
+  touch-action: pan-x pan-y;
+  -webkit-text-size-adjust: 100%;
 }
 
 h1, h2, h3, h4 {
@@ -916,6 +920,10 @@ h1, h2, h3, h4 {
 @media (min-width: 768px) and (max-width: 1023px) {
   html { font-size: 15px; }
   .nav-link { padding: 0.75rem 1rem; }
+
+  /* Ensure sections don't trap touch scroll on tablets */
+  section { overflow: visible; }
+  .heritage-quote { padding: 1.5rem 2rem; font-size: 1.2rem; }
 }
 
 @media (min-width: 1024px) {

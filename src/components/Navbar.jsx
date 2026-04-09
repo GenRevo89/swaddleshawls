@@ -14,6 +14,8 @@ export default function Navbar() {
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? "hidden" : "";
+    // Clean up on unmount — prevents stuck scroll lock on page navigation
+    return () => { document.body.style.overflow = ""; };
   }, [isMobileMenuOpen]);
 
   useEffect(() => {

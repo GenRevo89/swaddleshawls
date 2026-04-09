@@ -46,8 +46,8 @@ export default function ReviewsPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative pt-36 pb-20 text-white overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)" }}>
+      <section className="relative pt-36 pb-20 text-white"
+        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.04} speed={55} />
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <div className="inline-block px-5 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-8 border"
@@ -77,7 +77,7 @@ export default function ReviewsPage() {
       </section>
 
       {/* Reviews Grid */}
-      <section className="py-24 relative overflow-hidden" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section className="py-24 relative" style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.035} speed={60} />
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -114,8 +114,8 @@ export default function ReviewsPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 text-center relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)" }}>
+      <section className="py-20 text-center relative"
+        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.04} speed={50} />
         <div className="max-w-3xl mx-auto px-6 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white" style={{ fontFamily: "var(--font-heading)" }}>

@@ -8,8 +8,8 @@ export default function OurStoryPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative pt-36 pb-24 text-white overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)" }}>
+      <section className="relative pt-36 pb-24 text-white"
+        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.04} speed={55} />
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <div className="inline-block px-5 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-8 border"
@@ -26,7 +26,7 @@ export default function OurStoryPage() {
       </section>
 
       {/* Origin Story — Meet Karishma */}
-      <section className="py-24 relative overflow-hidden" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section className="py-24 relative" style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.035} speed={60} />
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -61,8 +61,8 @@ export default function OurStoryPage() {
       </section>
 
       {/* The Discovery — Chandra's Story */}
-      <section className="py-24 relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)" }}>
+      <section className="py-24 relative"
+        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.06} speed={50} />
         <div className="max-w-4xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="text-center mb-14">
@@ -100,8 +100,8 @@ export default function OurStoryPage() {
       </section>
 
       {/* Our Values */}
-      <section className="py-24 relative overflow-hidden"
-        style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section className="py-24 relative"
+        style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.03} speed={50} />
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
@@ -146,7 +146,7 @@ export default function OurStoryPage() {
       </section>
 
       {/* CTA */}
-      <section className="py-20 text-center relative overflow-hidden" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section className="py-20 text-center relative" style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.03} speed={65} />
         <div className="max-w-3xl mx-auto px-6 relative z-10">
           <h2 className="text-3xl md:text-4xl font-bold mb-6" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>

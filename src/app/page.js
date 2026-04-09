@@ -93,7 +93,7 @@ export default function Home() {
       {/* ══════════════════════════════════════
           HERO SECTION
           ══════════════════════════════════════ */}
-      <section ref={heroRef} id="hero" className="relative min-h-screen flex items-center justify-center text-center text-white overflow-hidden pt-20">
+      <section ref={heroRef} id="hero" className="relative min-h-screen flex items-center justify-center text-center text-white pt-20" style={{ overflowX: "clip" }}>
         {/* Background with parallax */}
         <div className="absolute inset-0 w-full h-full z-0" style={{ transform: `translateY(${parallaxOffset}px)` }}>
           <Image
@@ -185,7 +185,7 @@ export default function Home() {
       {/* ══════════════════════════════════════
           HERITAGE / OUR STORY SECTION
           ══════════════════════════════════════ */}
-      <section id="heritage" className="py-28 relative overflow-hidden" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section id="heritage" className="py-28 relative" style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.035} speed={60} />
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
@@ -337,8 +337,8 @@ export default function Home() {
       {/* ══════════════════════════════════════
           TESTIMONIALS SECTION
           ══════════════════════════════════════ */}
-      <section id="reviews" className="py-28 text-white relative overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)" }}>
+      <section id="reviews" className="py-28 text-white relative"
+        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)", overflowX: "clip" }}>
         <WaveDivider color="var(--warm-cream)" flip={true} />
         <PaisleyBackground opacity={0.1} speed={55} />
 
@@ -401,7 +401,7 @@ export default function Home() {
       {/* ══════════════════════════════════════
           FAQ SECTION
           ══════════════════════════════════════ */}
-      <section id="faq" className="py-28 relative overflow-hidden" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section id="faq" className="py-28 relative" style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.03} speed={70} />
         <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-20 md:items-center items-start">

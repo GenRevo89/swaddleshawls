@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { listInventory } from "@/lib/surge";
+import fs from "fs";
+import path from "path";
 
 // ── Server-side Product Cache (Stale-While-Revalidate) ──
 // Products are cached in-memory on the Node process. When a request arrives:
@@ -12,23 +14,52 @@ const CACHE_TTL_MS = 60 * 1000; // 60 seconds — stale threshold
 let cachedProducts = null;   // { data: [...], timestamp: number }
 let refreshInFlight = false; // Prevents duplicate background refreshes
 
+// ── Resolve local product images by SKU ──
+// Images live in /public/products/{SKU}_1.ext, {SKU}_2.ext
+// We check for .webp first (smaller), then .png
+const PRODUCTS_DIR = path.join(process.cwd(), "public", "products");
+const IMAGE_EXTS = [".webp", ".png"];
+
+function resolveLocalImages(sku) {
+    if (!sku) return [];
+    const images = [];
+    for (let i = 1; i <= 4; i++) {
+        for (const ext of IMAGE_EXTS) {
+            const filename = `${sku}_${i}${ext}`;
+            const fullPath = path.join(PRODUCTS_DIR, filename);
+            if (fs.existsSync(fullPath)) {
+                images.push(`/products/${filename}`);
+                break; // Found this index, move to next
+            }
+        }
+    }
+    return images;
+}
+
 function normalizeItems(data) {
     const raw = Array.isArray(data) ? data : data?.items || data?.products || [];
 
-    return raw.map((item) => ({
-        id: item.id || item._id,
-        sku: item.sku,
-        name: item.name,
-        price: item.priceUsd ?? item.price ?? 0,
-        category: item.category || "Swaddle",
-        description: item.description || "",
-        image: item.images && item.images.length > 0 ? item.images[0] : "",
-        images: item.images || [],
-        tags: item.tags || [],
-        stockQty: item.stockQty ?? 0,
-        attributes: item.attributes || {},
-        modifierGroups: item.modifierGroups || item.attributes?.modifierGroups || [],
-    }));
+    return raw.map((item) => {
+        const sku = item.sku;
+        const localImages = resolveLocalImages(sku);
+        // Use local images if available, otherwise strip any base64 and leave empty
+        const images = localImages.length > 0 ? localImages : [];
+
+        return {
+            id: item.id || item._id,
+            sku,
+            name: item.name,
+            price: item.priceUsd ?? item.price ?? 0,
+            category: item.category || "Swaddle",
+            description: item.description || "",
+            image: images[0] || "",
+            images,
+            tags: item.tags || [],
+            stockQty: item.stockQty ?? 0,
+            attributes: item.attributes || {},
+            modifierGroups: item.modifierGroups || item.attributes?.modifierGroups || [],
+        };
+    });
 }
 
 async function fetchAndCache() {

@@ -40,8 +40,8 @@ export default function FaqPage() {
   return (
     <main>
       {/* Hero */}
-      <section className="relative pt-36 pb-20 text-white overflow-hidden"
-        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)" }}>
+      <section className="relative pt-36 pb-20 text-white"
+        style={{ background: "linear-gradient(135deg, #2c1810 0%, #1a3a3a 50%, #1a0f09 100%)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.04} speed={55} />
         <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
           <div className="inline-block px-5 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-8 border"
@@ -58,7 +58,7 @@ export default function FaqPage() {
       </section>
 
       {/* FAQ Categories */}
-      <section className="py-24 relative overflow-hidden" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <section className="py-24 relative" style={{ backgroundColor: "var(--warm-cream)", overflowX: "clip" }}>
         <PaisleyBackground opacity={0.035} speed={60} />
         <div className="max-w-4xl mx-auto px-6 relative z-10">
           {ALL_FAQS.map((category, ci) => (

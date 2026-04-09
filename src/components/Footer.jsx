@@ -25,8 +25,8 @@ export default function Footer() {
 
   return (
     <>
-      <footer className="relative text-white pt-16 pb-8 text-[10px] uppercase tracking-widest overflow-hidden"
-        style={{ backgroundColor: "var(--brown-900)" }}>
+      <footer className="relative text-white pt-16 pb-8 text-[10px] uppercase tracking-widest"
+        style={{ backgroundColor: "var(--brown-900)", overflowX: "clip" }}>
         
         {/* Gradient top border */}
         <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-[var(--henna-500)] via-[var(--gold-400)] to-[var(--terra-500)]"></div>

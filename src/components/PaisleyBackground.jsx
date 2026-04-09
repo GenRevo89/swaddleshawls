@@ -11,7 +11,7 @@ export default function PaisleyBackground({ className = "", opacity = 0.04, spee
   return (
     <div
       className={`absolute inset-0 overflow-hidden pointer-events-none ${className}`}
-      style={{ zIndex: 0 }}
+      style={{ zIndex: 0, touchAction: "none" }}
     >
       {/* Layer 1 — slow drift right+down */}
       <div
