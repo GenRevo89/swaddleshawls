@@ -431,6 +431,22 @@ export default function Shop() {
   const [paymentModal, setPaymentModal] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null); // Product detail modal
 
+  // Wrapper to fire Meta Pixel ViewContent when opening product detail
+  const viewProduct = (product) => {
+    setSelectedProduct(product);
+    try {
+      if (typeof window !== "undefined" && window.fbq && product) {
+        window.fbq('track', 'ViewContent', {
+          content_ids: [product.sku || product._id || product.id],
+          content_name: product.name,
+          content_type: 'product',
+          value: Number(product.price),
+          currency: 'USD',
+        });
+      }
+    } catch (e) { console.error('Meta ViewContent failed:', e); }
+  };
+
   // Fetch products from BasaltSurge on mount
   useEffect(() => {
     async function fetchProducts() {
@@ -485,6 +501,19 @@ export default function Shop() {
     setAddedItem(pid);
     setTimeout(() => setAddedItem(null), 1200);
     if (!cartOpen && !selectedProduct) setCartOpen(true);
+
+    // Meta Pixel — AddToCart
+    try {
+      if (typeof window !== "undefined" && window.fbq) {
+        window.fbq('track', 'AddToCart', {
+          content_ids: [product.sku || pid],
+          content_name: product.name,
+          content_type: 'product',
+          value: unitPrice,
+          currency: 'USD',
+        });
+      }
+    } catch (e) { console.error('Meta AddToCart failed:', e); }
   };
 
   const updateQuantity = (cartItemId, delta) => {
@@ -576,6 +605,21 @@ export default function Shop() {
       }
     } catch (e) {
       console.error("GTM Conversion failed:", e);
+    }
+
+    // Meta Pixel — Purchase
+    try {
+      if (typeof window !== "undefined" && window.fbq) {
+        window.fbq('track', 'Purchase', {
+          content_ids: cart.map(item => item.sku),
+          content_type: 'product',
+          value: cartTotal,
+          currency: 'USD',
+          num_items: cart.reduce((sum, item) => sum + item.quantity, 0),
+        });
+      }
+    } catch (e) {
+      console.error("Meta Purchase failed:", e);
     }
 
     setPaymentModal(null);
@@ -748,7 +792,7 @@ export default function Shop() {
                         <div
                   key={pid}
                   className="group heritage-card bg-white rounded-2xl overflow-hidden shadow-md flex flex-col cursor-pointer relative"
-                  onClick={() => setSelectedProduct(product)}
+                  onClick={() => viewProduct(product)}
                 >
                   {isPreorder && (
                     <div className="absolute top-3 left-3 z-[15] px-2 py-1 rounded-md text-[10px] font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
@@ -822,7 +866,7 @@ export default function Shop() {
                           e.stopPropagation(); 
                           const hasRequredModifiers = product.modifierGroups && product.modifierGroups.some(mg => mg.required);
                           if (hasRequredModifiers) {
-                            setSelectedProduct(product);
+                            viewProduct(product);
                           } else {
                             addToCart(product); 
                           }
