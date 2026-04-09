@@ -514,6 +514,17 @@ export default function Shop() {
         });
       }
     } catch (e) { console.error('Meta AddToCart failed:', e); }
+
+    // Google Ads — Add to Cart conversion
+    try {
+      if (typeof window !== "undefined" && window.gtag) {
+        window.gtag('event', 'conversion', {
+          'send_to': 'AW-18072236543/YdbUCJK-s5gcEP_jwalD',
+          'value': unitPrice,
+          'currency': 'USD',
+        });
+      }
+    } catch (e) { console.error('GTM add_to_cart failed:', e); }
   };
 
   const updateQuantity = (cartItemId, delta) => {
