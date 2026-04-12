@@ -1,5 +1,98 @@
 export const posts = [
   {
+    slug: 'traveling-with-a-newborn-minimalist-guide',
+    title: 'Traveling with a Newborn: The Minimalist Parent\'s Guide to Going Anywhere',
+    category: 'Parenting Guides',
+    date: '2026-04-12',
+    description: 'First road trip with a baby? First flight? The key to stress-free newborn travel is not more gear—it is fewer, better, genuinely multi-purpose items. Learn how one or two heritage-quality cotton textiles can replace an entire suitcase of single-use baby products.',
+    image: '/journal_travel_cover.png',
+    readTime: '10 min read',
+    content: [
+      // ── INTRODUCTION ──
+      { type: 'p', text: 'There is a particular kind of dread that settles over new parents the first time they contemplate leaving the house with their baby for anything more ambitious than a pediatrician visit. It is not the logistics that frighten—car seats can be installed, diaper bags can be packed. It is the sheer volume of things that modern parenting culture insists you need to bring.' },
+      { type: 'p', text: 'Portable bottle warmers. Disposable changing mats. A different outfit for every conceivable temperature shift. A UV-sterilizing case for pacifiers. A sound machine that clips to the stroller. Another sound machine for the hotel room. An entire pharmacy of just-in-case medications. And, inevitably, a synthetic polyester blanket advertised as "travel-sized" that your baby will sweat through within twenty minutes of contact.' },
+      { type: 'p', text: 'We are going to suggest something radical: you need almost none of it. What you need—what generations of traveling parents relied on long before the baby-industrial complex invented a gadget for every anxiety—is a small number of exceptionally versatile, natural-fiber textiles and a willingness to trust that your baby is far more adaptable than the marketing departments want you to believe.' },
+
+      // ── SECTION 1: THE PSYCHOLOGY OF OVERPACKING ──
+      { type: 'h2', text: 'Why We Overpack: The Anxiety Economy' },
+      { type: 'p', text: 'Before we talk about what to bring, we need to talk about why new parents pack so much. The answer is not stupidity or inexperience. The answer is fear—specifically, the fear of being caught unprepared in a public space with a crying, uncomfortable, or sick baby and no way to fix the situation.' },
+      { type: 'p', text: 'This fear is natural. It is also enormously profitable for the companies that manufacture single-purpose baby travel products. Every "essential travel checklist" published by a baby gear retailer is, at its core, a document designed to convert parental anxiety into revenue. The more items on the list, the more products sold. The more specialized each item is—a car seat cover that only works with one brand, a nursing poncho that serves no other function—the more items you need to buy.' },
+      { type: 'image', src: '/journal_travel_packing.png', alt: 'Minimalist flat-lay of a newborn travel bag with cotton swaddles and essentials', caption: 'The entire travel kit for a newborn road trip: two heritage swaddles, a hat, a bottle, and confidence.' },
+      { type: 'p', text: 'The antidote to this anxiety economy is not recklessness. It is intentionality. It is understanding that a single, high-quality, generously sized cotton muslin swaddle can serve as a swaddle, a nursing cover, a car seat shade, a changing mat, a burp cloth, a light blanket, a stroller canopy, and an emergency bib—often within the same hour. When a single textile replaces eight separate products, your diaper bag gets lighter, your stress level drops, and your baby does not notice the difference because babies have never cared about product categories.' },
+
+      // ── SECTION 2: THE CAR TRIP ──
+      { type: 'h2', text: 'The First Road Trip: Keeping It Simple in the Car' },
+      { type: 'p', text: 'The car trip is typically the first real travel test for new parents, and it establishes patterns—good or bad—that carry forward into every subsequent journey. The key insight is this: your car is not an airplane. You can pull over. You can stop at any point. The pressure to have every conceivable item within arm\'s reach is largely imaginary.' },
+      { type: 'p', text: 'Here is what you genuinely need within the vehicle itself:' },
+      { type: 'list', items: [
+        'A properly installed, rear-facing car seat. This is non-negotiable and legally mandated. Have it inspected at your local fire station if you are unsure about the installation.',
+        'Two muslin cotton swaddles. One draped lightly over the car seat handle to shade the baby from direct sunlight (never covering the baby\'s face or restricting airflow around the seat). The second as a backup for spit-up, diaper emergencies, or as a clean surface for roadside changes.',
+        'A pre-packed diaper clutch: 4–6 diapers, a travel-sized pack of wipes, and one change of clothes in a ziplock bag.',
+        'Pre-prepared bottles or nursing supplies, depending on your feeding method.',
+        'One pacifier, if your baby uses one. Bring a spare clipped to the diaper bag, not floating loose in the car.'
+      ]},
+      { type: 'image', src: '/journal_travel_carseat.png', alt: 'Sleeping baby in car seat with a hand-block-printed muslin blanket', caption: 'A breathable cotton muslin draped over the handle provides shade without trapping heat—the exact opposite of synthetic car seat covers.' },
+      { type: 'p', text: 'Notice what is not on that list: a portable white noise machine (your car\'s engine and road noise serve the same function), a special car seat insert (the seat itself is designed to be safe without aftermarket additions the manufacturer hasn\'t tested), or a car seat mirror (these are unsecured objects that become projectiles in a collision, and the American Academy of Pediatrics does not recommend them).' },
+
+      { type: 'ad', productId: 'inventory:SC55JFH9Z', title: 'The Sunrise Heritage Swaddle', subtitle: 'Your baby\'s travel companion: sun shade, nursing cover, changing mat, and comfort blanket—all in one hand-block-printed cotton textile.', image: '/The Sunrise Heritage Swaddle.webp', price: '$30.00' },
+
+      { type: 'quote', text: 'The most well-traveled babies I have ever met were carried by parents who packed less and worried less. A calm parent is a better travel companion than any gadget. And calm comes from simplicity, not from having a backup for every backup.', attribution: 'Krishna Patel, SwaddleShawls' },
+
+      // ── SECTION 3: THE FLIGHT ──
+      { type: 'h2', text: 'Flying with an Infant: What Actually Matters at 35,000 Feet' },
+      { type: 'p', text: 'Flying with a baby under six months old sounds terrifying until you actually do it—and then you realize that the baby is usually the least difficult part of the experience. Newborns sleep. A lot. The cabin pressure, the white noise of the engines, and the gentle vibration of the aircraft conspire to create an environment that many babies find deeply soothing.' },
+      { type: 'p', text: 'The genuine challenges of air travel with an infant are logistical, not temperamental:' },
+      { type: 'list', items: [
+        'Ear pressure during ascent and descent. Nursing or bottle-feeding during takeoff and landing encourages swallowing, which equalizes ear pressure naturally.',
+        'Cabin air is aggressively dry. Dress your baby in breathable cotton layers and have a muslin blanket available—not for warmth, but to create a micro-humidity barrier around their skin.',
+        'Airplane lavatories do not always have changing tables. A clean cotton swaddle spread across the closed toilet lid creates a sanitary, comfortable changing surface in any bathroom.',
+        'Cabin temperatures fluctuate unpredictably. A muslin swaddle can be added as a layer or removed entirely in seconds—something a fleece travel blanket cannot do without triggering overheating.'
+      ]},
+      { type: 'p', text: 'The most critical fabric decision you make for air travel is the one that touches your baby\'s skin for the entire flight. Airplane cabins are sealed, recirculated-air environments. A synthetic polyester blanket in this setting does not merely trap heat—it traps moisture, creating a warm, humid microclimate against your baby\'s skin that promotes irritation. Natural cotton muslin, with its open weave, allows continuous air exchange even in the most stuffy cabin, keeping your baby\'s skin dry and their temperature stable.' },
+
+      { type: 'ad', productId: 'KMB-001', title: 'The Kerala Monsoon Bamboo Swaddle', subtitle: 'Bamboo-cotton blend engineered for exactly this: ultra-breathable temperature regulation in unpredictable environments.', image: '/kerala_monsoon_swaddle.png', price: '$38.00' },
+
+      // ── SECTION 4: THE OUTDOOR OUTING ──
+      { type: 'h2', text: 'Parks, Markets, and the Great Outdoors' },
+      { type: 'p', text: 'The day trip—a walk through the farmers\' market, a picnic in the park, a visit to family across town—is where the multi-purpose textile truly earns its place in your life. These excursions are unstructured, unpredictable, and often longer than planned. They are also, for many new parents, the first time they feel genuinely free since the baby arrived.' },
+      { type: 'p', text: 'A single large cotton swaddle handles virtually every scenario you will encounter:' },
+      { type: 'list', items: [
+        'Nursing in public: Draped over the shoulder, a 47-inch muslin provides complete coverage while maintaining airflow—unlike synthetic nursing ponchos that turn every feeding into a sauna.',
+        'Impromptu diaper changes: Spread flat on a park bench, a picnic table, or the tailgate of your car, it creates a clean, padded surface anywhere.',
+        'Sun protection: Draped over the stroller canopy, it filters UV light while allowing the baby to see out and air to flow through.',
+        'Tummy time: On a blanket at the park, your baby gets fresh air, natural light, and sensory stimulation from the grass beneath the cotton.',
+        'The inevitable mess: Spit-up, drool, food—a cotton muslin absorbs it all, rinses clean under any faucet, and dries remarkably fast in open air.'
+      ]},
+      { type: 'image', src: '/journal_travel_nursing.png', alt: 'Mother nursing a baby outdoors using a hand-block-printed cotton nursing cover', caption: 'A heritage cotton textile provides privacy and breathability in any setting—no specialized nursing gear required.' },
+      { type: 'p', text: 'The beauty of this approach is not merely practical. There is something profoundly liberating about realizing that you can walk out the door with your baby, two cotton swaddles, a small bag of essentials, and your own confidence—and that is enough. You do not need the $200 diaper bag with seventeen compartments. You do not need the travel system that converts from car seat to stroller to bassinet with fourteen intermediate steps. You need your hands, your instincts, and textiles that work as hard as you do.' },
+
+      { type: 'ad', productId: 'HNC-001', title: 'The Heritage Block-Print Nursing Cover', subtitle: 'Generous 50x50 inches of hand-block-printed cotton. Designed specifically for parents who refuse to choose between privacy and breathability.', image: '/nursing_cover.png', price: '$45.00' },
+
+      // ── SECTION 5: THE HOTEL/OVERNIGHT ──
+      { type: 'h2', text: 'The Overnight Stay: Building a Familiar Nest Anywhere' },
+      { type: 'p', text: 'The single greatest challenge of overnight travel with a newborn is sleep environment disruption. Your baby has spent their entire life—every single night—in the same crib, in the same room, surrounded by the same scents and textures. A hotel room, a grandparent\'s guest bedroom, or an Airbnb is a sensory shock that can derail sleep patterns for days.' },
+      { type: 'p', text: 'This is where the overlooked power of natural textiles becomes most apparent. Scent is a newborn\'s primary tool for recognizing safety. Before their vision fully develops, they navigate the world through smell. A cotton swaddle that has been washed in your home detergent, that carries the faint scent of your skin from being held against your chest, that smells like the nursery they know—this is not a blanket. It is a portable sense of home.' },
+      { type: 'p', text: 'When you arrive at your overnight destination:' },
+      { type: 'list', items: [
+        'Line the travel crib or pack-and-play with your own fitted cotton sheet, brought from home.',
+        'Swaddle the baby in their familiar cotton muslin—the same one you use every night. The routine and the scent together signal to the baby that sleep time has arrived, regardless of the unfamiliar walls.',
+        'Drape a second swaddle over the side of the crib nearest any light source to create gentle shade without restricting airflow.',
+        'Place a third cotton textile near wherever you will be sitting during night feedings. Hotel room chairs are often leather or synthetic—a familiar cotton layer between skin and surface makes 3 a.m. feedings in a strange room feel slightly less alien.'
+      ]},
+      { type: 'p', text: 'Synthetic travel blankets cannot do this. They do not absorb and retain scent the way natural cotton fibers do. They do not soften with use. They do not carry the olfactory memory of your home. They are strangers to your baby, just like the hotel room itself.' },
+
+      { type: 'quote', text: 'A well-loved cotton swaddle is not luggage. It is geography. It is the baby\'s entire known world, folded into a square and carried in your bag. Wherever you unfold it, you are home.', attribution: 'Krishna Patel, SwaddleShawls' },
+
+      // ── SECTION 6: CONCLUSION ──
+      { type: 'h2', text: 'The Freedom of Less' },
+      { type: 'p', text: 'The baby gear industry has convinced an entire generation of parents that leaving the house with an infant requires the logistical planning of a military deployment. It does not. Human beings have been traveling with babies since before we had luggage. What those parents carried was simple: cloth to wrap, food to feed, and the calm certainty that their child would be fine—because children are designed to be portable.' },
+      { type: 'p', text: 'The modern version of this ancient confidence looks like two or three genuinely excellent cotton swaddles, a small clutch of diapers and wipes, your feeding supplies, and nothing else. Every additional item you add to the bag adds weight to your shoulder and doubt to your mind. Every single-purpose gadget is a silent suggestion that you cannot manage without it.' },
+      { type: 'p', text: 'You can. You were always going to be able to.' },
+      { type: 'p', text: 'At SwaddleShawls, every piece in our collection is designed by parents who have traveled with babies, for parents who want to travel without fear. Our textiles are generously sized because we know that a swaddle is never just a swaddle. It is a shade and a shield and a surface and a signal of home. It is the single most versatile object in your diaper bag—and, honestly, sometimes the only one you need.' },
+      { type: 'p', text: 'Pack light. Trust yourself. And go anywhere.' },
+    ]
+  },
+  {
     slug: 'the-timeless-art-of-hand-block-printing',
     title: 'The Timeless Art of Hand Block Printing: Why Artisanal Craftsmanship Matters for Your Newborn',
     category: 'Heritage & Craft',
