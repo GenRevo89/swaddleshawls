@@ -1,8 +1,105 @@
 export const posts = [
   {
+    slug: 'seasonal-baby-sleep-guide-dressing-for-every-temperature',
+    title: 'The Seasonal Baby Sleep Guide: How to Dress Your Newborn for Every Temperature',
+    category: 'Season & Sleep',
+    hub: true,
+    date: '2026-04-14',
+    description: 'From summer heatwaves to winter cold snaps, your baby\'s sleep quality depends on one decision you make every single night: what you wrap them in. A comprehensive, temperature-by-temperature guide to infant sleep layering.',
+    image: '/journal_seasonal_cover.png',
+    readTime: '14 min read',
+    content: [
+      // ── INTRODUCTION ──
+      { type: 'p', text: 'There is a question that haunts every new parent, every single night, in every season: is my baby too hot, too cold, or just right? It is the Goldilocks problem applied to the most important sleeper in your household—someone who cannot tell you the answer, cannot adjust their own blankets, and whose immature thermoregulatory system makes them genuinely vulnerable to the consequences of getting it wrong.' },
+      { type: 'p', text: 'The stakes are not theoretical. The American Academy of Pediatrics has identified overheating as a significant environmental risk factor for Sudden Infant Death Syndrome (SIDS). Hypothermia, while less commonly discussed, disrupts sleep architecture, increases caloric expenditure, and causes prolonged periods of inconsolable crying. The margin between "too warm" and "too cold" is remarkably narrow for a newborn—often a matter of a single layer.' },
+      { type: 'p', text: 'This guide exists because we believe that navigating this decision should not require a medical degree. It requires understanding three things: how babies lose and retain heat, how different fabrics perform across temperature ranges, and the specific layering logic for each season. By the end, you will know exactly what to dress your baby in tonight—and every night for the rest of their first year.' },
+
+      // ── SECTION 1: HOW BABIES THERMOREGULATE ──
+      { type: 'h2', text: 'The Science of Infant Thermoregulation' },
+      { type: 'p', text: 'Adults regulate body temperature through a sophisticated system of vasodilation, vasoconstriction, and perspiration. When you are too hot, your blood vessels dilate to release heat through the skin, and your sweat glands activate to cool through evaporation. When you are cold, your vessels constrict to preserve core warmth, and your muscles shiver to generate heat through metabolic activity.' },
+      { type: 'p', text: 'Newborns cannot do most of this. Their sweat glands are functionally immature for the first several weeks. Their surface-area-to-body-mass ratio is enormously high compared to adults, meaning they radiate heat far more rapidly. They have minimal subcutaneous fat for insulation. And they cannot shiver effectively as a warming mechanism until several months of age.' },
+      { type: 'image', src: '/journal_nursery_temp.png', alt: 'Mother checking nursery temperature with sleeping baby in crib nearby', caption: 'The room thermometer is your co-parent in sleep decisions. The AAP recommends 68–72°F (20–22°C) as the ideal nursery temperature.' },
+      { type: 'p', text: 'What this means, practically, is that your baby is almost entirely dependent on you—and on the textiles you choose—to maintain a safe body temperature during sleep. The fabric you wrap them in is not a passive covering. It is an active thermoregulatory system. It is the most important piece of sleep infrastructure in the nursery, more important than the mattress, the white noise machine, or the blackout curtains.' },
+
+      { type: 'quote', text: 'A baby\'s swaddle is not a blanket. It is a climate system. It determines the temperature, humidity, and airflow of the most intimate environment your child inhabits during their most vulnerable hours.', attribution: 'Krishna Patel, SwaddleShawls' },
+
+      // ── SECTION 2: THE TOG RATING MYTH ──
+      { type: 'h2', text: 'Understanding Fabric Weight: Beyond the TOG Rating' },
+      { type: 'p', text: 'The baby sleep industry has popularized TOG ratings—a measure of thermal resistance originally developed for duvets—as the definitive guide to sleep layering. While TOG ratings provide a useful starting framework, they tell an incomplete story, because they measure only one dimension of thermal performance: insulation. They do not measure breathability, moisture wicking, or airflow—the three properties that actually determine whether your baby overheats.' },
+      { type: 'p', text: 'A 1.0 TOG polyester sleep sack and a 1.0 TOG cotton muslin swaddle have theoretically identical insulation values. But in practice, the polyester traps moisture against the skin while the muslin allows continuous evaporative cooling. The baby in the polyester overheats. The baby in the muslin sleeps comfortably. The TOG rating cannot capture this difference because it was never designed to.' },
+      { type: 'image', src: '/journal_seasonal_layers.png', alt: 'Flat-lay of cotton swaddles arranged by weight from summer to winter', caption: 'The seasonal spectrum: single-layer muslin for summer, double-layer for transitional months, cotton quilt layering for true winter.' },
+      { type: 'p', text: 'The more useful mental model is to think about fabric architecture. An open-weave muslin has gaps between its threads that function as ventilation channels. These gaps allow warm, humid air to escape and be replaced by cooler, drier air. A dense-weave cotton has fewer gaps, retaining more warmth while still allowing some airflow. And synthetic fabrics have essentially no airflow capacity—they function as sealed thermal envelopes that trap everything: heat, moisture, and chemical off-gassing.' },
+
+      { type: 'ad', productId: 'KMB-001', title: 'The Kerala Monsoon Bamboo Swaddle', subtitle: 'Engineered for warm-weather sleep. Bamboo-cotton blend with exceptional moisture-wicking and airflow.', image: '/kerala_monsoon_swaddle.png', price: '$38.00' },
+
+      // ── SECTION 3: SUMMER ──
+      { type: 'h2', text: 'Summer Layering: The Art of Almost Nothing' },
+      { type: 'p', text: 'Summer is when the overheating risk is highest, and it is also when parents most frequently make the mistake of adding too much. The instinct to wrap and protect is powerful—but in temperatures above 75°F (24°C), the greatest protection you can offer your baby is the absence of excessive covering.' },
+      { type: 'p', text: 'The summer sleep formula is elegantly simple:' },
+      { type: 'list', items: [
+        'Room temperature 75°F+ (24°C+): A single layer. Either a short-sleeved cotton bodysuit alone, or a lightweight muslin swaddle over a diaper only. Never both.',
+        'Room temperature 72–75°F (22–24°C): A short-sleeved cotton bodysuit under a single-layer muslin swaddle. The muslin provides the gentle pressure of swaddling without adding meaningful warmth.',
+        'The fan test: If you have a ceiling fan or portable fan circulating air in the nursery (which the AAP recommends as a SIDS risk reduction measure), you can use the slightly warmer layering option even in higher temperatures.',
+      ]},
+      { type: 'image', src: '/journal_summer_sleep.png', alt: 'Peacefully sleeping newborn in bassinet with light muslin swaddle in summer light', caption: 'Summer sleep at its simplest: a single layer of breathable muslin between the baby and the world.' },
+      { type: 'p', text: 'The critical fabric decision in summer is the weave, not the weight. A muslin with an open plain weave will perform dramatically better than a dense cotton of identical weight. The open weave allows continuous passive heat exchange—your baby radiates warmth through the fabric rather than having it reflected back against their skin.' },
+      { type: 'p', text: 'Signs that your baby is too hot during summer sleep: flushed or red cheeks, damp hair at the nape of the neck, rapid breathing, a hot chest or back when you place your hand under the swaddle. If you detect any of these signs, remove a layer immediately. It is always safer to err on the side of slightly cool than slightly warm.' },
+
+      { type: 'ad', productId: 'inventory:SC55JFH9Z', title: 'The Sunrise Heritage Swaddle', subtitle: 'Single-layer open-weave cotton muslin. The ideal summer sleep textile—breathable enough for the hottest nights.', image: '/The Sunrise Heritage Swaddle.webp', price: '$30.00' },
+
+      // ── SECTION 4: TRANSITIONAL SEASONS ──
+      { type: 'h2', text: 'Spring and Autumn: The Most Dangerous Seasons for Overdressing' },
+      { type: 'p', text: 'Counterintuitively, the transitional seasons—not summer, not winter—are when parents most frequently get the layering wrong. The reason is simple: spring and autumn temperatures fluctuate wildly within a single 24-hour cycle. The nursery that is 74°F at bedtime may be 64°F by 3 a.m. The instinct is to dress for the coldest expected temperature, which means the baby is overdressed for the first several hours of sleep.' },
+      { type: 'p', text: 'The solution is not more layers. It is smarter layers:' },
+      { type: 'list', items: [
+        'Room temperature 68–72°F (20–22°C): The Goldilocks zone. Long-sleeved cotton bodysuit under a single-layer muslin swaddle. This is the AAP\'s recommended nursery temperature range, and this layering combination handles it perfectly.',
+        'Room temperature 64–68°F (18–20°C): Long-sleeved cotton bodysuit with cotton footed sleeper, under a double-layer muslin swaddle. The two layers of muslin create an insulating air pocket between them without adding bulk.',
+        'The hand and foot test: Touch your baby\'s chest or back—not their hands or feet—to gauge temperature. Newborn extremities are almost always cooler than their core, and this is normal. Cold hands do not mean a cold baby.',
+      ]},
+      { type: 'p', text: 'The genius of natural cotton and muslin in transitional weather is their bidirectional thermal performance. Cotton muslin moderates in both directions—it allows excess heat to escape through its open weave when the room is warm, and the air trapped between weave layers provides gentle insulation when temperatures drop. No synthetic fabric can do this. Polyester has a single thermal setting: retain everything.' },
+
+      { type: 'ad', productId: 'inventory:RK4RWVUTL', title: 'The Simplicity Heritage Shawl', subtitle: 'Generous 47×47 inches of double-layer muslin. The perfect transitional-season swaddle for fluctuating nursery temperatures.', image: '/The Simplicity Heritage Shawl.webp', price: '$30.00' },
+
+      // ── SECTION 5: WINTER ──
+      { type: 'h2', text: 'Winter Layering: Warmth Without the Weight' },
+      { type: 'p', text: 'Winter is when families in northern climates face the highest temptation to add fleece, down, and heavy synthetic blankets to the crib. This temptation must be resisted absolutely. The AAP\'s safe sleep guidelines have not changed: the crib should contain a firm mattress, a fitted sheet, and the baby—swaddled or in a wearable blanket. No loose blankets. No quilts draped over the top. No matter how cold it is outside.' },
+      { type: 'p', text: 'The winter layering strategy is about building warmth through cotton layers, not bulk:' },
+      { type: 'list', items: [
+        'Room temperature 61–64°F (16–18°C): Cotton bodysuit base layer, footed cotton sleeper mid-layer, and a double-layer cotton muslin swaddle as the outer layer. This three-layer cotton system creates two insulating air pockets while maintaining breathability.',
+        'Room temperature below 61°F (16°C): Consider adding a cotton cap (babies lose significant heat through their heads) and using a heavier heritage cotton quilt-weight swaddle. At this temperature, also evaluate whether your heating system needs adjustment—a nursery consistently below 64°F may benefit from a small space heater with an automatic shutoff.',
+        'The zip-up sleep sack alternative: Once your baby transitions out of swaddling (typically 8–16 weeks), a cotton or cotton-blend wearable sleep sack replaces the swaddle as the primary outer layer. Choose one with a two-way zipper for easy nighttime diaper changes.',
+      ]},
+      { type: 'p', text: 'The critical winter principle is that multiple thin natural layers will always outperform a single thick synthetic layer. Three layers of cotton create two air gaps, each providing insulation while maintaining the breathability chain. A single fleece blanket provides insulation without any breathability, trapping moisture against the skin and creating the paradoxical condition where a baby can be simultaneously overheated and clammy.' },
+
+      { type: 'ad', productId: 'EFW-001', title: 'The Emerald Forest Winter Quilt', subtitle: 'Reversible, double-padded heritage cotton. Winter warmth with natural breathability—because your baby deserves both.', image: '/emerald_forest_quilt.png', price: '$45.00' },
+
+      // ── SECTION 6: THE NIGHTTIME CHECK ──
+      { type: 'h2', text: 'The 10-Second Nighttime Temperature Check' },
+      { type: 'p', text: 'Every parent should learn this technique, because it eliminates guesswork entirely and takes less time than checking your phone:' },
+      { type: 'p', text: 'Place two fingers flat against your baby\'s chest, between the nipples. The skin should feel warm and dry. Not hot. Not damp. Not cool. Warm and dry. That is the target.' },
+      { type: 'list', items: [
+        'Hot and damp: Remove a layer immediately. Open a window or turn on a fan. Check again in 15 minutes.',
+        'Warm and dry: Perfect. Change nothing.',
+        'Cool to the touch: Add a layer. If the baby is in a single-layer swaddle, switch to a double-layer or add a bodysuit beneath.',
+        'Cold: Add layers and increase room temperature. Monitor closely for the next hour.',
+      ]},
+      { type: 'p', text: 'Do this check at every nighttime feeding or wake-up. It becomes second nature within a week and provides more accurate information than any wearable baby temperature monitor on the market—because you are feeling the actual skin temperature, not a proxy measurement filtered through an algorithm.' },
+
+      // ── CONCLUSION ──
+      { type: 'h2', text: 'The Year-Round Truth: Fabric Is the Foundation' },
+      { type: 'p', text: 'Across every season, every temperature fluctuation, and every midnight wake-up, the constant variable is fabric. Not the nursery paint color. Not the mattress brand. Not the $300 smart monitor. The fabric, against the skin, all night long.' },
+      { type: 'p', text: 'Natural cotton and muslin exist at the intersection of safety and comfort that no synthetic material has ever reached. They breathe when your baby needs cooling. They insulate when your baby needs warmth. They wick moisture instead of trapping it. They soften instead of degrading. And they carry the scent of home instead of the off-gassing of a petrochemical factory.' },
+      { type: 'p', text: 'At SwaddleShawls, every textile in our collection is designed to perform across the full thermal spectrum of your baby\'s first year. Our open-weave muslins for summer. Our double-layer shawls for the transitional months. Our heritage quilts for winter. Each one hand-block-printed, vegetable-dyed, and made by artisans who understand that the fabric touching your baby\'s skin is the most important decision you make every night.' },
+      { type: 'p', text: 'Dress them with intention. Layer them with knowledge. And sleep a little easier yourself, knowing that what wraps your baby was made with the same care you bring to every other decision in their small, extraordinary life.' },
+
+      { type: 'ad', productId: 'inventory:DNQ3P5HA6', title: 'The Heritage Paisley Swaddle', subtitle: 'Year-round versatility in a single textile. Layer it, fold it, wrap it—47×47 inches of heritage cotton for every season.', image: '/The Heritage Paisley Swaddle.webp', price: '$30.00' },
+    ]
+  },
+  {
     slug: 'traveling-with-a-newborn-minimalist-guide',
     title: 'Traveling with a Newborn: The Minimalist Parent\'s Guide to Going Anywhere',
     category: 'Parenting Guides',
+    hubSlug: 'seasonal-baby-sleep-guide-dressing-for-every-temperature',
     date: '2026-04-12',
     description: 'First road trip with a baby? First flight? The key to stress-free newborn travel is not more gear—it is fewer, better, genuinely multi-purpose items. Learn how one or two heritage-quality cotton textiles can replace an entire suitcase of single-use baby products.',
     image: '/journal_travel_cover.png',
@@ -96,6 +193,7 @@ export const posts = [
     slug: 'the-timeless-art-of-hand-block-printing',
     title: 'The Timeless Art of Hand Block Printing: Why Artisanal Craftsmanship Matters for Your Newborn',
     category: 'Heritage & Craft',
+    hub: true,
     date: '2026-04-06',
     description: 'Discover the rich cultural history and intricate, labor-intensive process behind authentic Indian hand block printing. Learn why choosing artisanal, vegetable-dyed slow fashion creates a fundamentally healthier, safer environment for your baby.',
     image: '/og/story_bg.png',
@@ -176,6 +274,7 @@ export const posts = [
     slug: 'muslin-vs-traditional-cotton-safest-swaddle',
     title: 'Muslin vs. Traditional Cotton: Finding the Safest Swaddle for Your Newborn',
     category: 'Parenting Guides',
+    hubSlug: 'the-timeless-art-of-hand-block-printing',
     date: '2026-04-05',
     description: 'A deep, honest comparison between muslin and traditional cotton weaves. Understand the science of thread count, thermal regulation, and infant skin safety to make the most informed choice for your baby.',
     image: '/og/shop_bg.png',
@@ -234,6 +333,7 @@ export const posts = [
     slug: 'sustainable-luxury-baby-shower-gifts',
     title: '5 Reasons Sustainable Baby Gifts Are the New Baby Shower Standard',
     category: 'Gifting',
+    hubSlug: 'the-timeless-art-of-hand-block-printing',
     date: '2026-04-04',
     description: 'The baby shower is being reinvented. Modern parents are rejecting disposable plastic and demanding heirloom-quality, ethically made gifts. Here is why sustainable gifting is not a trend—it is the new permanent standard.',
     image: '/og/global_bg.png',
@@ -296,6 +396,7 @@ export const posts = [
     slug: 'how-to-swaddle-a-newborn-step-by-step',
     title: 'How to Swaddle a Newborn: A Complete Step-by-Step Guide',
     category: 'Parenting Guides',
+    hubSlug: 'seasonal-baby-sleep-guide-dressing-for-every-temperature',
     date: '2026-04-03',
     description: 'Master the art of swaddling with our detailed, pediatrician-aligned guide. Learn the diamond fold technique, understand when to stop swaddling, and discover which fabrics keep your baby safest during sleep.',
     image: '/journal_swaddle_thumb.png',
@@ -374,6 +475,7 @@ export const posts = [
     slug: 'first-time-parent-nursery-checklist',
     title: "The First-Time Parent's Nursery Checklist: What You Actually Need (And What You Don't)",
     category: 'Parenting Guides',
+    hubSlug: 'seasonal-baby-sleep-guide-dressing-for-every-temperature',
     date: '2026-04-02',
     description: "Cut through the marketing noise. A honest, stripped-down nursery checklist from parents who have been there—covering what your baby genuinely needs, what is a waste of money, and where to invest in quality that lasts.",
     image: '/journal_nursery_thumb.png',
@@ -461,6 +563,7 @@ export const posts = [
     slug: 'minimalist-hospital-bag-checklist',
     title: 'The Hospital Bag Checklist for the Minimalist Mother',
     category: 'Parenting Guides',
+    hubSlug: 'seasonal-baby-sleep-guide-dressing-for-every-temperature',
     date: '2026-04-01',
     description: 'Avoid the overpacking trap. A curated, practical guide to exactly what you need in your hospital bag for labor, delivery, and postpartum recovery—focusing on comfort and intention over excess.',
     image: '/journal_hospital_bag_thumb.png',
@@ -513,6 +616,7 @@ export const posts = [
     slug: 'skin-deep-understanding-newborn-eczema',
     title: 'Skin Deep: Understanding Newborn Eczema and Textile Dermatitis',
     category: 'Pediatric Care',
+    hubSlug: 'the-timeless-art-of-hand-block-printing',
     date: '2026-03-31',
     description: 'Infant skin is 30% thinner than adult skin and highly susceptible to irritation. Learn how to identify textile dermatitis, manage newborn eczema, and why the fabric you choose is your first line of defense.',
     image: '/journal_skin_care_thumb.png',
