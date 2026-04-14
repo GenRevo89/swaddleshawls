@@ -1,6 +1,6 @@
 {
   "name": "swaddleshawls",
-  "version": "0.1.0",
+  "version": "1.0.0s",
   "private": true,
   "scripts": {
     "dev": "next dev",
