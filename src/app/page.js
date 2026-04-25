@@ -128,7 +128,7 @@ export default function Home() {
         <div className="relative z-10 max-w-5xl mx-auto px-6 py-20">
           <div className="hero-reveal hero-reveal-1 inline-block px-5 py-2 rounded-full text-xs font-bold tracking-[0.2em] uppercase mb-8 border"
             style={{ backgroundColor: "rgba(219,181,92,0.12)", borderColor: "rgba(219,181,92,0.25)", color: "var(--gold-400)" }}>
-            {isPreorder ? "✦  Pre-Orders Now Open  ✦" : "✦  Pure Comfort from India  ✦"}
+            {isPreorder ? "✦  Launch Special Live  ✦" : "✦  Pure Comfort from India  ✦"}
           </div>
 
           <h1 className="hero-reveal hero-reveal-2 text-5xl md:text-6xl lg:text-7xl font-bold mb-8 leading-[1.1] tracking-tight text-white drop-shadow-md"
@@ -144,7 +144,7 @@ export default function Home() {
 
           <div className="hero-reveal hero-reveal-4 flex flex-col sm:flex-row justify-center gap-5">
             <Link href="/shop" className="btn-primary px-10 py-4 text-lg tracking-wide">
-              {isPreorder ? "PRE-ORDER NOW" : "SHOP COLLECTION"}
+              {isPreorder ? "SHOP THE LAUNCH SPECIAL" : "SHOP COLLECTION"}
             </Link>
             <Link href="#heritage" className="btn-outline px-10 py-4 text-lg tracking-wide">
               Our Story
@@ -294,7 +294,7 @@ export default function Home() {
                 <div className="heritage-card bg-white rounded-2xl overflow-hidden shadow-lg h-full flex flex-col relative">
                   {isPreorder && (
                     <div className="absolute top-4 left-4 z-10 px-3 py-1 rounded-md text-xs font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
-                      10% Off Preorder
+                      10% Off Launch Special
                     </div>
                   )}
                   <div className="h-72 overflow-hidden flex-shrink-0 relative">
@@ -309,7 +309,7 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-6">
                       <span className="px-5 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg translate-y-4 group-hover:translate-y-0 transition-transform duration-500"
                         style={{ color: "var(--brown-800)" }}>
-                        {isPreorder ? "Pre-Order" : "View Details"}
+                        {isPreorder ? "Launch Special" : "View Details"}
                       </span>
                     </div>
                   </div>
@@ -317,7 +317,7 @@ export default function Home() {
                     <h3 className="text-lg font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{product.name}</h3>
                     <p className="text-sm leading-relaxed flex-1" style={{ color: "var(--brown-400)" }}>{product.description}</p>
                     <div className="mt-5 flex items-center gap-2 text-sm font-bold" style={{ color: "var(--henna-500)" }}>
-                      <span>{isPreorder ? "Pre-Order" : "View Details"}</span>
+                      <span>{isPreorder ? "Launch Special" : "View Details"}</span>
                       <svg className="w-4 h-4 transform group-hover:translate-x-2 transition-transform duration-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path></svg>
                     </div>
                   </div>
@@ -328,7 +328,7 @@ export default function Home() {
 
           <div className="reveal text-center mt-14">
             <Link href="/shop" className="btn-primary px-12 py-4 text-base tracking-wide">
-              {isPreorder ? "View Pre-Order Collection" : "View Full Collection"}
+              {isPreorder ? "View Launch Special Collection" : "View Full Collection"}
             </Link>
           </div>
         </div>

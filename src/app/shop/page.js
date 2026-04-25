@@ -150,7 +150,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
             <div className="p-6 md:p-8 flex flex-col relative" style={{ backgroundColor: "var(--brown-50)" }}>
               {isPreorder && (
                 <div className="absolute top-10 left-10 z-[15] px-3 py-1 rounded-md text-xs font-bold uppercase shadow-lg tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
-                  10% Off Preorder Special
+                  10% Off Launch Special
                 </div>
               )}
               {/* Main Image */}
@@ -313,7 +313,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
                 }`}
                 style={addedItem !== pid ? { backgroundColor: "var(--brown-800)" } : {}}
               >
-                {addedItem === pid ? "✓ Added to Cart" : isPreorder ? `Pre-Order — $${currentTotal.toFixed(2)}` : `Add to Cart — $${currentTotal.toFixed(2)}`}
+                {addedItem === pid ? "✓ Added to Cart" : `Add to Cart — $${currentTotal.toFixed(2)}`}
               </button>
             </div>
           </div>
@@ -562,7 +562,7 @@ export default function Shop() {
                  id: "preorder-discount",
                  groupId: "discount",
                  modifierId: "preorder",
-                 name: "10% Pre-Order Discount",
+                 name: "10% Launch Special Discount",
                  priceAdjustment: -(item.basePrice * 0.1)
                });
             }
@@ -686,13 +686,13 @@ export default function Shop() {
         <div className="max-w-7xl mx-auto relative z-10">
         <div className="text-center mb-20">
           <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wider uppercase" style={{ backgroundColor: "var(--henna-50)", color: "var(--henna-600)" }}>
-            {isPreorder ? "✦ Limited Pre-Orders ✦" : "✦ Handcrafted with Love ✦"}
+            {isPreorder ? "✦ Limited Launch Special ✦" : "✦ Handcrafted with Love ✦"}
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-5" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "Pre-Order Collection" : "Our Collection"}</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-5" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "The Inaugural Collection" : "Our Collection"}</h1>
           <div className="section-divider mb-8"></div>
           <p className="max-w-2xl mx-auto text-lg leading-relaxed" style={{ color: "var(--brown-500)" }}>
             {isPreorder
-              ? "Be the first to own our handcrafted collection. Reserve yours today — shipping begins soon."
+              ? "Welcome to our highly anticipated launch! Enjoy exclusive, limited-time pricing on our premier collection of authentic, handcrafted Indian muslin swaddles."
               : "Browse our handcrafted collection of authentic Indian baby shawls and swaddles."}
           </p>
         </div>
@@ -705,7 +705,7 @@ export default function Shop() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
               </svg>
             </div>
-            <h3 className="text-2xl font-bold text-emerald-900 mb-2">{isPreorder ? "Pre-Order Confirmed!" : "Payment Confirmed!"}</h3>
+            <h3 className="text-2xl font-bold text-emerald-900 mb-2">{isPreorder ? "Launch Special Confirmed!" : "Payment Confirmed!"}</h3>
             <p className="text-emerald-700 mb-1">
               Your order number is <span className="font-mono font-bold text-lg">{orderResult.orderNumber}</span>
             </p>
@@ -777,11 +777,13 @@ export default function Shop() {
             {[
               {
                 title: "Newborn Essentials",
+                badge: "For The Little Ones",
                 description: "Pure, gentle swaddles crafted for your baby's first days.",
                 items: products.filter(p => !p.category || p.category === "Newborn Essentials")
               },
               {
                 title: "Parenthood Essentials",
+                badge: "For The Parents",
                 description: "Mindfully designed essentials to support you through your parenthood journey.",
                 items: products.filter(p => p.category === "Parenthood Essentials")
               }
@@ -790,9 +792,11 @@ export default function Shop() {
               return (
                 <div key={idx}>
                   <div className="mb-10 pb-5 relative" style={{ borderBottom: "2px solid var(--brown-100)" }}>
-                    <div className="inline-block px-3 py-1 rounded-full text-[10px] font-bold mb-3 tracking-wider uppercase" style={{ backgroundColor: "var(--terra-50)", color: "var(--terra-600)" }}>
-                      {category.title}
-                    </div>
+                    {category.badge && (
+                      <div className="inline-block px-3 py-1 rounded-full text-[10px] font-bold mb-3 tracking-wider uppercase" style={{ backgroundColor: "var(--terra-50)", color: "var(--terra-600)" }}>
+                        {category.badge}
+                      </div>
+                    )}
                     <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{category.title}</h2>
                     <p className="text-lg" style={{ color: "var(--brown-500)" }}>{category.description}</p>
                   </div>
@@ -807,7 +811,7 @@ export default function Shop() {
                 >
                   {isPreorder && (
                     <div className="absolute top-3 left-3 z-[15] px-2 py-1 rounded-md text-[10px] font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
-                      10% Off Preorder Special
+                      10% Off Launch Special
                     </div>
                   )}
                   {/* 1:1 Square Image */}
@@ -828,7 +832,7 @@ export default function Shop() {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-6">
                       <span className="px-5 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg translate-y-3 group-hover:translate-y-0 transition-transform duration-500"
                         style={{ color: "var(--brown-800)" }}>
-                        {isPreorder ? "Pre-Order" : "View Details"}
+                        {isPreorder ? "Launch Special" : "View Details"}
                       </span>
                     </div>
 
@@ -855,7 +859,7 @@ export default function Shop() {
                     <p className="text-xs mb-4 flex-grow line-clamp-2" style={{ color: "var(--brown-400)" }}>
                       {product.description}
                     </p>
-                    <div className="flex items-center justify-between mt-auto">
+                    <div className="flex flex-col xl:flex-row xl:items-center justify-between mt-auto gap-3 pt-2">
                       <div className="flex flex-col items-start mt-auto">
                         {isPreorder ? (
                           <>
@@ -882,13 +886,13 @@ export default function Shop() {
                             addToCart(product); 
                           }
                         }}
-                        className={`btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${
+                        className={`w-full xl:w-auto btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${
                           addedItem === pid
                             ? "!bg-emerald-600 scale-95"
                             : ""
                         }`}
                       >
-                        {addedItem === pid ? "✓ Added" : isPreorder ? "Pre-Order" : "Add to Cart"}
+                        {addedItem === pid ? "✓ Added" : "Add to Cart"}
                       </button>
                     </div>
                   </div>
