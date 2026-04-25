@@ -416,6 +416,143 @@ function PaymentModal({ receiptId, paymentUrl, onSuccess, onCancel }) {
   );
 }
 
+function getProductColor(sku) {
+  const colors = {
+    "LPS-001": "160, 90, 180",  // Bold Lavender (Tartan)
+    "VSS-001": "240, 140, 100", // Peach/Terracotta (Heritage Paisley)
+    "HFS-001": "20, 60, 120",   // Navy (Snowflake)
+    "KVR-001": "130, 40, 60",   // Plum Burgundy (Floral Vine)
+    "GSS-001": "200, 130, 60",  // Mustard Rust (Sunrise)
+    "RPP-001": "110, 40, 130",  // Peacock Purple (Peacock)
+    "KMB-001": "100, 180, 80",  // Vibrant Green (Monstera)
+    "JPP-001": "200, 40, 120",  // Fuchsia (Peony)
+    "BRH-001": "170, 50, 40",   // Brick Red (Agra Henna)
+    "WNC-001": "200, 80, 70",   // Terracotta Red (Bindi Dots)
+    "HNC-001": "20, 80, 160",   // Indigo Blue (Heritage Nursing Cover)
+    "DSH-001": "190, 110, 60",  // Warm Tan (Tribal)
+    "MBS-001": "230, 120, 20",  // Marigold Orange (Floral)
+    "EFW-001": "10, 90, 50",    // Emerald Green (Gold Floral)
+    "GLS-001": "230, 160, 40",  // Mustard Yellow (Lotus)
+    "MMS-001": "40, 80, 140",   // Deep Blue (Rain/Stars)
+    "EPU39F8P3": "120, 100, 80", // Brown Linen
+    "RK4RWVUTL": "20, 120, 140", // Teal Border
+    "SC55JFH9Z": "220, 100, 30", // Orange Paisley
+    "DNQ3P5HA6": "180, 50, 40",  // Red Paisley
+  };
+  return colors[sku] || "219, 181, 92"; // Default gold
+}
+
+function ProductCard({ product, viewProduct, isPreorder, addedItem, addToCart }) {
+  const pid = product._id || product.id;
+  const color = getProductColor(product.sku);
+
+  return (
+    <div
+      className="group relative rounded-2xl flex flex-col cursor-pointer transition-all duration-500 shadow-md hover:shadow-xl hover:-translate-y-1"
+      onClick={() => viewProduct(product)}
+      style={{ "--card-color": color || "219, 181, 92" }}
+    >
+      {/* Animated Glowing Border */}
+      <div className="absolute inset-0 z-0 overflow-hidden rounded-2xl pointer-events-none opacity-60 md:opacity-40 group-hover:opacity-100 transition-opacity duration-700">
+        <div 
+          className="absolute inset-[-50%] animate-[spin_4s_linear_infinite]" 
+          style={{ background: `conic-gradient(from 0deg, rgba(var(--card-color), 0.3) 0%, rgba(var(--card-color), 0.3) 75%, rgba(var(--card-color), 1) 90%, rgba(var(--card-color), 0.3) 100%)` }}
+        ></div>
+      </div>
+      
+      {/* Inner Content Wrapper */}
+      <div className="relative z-10 m-[2px] bg-white rounded-[14px] overflow-hidden flex flex-col h-full flex-grow">
+        {isPreorder && (
+          <div className="absolute top-3 left-3 z-[15] px-2 py-1 rounded-md text-[10px] font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
+            10% Off Launch Special
+          </div>
+        )}
+        {/* 1:1 Square Image */}
+        <div className="aspect-square overflow-hidden relative" style={{ backgroundColor: "var(--brown-50)" }}>
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="w-full h-full object-cover transform scale-[1.08] group-hover:scale-[1.15] transition-transform duration-1000"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center" style={{ color: "var(--brown-300)" }}>
+              <ProductIcon />
+            </div>
+          )}
+
+          {/* Hover overlay with "View Details" */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-6">
+            <span className="px-5 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg translate-y-3 group-hover:translate-y-0 transition-transform duration-500"
+              style={{ color: "var(--brown-800)" }}>
+              {isPreorder ? "Launch Special" : "View Details"}
+            </span>
+          </div>
+
+          {/* Image count badge */}
+          {product.images && product.images.length > 1 && (
+            <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-xs font-bold flex items-center gap-1">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              {product.images.length}
+            </div>
+          )}
+        </div>
+
+        {/* Product Info */}
+        <div className="p-5 flex flex-col flex-grow">
+          <div className="uppercase text-[10px] font-bold tracking-wider mb-1.5" style={{ color: "var(--henna-500)" }}>
+            {product.category || "Swaddle"}
+          </div>
+          <h3 className="text-base font-bold mb-1.5"
+            style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>
+            {product.name}
+          </h3>
+          <p className="text-xs mb-4 flex-grow line-clamp-2" style={{ color: "var(--brown-400)" }}>
+            {product.description}
+          </p>
+          <div className="flex flex-col xl:flex-row xl:items-center justify-between mt-auto gap-3 pt-2">
+            <div className="flex flex-col items-start mt-auto">
+              {isPreorder ? (
+                <>
+                  <span className="text-xs line-through text-opacity-60" style={{ color: "var(--brown-400)" }}>
+                    ${Number(product.price).toFixed(2)}
+                  </span>
+                  <span className="text-xl font-bold" style={{ color: "var(--henna-600)" }}>
+                    ${(Number(product.price) * 0.9).toFixed(2)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-xl font-bold" style={{ color: "var(--brown-800)" }}>
+                  ${Number(product.price).toFixed(2)}
+                </span>
+              )}
+            </div>
+            <button
+              onClick={(e) => { 
+                e.stopPropagation(); 
+                const hasRequredModifiers = product.modifierGroups && product.modifierGroups.some(mg => mg.required);
+                if (hasRequredModifiers) {
+                  viewProduct(product);
+                } else {
+                  addToCart(product); 
+                }
+              }}
+              className={`w-full xl:w-auto btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${
+                addedItem === pid
+                  ? "!bg-emerald-600 scale-95"
+                  : ""
+              }`}
+            >
+              {addedItem === pid ? "✓ Added" : "Add to Cart"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Shop() {
   const [products, setProducts] = useState([]);
@@ -804,101 +941,16 @@ export default function Shop() {
                     {category.items.map((product) => {
                       const pid = product._id || product.id;
                       return (
-                        <div
-                  key={pid}
-                  className="group heritage-card bg-white rounded-2xl overflow-hidden shadow-md flex flex-col cursor-pointer relative"
-                  onClick={() => viewProduct(product)}
-                >
-                  {isPreorder && (
-                    <div className="absolute top-3 left-3 z-[15] px-2 py-1 rounded-md text-[10px] font-bold uppercase shadow-md tracking-wider" style={{ backgroundColor: "var(--henna-500)", color: "white" }}>
-                      10% Off Launch Special
-                    </div>
-                  )}
-                  {/* 1:1 Square Image */}
-                  <div className="aspect-square overflow-hidden relative" style={{ backgroundColor: "var(--brown-50)" }}>
-                    {product.image ? (
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-1000"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center" style={{ color: "var(--brown-300)" }}>
-                        <ProductIcon />
-                      </div>
-                    )}
-
-                    {/* Hover overlay with "View Details" */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-500 flex items-end justify-center pb-6">
-                      <span className="px-5 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold shadow-lg translate-y-3 group-hover:translate-y-0 transition-transform duration-500"
-                        style={{ color: "var(--brown-800)" }}>
-                        {isPreorder ? "Launch Special" : "View Details"}
-                      </span>
-                    </div>
-
-                    {/* Image count badge */}
-                    {product.images && product.images.length > 1 && (
-                      <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 backdrop-blur-sm rounded-full text-white text-xs font-bold flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        {product.images.length}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Product Info */}
-                  <div className="p-5 flex flex-col flex-grow">
-                    <div className="uppercase text-[10px] font-bold tracking-wider mb-1.5" style={{ color: "var(--henna-500)" }}>
-                      {product.category || "Swaddle"}
-                    </div>
-                    <h3 className="text-base font-bold mb-1.5"
-                      style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>
-                      {product.name}
-                    </h3>
-                    <p className="text-xs mb-4 flex-grow line-clamp-2" style={{ color: "var(--brown-400)" }}>
-                      {product.description}
-                    </p>
-                    <div className="flex flex-col xl:flex-row xl:items-center justify-between mt-auto gap-3 pt-2">
-                      <div className="flex flex-col items-start mt-auto">
-                        {isPreorder ? (
-                          <>
-                            <span className="text-xs line-through text-opacity-60" style={{ color: "var(--brown-400)" }}>
-                              ${Number(product.price).toFixed(2)}
-                            </span>
-                            <span className="text-xl font-bold" style={{ color: "var(--henna-600)" }}>
-                              ${(Number(product.price) * 0.9).toFixed(2)}
-                            </span>
-                          </>
-                        ) : (
-                          <span className="text-xl font-bold" style={{ color: "var(--brown-800)" }}>
-                            ${Number(product.price).toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                      <button
-                        onClick={(e) => { 
-                          e.stopPropagation(); 
-                          const hasRequredModifiers = product.modifierGroups && product.modifierGroups.some(mg => mg.required);
-                          if (hasRequredModifiers) {
-                            viewProduct(product);
-                          } else {
-                            addToCart(product); 
-                          }
-                        }}
-                        className={`w-full xl:w-auto btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${
-                          addedItem === pid
-                            ? "!bg-emerald-600 scale-95"
-                            : ""
-                        }`}
-                      >
-                        {addedItem === pid ? "✓ Added" : "Add to Cart"}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                        <ProductCard
+                          key={pid}
+                          product={product}
+                          viewProduct={viewProduct}
+                          isPreorder={isPreorder}
+                          addedItem={addedItem}
+                          addToCart={addToCart}
+                        />
+                      );
+                    })}
                   </div>
                 </div>
               );
