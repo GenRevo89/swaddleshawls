@@ -632,7 +632,8 @@ export default function Shop() {
         price: unitPrice, 
         basePrice: Number(product.price),
         quantity: 1,
-        modifiers
+        modifiers,
+        image: product.image
       }];
     });
     setAddedItem(pid);
@@ -1023,24 +1024,31 @@ export default function Shop() {
                 <>
                   <div className="space-y-4 mb-6">
                     {cart.map((item) => (
-                      <div key={item.cartItemId} className="flex items-center justify-between rounded-xl p-4" style={{ backgroundColor: "var(--brown-50)" }}>
-                        <div>
-                          <h4 className="font-bold" style={{ color: "var(--brown-800)" }}>{item.name}</h4>
-                          {item.modifiers && item.modifiers.length > 0 && (
-                            <div className="text-xs mb-1 space-y-0.5" style={{ color: "var(--brown-500)" }}>
-                              {item.modifiers.map(m => (
-                                <div key={m.id}>+ {m.name}</div>
-                              ))}
+                      <div key={item.cartItemId} className="flex items-center justify-between rounded-xl p-4 gap-4" style={{ backgroundColor: "var(--brown-50)" }}>
+                        <div className="flex items-center gap-4 flex-1">
+                          {item.image && (
+                            <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-white" style={{ border: "1px solid var(--brown-100)" }}>
+                              <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                             </div>
                           )}
-                          {isPreorder ? (
-                            <p className="text-sm font-medium mt-1">
-                              <span className="line-through text-xs mr-2" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)}</span>
-                              <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.basePrice * 0.1)).toFixed(2)} each</span>
-                            </p>
-                          ) : (
-                            <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
-                          )}
+                          <div>
+                            <h4 className="font-bold" style={{ color: "var(--brown-800)" }}>{item.name}</h4>
+                            {item.modifiers && item.modifiers.length > 0 && (
+                              <div className="text-xs mb-1 space-y-0.5" style={{ color: "var(--brown-500)" }}>
+                                {item.modifiers.map(m => (
+                                  <div key={m.id}>+ {m.name}</div>
+                                ))}
+                              </div>
+                            )}
+                            {isPreorder ? (
+                              <p className="text-sm font-medium mt-1">
+                                <span className="line-through text-xs mr-2" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)}</span>
+                                <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.basePrice * 0.1)).toFixed(2)} each</span>
+                              </p>
+                            ) : (
+                              <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
+                            )}
+                          </div>
                         </div>
                         <div className="flex items-center gap-3">
                           <button
