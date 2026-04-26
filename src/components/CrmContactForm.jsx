@@ -159,6 +159,13 @@ export default function CrmContactForm({ heading, subtitle }) {
     });
     
     container.appendChild(form);
+    
+    // Cleanup function to prevent React unmount errors on client-side transition
+    return () => {
+      if (container) {
+        container.innerHTML = "";
+      }
+    };
   }, []);
 
   return (
