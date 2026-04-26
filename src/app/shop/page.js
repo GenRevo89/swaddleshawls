@@ -998,7 +998,7 @@ export default function Shop() {
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--henna-500)" }}>
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"></path>
                 </svg>
-                {isPreorder ? "Your Pre-Order" : "Your Cart"}
+                Your Cart
                 <span className="text-sm font-normal" style={{ color: "var(--brown-400)" }}>({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
               </h3>
               <button
@@ -1099,12 +1099,18 @@ export default function Shop() {
                           style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
                         />
                       </div>
+                      <div className="text-[11px] leading-relaxed text-center my-2" style={{ color: "var(--brown-500)" }}>
+                        <svg className="w-3.5 h-3.5 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        Your email will be used to access the <a href="/portal" className="underline font-bold hover:text-emerald-700 transition-colors">Client Portal</a> to track your order.
+                      </div>
                       <button
                         type="submit" disabled={submitting}
-                        className="w-full text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide"
+                        className="w-full text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide mt-2"
                         style={{ backgroundColor: "var(--henna-500)" }}
                       >
-                        {submitting ? "Placing Order..." : isPreorder ? `Confirm Pre-Order — $${cartTotal.toFixed(2)}` : `Place Order — $${cartTotal.toFixed(2)}`}
+                        {submitting ? "Placing Order..." : `Place Order — $${cartTotal.toFixed(2)}`}
                       </button>
                     </form>
                   )}
@@ -1123,7 +1129,7 @@ export default function Shop() {
                   className="w-full text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform tracking-wide"
                   style={{ backgroundColor: "var(--brown-800)" }}
                 >
-                  {isPreorder ? "Confirm Pre-Order" : "Proceed to Checkout"}
+                  Proceed to Checkout
                 </button>
               </div>
             )}
