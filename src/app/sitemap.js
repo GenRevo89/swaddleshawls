@@ -1,10 +1,9 @@
+import { posts } from '@/data/posts';
+
 export default function sitemap() {
   const baseUrl = process.env.NEXT_PUBLIC_BRAND_URL || "https://swaddleshawls.com";
 
-  // If you later add dynamic blogs or product pages, you can fetch them here 
-  // and append to this array. Right now, products are handled in a modal on /shop.
-
-  return [
+  const staticRoutes = [
     {
       url: `${baseUrl}`,
       lastModified: new Date(),
@@ -26,14 +25,41 @@ export default function sitemap() {
     {
       url: `${baseUrl}/faq`,
       lastModified: new Date(),
-      changeFrequency: 'weekly',
+      changeFrequency: 'monthly',
       priority: 0.5,
     },
     {
       url: `${baseUrl}/reviews`,
       lastModified: new Date(),
-      changeFrequency: 'daily',
+      changeFrequency: 'weekly',
       priority: 0.6,
     },
+    {
+      url: `${baseUrl}/journal`,
+      lastModified: new Date(),
+      changeFrequency: 'weekly',
+      priority: 0.8,
+    },
+    {
+      url: `${baseUrl}/privacy`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
+    {
+      url: `${baseUrl}/terms`,
+      lastModified: new Date(),
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    },
   ];
+
+  const dynamicJournalRoutes = posts.map((post) => ({
+    url: `${baseUrl}/journal/${post.slug}`,
+    lastModified: new Date(post.date),
+    changeFrequency: 'monthly',
+    priority: post.hub ? 0.7 : 0.6,
+  }));
+
+  return [...staticRoutes, ...dynamicJournalRoutes];
 }
