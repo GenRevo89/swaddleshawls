@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import ExitIntentModal from "@/components/ExitIntentModal";
+import MobileWelcomeModal from "@/components/MobileWelcomeModal";
 import { Analytics } from "@vercel/analytics/react";
 
 const playfair = Playfair_Display({
@@ -144,6 +145,7 @@ export default function RootLayout({ children }) {
         </div>
         <Footer />
         <ExitIntentModal />
+        <MobileWelcomeModal />
         <Analytics />
       </body>
     </html>
