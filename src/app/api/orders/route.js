@@ -8,7 +8,7 @@ import { createOrder as createSurgeOrder, getPortalUrl } from "@/lib/surge";
 export async function POST(req) {
     try {
         const body = await req.json();
-        const { email, customerName, items } = body;
+        const { email, customerName, items, shippingAddress, paymentMethod } = body;
 
         if (!email || !customerName || !items || !Array.isArray(items) || items.length === 0) {
             return NextResponse.json(
@@ -85,6 +85,8 @@ export async function POST(req) {
             items,
             total: roundedTotal,
             status: receiptId ? "awaiting_payment" : "confirmed",
+            paymentMethod: paymentMethod || "surge",
+            shippingAddress: shippingAddress || {},
             receiptId: receiptId || null,
             surgeStatus: receiptId ? "generated" : null,
             paymentUrl: paymentUrl || null,

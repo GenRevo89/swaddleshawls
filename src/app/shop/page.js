@@ -1,5 +1,9 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe-js";
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 // Default icon for products without images
 function ProductIcon() {
@@ -393,14 +397,7 @@ function PaymentModal({ receiptId, paymentUrl, onSuccess, onCancel }) {
       ></div>
       <div className="fixed inset-0 flex items-center justify-center p-4 lg:p-8" style={{ zIndex: 10101 }}>
         <div className="relative w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden payment-modal-enter transition-all duration-300">
-          <button
-            onClick={onCancel}
-            className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 flex items-center justify-center transition-colors"
-          >
-            <svg className="w-4 h-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+
           <iframe
             src={paymentUrl}
             width="100%"
@@ -567,6 +564,43 @@ export default function Shop() {
   const [addedItem, setAddedItem] = useState(null);
   const [paymentModal, setPaymentModal] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null); // Product detail modal
+  const [stripeLoading, setStripeLoading] = useState(false);
+  const [stripeClientSecret, setStripeClientSecret] = useState(null); // Embedded checkout
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [couponError, setCouponError] = useState("");
+
+  const handleApplyCoupon = (e) => {
+    e?.preventDefault();
+    setCouponError("");
+    const code = formData.couponCode.trim().toUpperCase();
+    if (!code) return;
+
+    if (code === "PREORDER-10" || code === "NWSLTR-10") {
+      setAppliedCoupon({ code, type: "percent", value: 10, name: "10% Discount" });
+    } else {
+      setCouponError("Invalid coupon code.");
+      setAppliedCoupon(null);
+    }
+  };
+
+  // ── Handle Stripe success/cancel redirect ──
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const payment = params.get("payment");
+    const sessionId = params.get("session_id");
+    if (payment === "success" && sessionId) {
+      setOrderResult({
+        orderNumber: "Processing...",
+        email: "Your confirmation email is on the way.",
+        stripeSessionId: sessionId,
+      });
+      // Clean URL
+      window.history.replaceState({}, "", "/shop");
+    } else if (payment === "cancelled") {
+      window.history.replaceState({}, "", "/shop");
+    }
+  }, []);
 
   // Wrapper to fire Meta Pixel ViewContent when opening product detail
   const viewProduct = (product) => {
@@ -673,15 +707,78 @@ export default function Shop() {
     );
   };
 
-  const cartTotal = cart.reduce((sum, item) => {
+  const baseTotal = cart.reduce((sum, item) => {
     const activePrice = isPreorder ? item.price - (item.basePrice * 0.1) : item.price;
     return sum + activePrice * item.quantity;
   }, 0);
+
+  // Apply active coupon to cartTotal
+  let cartTotal = baseTotal;
+  if (appliedCoupon && appliedCoupon.type === "percent") {
+    cartTotal = Math.round(baseTotal * (1 - appliedCoupon.value / 100) * 100) / 100;
+  }
+
+  const surgeTotal = Math.round(cartTotal * 0.95 * 100) / 100; // 5% Surge discount
+  const surgeSavings = Math.round((cartTotal - surgeTotal) * 100) / 100;
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
-  const handleCheckout = async (e) => {
-    e.preventDefault();
-    if (cart.length === 0) return;
+  // ── Shared: build cart items for order submission ──
+  const buildOrderItems = ({ surgeDiscount = false } = {}) => {
+    return cart.map((item) => {
+      const itemModifiers = [...item.modifiers];
+      if (isPreorder && !itemModifiers.find(m => m.id === "preorder-discount")) {
+        itemModifiers.push({
+          id: "preorder-discount",
+          groupId: "discount",
+          modifierId: "preorder",
+          name: "10% Launch Special Discount",
+          priceAdjustment: -(item.basePrice * 0.1)
+        });
+      }
+      let unitPrice = isPreorder ? item.price - (item.basePrice * 0.1) : item.price;
+
+      // Apply User Coupon Discount
+      if (appliedCoupon && appliedCoupon.type === "percent" && !itemModifiers.find(m => m.id === "user-coupon")) {
+        const couponAdj = -(unitPrice * (appliedCoupon.value / 100));
+        itemModifiers.push({
+          id: "user-coupon",
+          groupId: "discount",
+          modifierId: appliedCoupon.code,
+          name: appliedCoupon.name,
+          priceAdjustment: Math.round(couponAdj * 100) / 100,
+        });
+        unitPrice = Math.round(unitPrice * (1 - appliedCoupon.value / 100) * 100) / 100;
+      }
+
+      // Apply 5% Surge discount
+      if (surgeDiscount && !itemModifiers.find(m => m.id === "surge-discount")) {
+        const surgeAdj = -(unitPrice * 0.05);
+        itemModifiers.push({
+          id: "surge-discount",
+          groupId: "discount",
+          modifierId: "surge",
+          name: "5% Surge Payment Discount",
+          priceAdjustment: Math.round(surgeAdj * 100) / 100,
+        });
+        unitPrice = Math.round(unitPrice * 0.95 * 100) / 100;
+      }
+
+      return {
+        productName: item.name,
+        name: item.name,
+        sku: item.sku,
+        quantity: item.quantity,
+        price: unitPrice,
+        modifiers: itemModifiers,
+        image: item.image,
+      };
+    });
+  };
+
+  // ── Create order in Surge + DB, then open Surge portal ──
+  const handleSurgeCheckout = async (e) => {
+    e?.preventDefault();
+    if (cart.length === 0 || !formData.name || !formData.email) return;
     setSubmitting(true);
 
     try {
@@ -691,27 +788,9 @@ export default function Shop() {
         body: JSON.stringify({
           email: formData.email,
           customerName: formData.name,
-          couponCode: formData.couponCode || undefined,
-          items: cart.map((item) => {
-            const itemModifiers = [...item.modifiers];
-            // Automatically apply preorder discount if missing
-            if (isPreorder && !itemModifiers.find(m => m.id === "preorder-discount")) {
-               itemModifiers.push({
-                 id: "preorder-discount",
-                 groupId: "discount",
-                 modifierId: "preorder",
-                 name: "10% Launch Special Discount",
-                 priceAdjustment: -(item.basePrice * 0.1)
-               });
-            }
-            return {
-              productName: item.name,
-              sku: item.sku,
-              quantity: item.quantity,
-              price: isPreorder ? item.price - (item.basePrice * 0.1) : item.price,
-              modifiers: itemModifiers,
-            };
-          }),
+          couponCode: appliedCoupon?.code || undefined,
+          paymentMethod: "surge",
+          items: buildOrderItems({ surgeDiscount: true }),
         }),
       });
       const data = await res.json();
@@ -729,7 +808,7 @@ export default function Shop() {
           setOrderResult(data.data);
           setCart([]);
           setCheckoutMode(false);
-          setFormData({ name: "", email: "" });
+          setFormData({ name: "", email: "", couponCode: "" });
         }
       } else {
         alert(data.error || "Order failed. Please try again.");
@@ -738,6 +817,73 @@ export default function Shop() {
       alert("Failed to connect to server.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  // ── Create order in DB, then redirect to Stripe Checkout ──
+  const handleStripeCheckout = async (e) => {
+    e?.preventDefault();
+    if (cart.length === 0 || !formData.name || !formData.email) return;
+    setStripeLoading(true);
+
+    try {
+      // Step 1: Create the order in Surge + DB so we have a receiptId for reconciliation
+      const orderRes = await fetch("/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          customerName: formData.name,
+          couponCode: appliedCoupon?.code || undefined,
+          paymentMethod: "stripe",
+          items: buildOrderItems(),
+        }),
+      });
+      const orderData = await orderRes.json();
+      if (!orderRes.ok || !orderData.success) {
+        alert(orderData.error || "Order creation failed.");
+        setStripeLoading(false);
+        return;
+      }
+
+      // Step 2: Create Stripe Checkout Session
+      const stripeRes = await fetch("/api/checkout/stripe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          customerName: formData.name,
+          orderId: orderData.data._id,
+          receiptId: orderData.data.receiptId || "",
+          couponCode: appliedCoupon?.code || undefined,
+          items: buildOrderItems(),
+        }),
+      });
+      const stripeData = await stripeRes.json();
+      if (stripeRes.ok && stripeData.success && stripeData.clientSecret) {
+        // Meta Pixel — InitiateCheckout
+        try {
+          if (typeof window !== "undefined" && window.fbq) {
+            window.fbq('track', 'InitiateCheckout', {
+              content_ids: cart.map(item => item.sku),
+              content_type: 'product',
+              value: cartTotal,
+              currency: 'USD',
+              num_items: cart.reduce((sum, item) => sum + item.quantity, 0),
+            });
+          }
+        } catch (e) { console.error('Meta InitiateCheckout failed:', e); }
+
+        setStripeClientSecret(stripeData.clientSecret);
+        setCartOpen(false);
+        setStripeLoading(false);
+      } else {
+        alert(stripeData.error || "Failed to create Stripe session.");
+        setStripeLoading(false);
+      }
+    } catch {
+      alert("Failed to connect to payment server.");
+      setStripeLoading(false);
     }
   };
 
@@ -1072,7 +1218,7 @@ export default function Shop() {
                   </div>
 
                   {checkoutMode && (
-                    <form onSubmit={handleCheckout} className="space-y-4 rounded-xl p-5" style={{ backgroundColor: "var(--brown-50)", border: "1px solid var(--brown-100)" }}>
+                    <div className="space-y-4 rounded-xl p-5" style={{ backgroundColor: "var(--brown-50)", border: "1px solid var(--brown-100)" }}>
                       <h4 className="font-bold mb-1" style={{ color: "var(--brown-800)" }}>Checkout Details</h4>
                       <div>
                         <label htmlFor="checkout-name" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Full Name</label>
@@ -1098,14 +1244,38 @@ export default function Shop() {
                       </div>
                       <div>
                         <label htmlFor="checkout-coupon" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Coupon Code (Optional)</label>
-                        <input
-                          type="text" id="checkout-coupon"
-                          value={formData.couponCode}
-                          onChange={(e) => setFormData({ ...formData, couponCode: e.target.value.toUpperCase() })}
-                          placeholder="e.g. WELCOME10"
-                          className="w-full px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm uppercase"
-                          style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
-                        />
+                        <div className="flex gap-2">
+                          <input
+                            type="text" id="checkout-coupon"
+                            value={formData.couponCode}
+                            onChange={(e) => setFormData({ ...formData, couponCode: e.target.value.toUpperCase() })}
+                            disabled={appliedCoupon}
+                            placeholder="e.g. WELCOME10"
+                            className="flex-1 px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm uppercase disabled:opacity-50"
+                            style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
+                          />
+                          {appliedCoupon ? (
+                            <button
+                              type="button"
+                              onClick={() => { setAppliedCoupon(null); setFormData({ ...formData, couponCode: "" }); }}
+                              className="px-4 py-2.5 rounded-lg text-sm font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+                            >
+                              Remove
+                            </button>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={handleApplyCoupon}
+                              disabled={!formData.couponCode}
+                              className="px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-colors disabled:opacity-50"
+                              style={{ backgroundColor: "var(--henna-500)" }}
+                            >
+                              Apply
+                            </button>
+                          )}
+                        </div>
+                        {couponError && <div className="text-red-500 text-xs mt-1 font-bold">{couponError}</div>}
+                        {appliedCoupon && <div className="text-emerald-600 text-xs mt-1 font-bold">✓ {appliedCoupon.name} applied!</div>}
                       </div>
                       <div className="text-[11px] leading-relaxed text-center my-2" style={{ color: "var(--brown-500)" }}>
                         <svg className="w-3.5 h-3.5 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1113,14 +1283,81 @@ export default function Shop() {
                         </svg>
                         Your email will be used to access the <a href="/portal" className="underline font-bold hover:text-emerald-700 transition-colors">Client Portal</a> to track your order.
                       </div>
+
+                      {/* ── Divider ── */}
+                      <div className="pt-2">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-center mb-3" style={{ color: "var(--brown-400)" }}>Choose Payment Method</div>
+                      </div>
+
+                      {/* ── Stripe Button (Primary) ── */}
                       <button
-                        type="submit" disabled={submitting}
-                        className="w-full text-white font-bold py-3 rounded-lg transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide mt-2"
-                        style={{ backgroundColor: "var(--henna-500)" }}
+                        type="button"
+                        disabled={stripeLoading || submitting || !formData.name || !formData.email}
+                        onClick={handleStripeCheckout}
+                        className="w-full font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2.5 hover:shadow-xl hover:-translate-y-0.5"
+                        style={{ backgroundColor: "#635BFF", color: "#fff" }}
                       >
-                        {submitting ? "Placing Order..." : `Place Order — $${cartTotal.toFixed(2)}`}
+                        {stripeLoading ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            Redirecting to Stripe...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                              <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+                            </svg>
+                            Pay with Card — ${cartTotal.toFixed(2)}
+                          </>
+                        )}
                       </button>
-                    </form>
+
+                      {/* ── OR Divider ── */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--brown-400)" }}>or</span>
+                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
+                      </div>
+
+                      {/* ── Surge Button (Secondary) ── */}
+                      <button
+                        type="button"
+                        disabled={submitting || stripeLoading || !formData.name || !formData.email}
+                        onClick={handleSurgeCheckout}
+                        className="w-full font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2.5 hover:shadow-lg hover:-translate-y-0.5"
+                        style={{ backgroundColor: "var(--brown-800)", color: "#fff" }}
+                      >
+                        {submitting ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                            </svg>
+                            <span className="flex flex-col items-center leading-tight">
+                              <span>Pay with Surge — ${surgeTotal.toFixed(2)}</span>
+                              <span className="text-[10px] font-normal opacity-80">Save ${surgeSavings.toFixed(2)} (5% off)</span>
+                            </span>
+                          </>
+                        )}
+                      </button>
+
+                      <div className="text-[10px] text-center leading-relaxed" style={{ color: "var(--brown-400)" }}>
+                        <svg className="w-3 h-3 inline mr-0.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        </svg>
+                        Secured by 256-bit SSL encryption
+                      </div>
+                    </div>
                   )}
                 </>
               )}
@@ -1163,6 +1400,18 @@ export default function Shop() {
           onSuccess={handlePaymentSuccess}
           onCancel={handlePaymentCancel}
         />
+      )}
+
+      {/* Stripe Embedded Checkout Modal */}
+      {stripeClientSecret && (
+        <div className="fixed inset-0 z-[10101] flex items-center justify-center p-4 lg:p-8">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setStripeClientSecret(null)}></div>
+          <div className="relative w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-white rounded-2xl shadow-2xl payment-modal-enter transition-all duration-300 max-h-[90vh] min-h-[400px] overflow-y-auto">
+            <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret: stripeClientSecret }}>
+              <EmbeddedCheckout className="w-full" />
+            </EmbeddedCheckoutProvider>
+          </div>
+        </div>
       )}
     </>
   );

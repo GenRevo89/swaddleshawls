@@ -9,6 +9,17 @@ const OrderItemSchema = new mongoose.Schema(
     { _id: false }
 );
 
+const ShippingAddressSchema = new mongoose.Schema(
+    {
+        street: { type: String, default: "" },
+        city: { type: String, default: "" },
+        state: { type: String, default: "" },
+        zip: { type: String, default: "" },
+        country: { type: String, default: "" },
+    },
+    { _id: false }
+);
+
 function generateOrderNumber() {
     const rand = Math.random().toString(36).substring(2, 8).toUpperCase();
     return `BSL-${rand}`;
@@ -46,6 +57,17 @@ const OrderSchema = new mongoose.Schema(
             enum: ["awaiting_payment", "confirmed", "processing", "shipped", "delivered"],
             default: "awaiting_payment",
         },
+        // ── Payment method ──
+        paymentMethod: {
+            type: String,
+            enum: ["surge", "stripe"],
+            default: "surge",
+        },
+        // ── Shipping address ──
+        shippingAddress: {
+            type: ShippingAddressSchema,
+            default: () => ({}),
+        },
         // ── BasaltSurge payment fields ──
         receiptId: {
             type: String,
@@ -54,11 +76,36 @@ const OrderSchema = new mongoose.Schema(
         },
         surgeStatus: {
             type: String,
-            enum: ["generated", "pending", "paid", "completed", "refunded"],
+            enum: ["generated", "pending", "paid", "paid_stripe", "completed", "refunded"],
             default: "generated",
         },
         paymentUrl: {
             type: String,
+        },
+        // ── Stripe payment fields ──
+        stripeSessionId: {
+            type: String,
+            sparse: true,
+        },
+        stripePaymentIntent: {
+            type: String,
+            sparse: true,
+        },
+        // ── Shipping tracking ──
+        trackingCarrier: {
+            type: String, // e.g. "USPS", "UPS", "FedEx", "DHL"
+        },
+        trackingNumber: {
+            type: String,
+        },
+        trackingUrl: {
+            type: String,
+        },
+        shippedAt: {
+            type: Date,
+        },
+        deliveredAt: {
+            type: Date,
         },
     },
     { timestamps: true }

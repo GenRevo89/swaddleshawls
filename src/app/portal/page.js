@@ -619,6 +619,39 @@ export default function Portal() {
                                                                 <span className="text-slate-500 font-medium">Total</span>
                                                                 <span className="text-2xl font-bold text-slate-900">${order.total.toFixed(2)}</span>
                                                             </div>
+                                                            {/* Shipping Address */}
+                                                            {order.shippingAddress && (order.shippingAddress.street || order.shippingAddress.city) && (
+                                                                <div className="mt-4 pt-4 border-t border-slate-100">
+                                                                    <div className="flex items-center gap-2 mb-2">
+                                                                        <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                                                                        <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Shipping Address</span>
+                                                                    </div>
+                                                                    <p className="text-sm text-slate-700 pl-6">
+                                                                        {[order.shippingAddress.street, order.shippingAddress.city, order.shippingAddress.state, order.shippingAddress.zip, order.shippingAddress.country].filter(Boolean).join(", ")}
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                            {/* Tracking Info */}
+                                                            {order.trackingNumber && (
+                                                                <div className="mt-4 pt-4 border-t border-slate-100">
+                                                                    <div className="flex items-center gap-2 mb-2">
+                                                                        <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                                                                        <span className="text-xs text-slate-500 uppercase tracking-wider font-bold">Tracking</span>
+                                                                    </div>
+                                                                    <div className="pl-6 space-y-1">
+                                                                        <p className="text-sm text-slate-700">
+                                                                            {order.trackingCarrier && <span className="font-bold mr-2">{order.trackingCarrier}</span>}
+                                                                            {order.trackingUrl ? (
+                                                                                <a href={order.trackingUrl} target="_blank" rel="noopener noreferrer" className="text-sage-600 underline hover:text-sage-700 font-mono text-xs">{order.trackingNumber}</a>
+                                                                            ) : (
+                                                                                <span className="font-mono text-xs">{order.trackingNumber}</span>
+                                                                            )}
+                                                                        </p>
+                                                                        {order.shippedAt && <p className="text-xs text-slate-400">Shipped {new Date(order.shippedAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>}
+                                                                        {order.deliveredAt && <p className="text-xs text-emerald-600 font-bold">Delivered {new Date(order.deliveredAt).toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })}</p>}
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                             {debugMode && (
                                                                 <div className="mt-4 pt-4 border-t border-dashed border-amber-200">
                                                                     <div className="flex items-center justify-between">
