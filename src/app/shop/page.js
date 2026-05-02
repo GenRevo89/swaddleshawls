@@ -50,7 +50,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
       const initial = {};
       product.modifierGroups.forEach(mg => {
         if (mg.modifiers && mg.modifiers.length > 0) {
-          initial[mg.id] = mg.modifiers.slice().sort((a,b) => a.sortOrder - b.sortOrder)[0];
+          initial[mg.id] = mg.modifiers.slice().sort((a, b) => a.sortOrder - b.sortOrder)[0];
         }
       });
       setSelectedModifiers(initial);
@@ -233,24 +233,24 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
               {/* Modifier Groups UI */}
               {product.modifierGroups && product.modifierGroups.length > 0 && (
                 <div className="mb-5 space-y-4">
-                  {product.modifierGroups.slice().sort((a,b) => a.sortOrder - b.sortOrder).map(mg => (
+                  {product.modifierGroups.slice().sort((a, b) => a.sortOrder - b.sortOrder).map(mg => (
                     <div key={mg.id} className="rounded-xl p-4" style={{ backgroundColor: "var(--brown-50)", border: "1px solid var(--brown-100)" }}>
                       <div className="text-sm font-bold mb-3 uppercase tracking-wider flex items-center justify-between" style={{ color: "var(--brown-700)" }}>
                         <span>{mg.name} {mg.required && <span className="text-red-500 ml-1">*</span>}</span>
                       </div>
                       <div className="space-y-2">
-                        {mg.modifiers.slice().sort((a,b) => a.sortOrder - b.sortOrder).map(mod => (
+                        {mg.modifiers.slice().sort((a, b) => a.sortOrder - b.sortOrder).map(mod => (
                           <label key={mod.id} className="flex items-center gap-3 cursor-pointer group">
-                            <input 
-                              type="radio" 
-                              name={mg.id} 
-                              value={mod.id} 
+                            <input
+                              type="radio"
+                              name={mg.id}
+                              value={mod.id}
                               checked={selectedModifiers[mg.id]?.id === mod.id}
                               onChange={() => setSelectedModifiers(prev => ({ ...prev, [mg.id]: mod }))}
                               className="w-4 h-4 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                             />
                             <span className="text-sm font-medium transition-colors group-hover:text-black" style={{ color: "var(--brown-800)" }}>
-                              {mod.name} 
+                              {mod.name}
                               {mod.priceAdjustment > 0 && <span className="ml-2 text-xs font-semibold" style={{ color: "var(--brown-500)" }}>(+${mod.priceAdjustment.toFixed(2)})</span>}
                             </span>
                           </label>
@@ -310,11 +310,10 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
               {/* Add to Cart */}
               <button
                 onClick={() => onAddToCart(product, Object.values(selectedModifiers))}
-                className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-300 shadow-lg ${
-                  addedItem === pid
-                    ? "bg-emerald-600 text-white scale-[0.98]"
-                    : "text-white hover:-translate-y-0.5"
-                }`}
+                className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-300 shadow-lg ${addedItem === pid
+                  ? "bg-emerald-600 text-white scale-[0.98]"
+                  : "text-white hover:-translate-y-0.5"
+                  }`}
                 style={addedItem !== pid ? { backgroundColor: "var(--brown-800)" } : {}}
               >
                 {addedItem === pid ? "✓ Added to Cart" : `Add to Cart — $${currentTotal.toFixed(2)}`}
@@ -451,12 +450,12 @@ function ProductCard({ product, viewProduct, isPreorder, addedItem, addToCart })
     >
       {/* Animated Glowing Border */}
       <div className="absolute inset-0 z-0 overflow-hidden rounded-2xl pointer-events-none opacity-60 md:opacity-40 group-hover:opacity-100 transition-opacity duration-700">
-        <div 
-          className="absolute inset-[-50%] animate-[spin_4s_linear_infinite]" 
+        <div
+          className="absolute inset-[-50%] animate-[spin_4s_linear_infinite]"
           style={{ background: `conic-gradient(from 0deg, rgba(var(--card-color), 0.3) 0%, rgba(var(--card-color), 0.3) 75%, rgba(var(--card-color), 1) 90%, rgba(var(--card-color), 0.3) 100%)` }}
         ></div>
       </div>
-      
+
       {/* Inner Content Wrapper */}
       <div className="relative z-10 m-[2px] bg-white rounded-[14px] overflow-hidden flex flex-col h-full flex-grow">
         {isPreorder && (
@@ -527,20 +526,19 @@ function ProductCard({ product, viewProduct, isPreorder, addedItem, addToCart })
               )}
             </div>
             <button
-              onClick={(e) => { 
-                e.stopPropagation(); 
+              onClick={(e) => {
+                e.stopPropagation();
                 const hasRequredModifiers = product.modifierGroups && product.modifierGroups.some(mg => mg.required);
                 if (hasRequredModifiers) {
                   viewProduct(product);
                 } else {
-                  addToCart(product); 
+                  addToCart(product);
                 }
               }}
-              className={`w-full xl:w-auto btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${
-                addedItem === pid
-                  ? "!bg-emerald-600 scale-95"
-                  : ""
-              }`}
+              className={`w-full xl:w-auto btn-primary px-4 py-2.5 text-[11px] transition-all duration-300 ${addedItem === pid
+                ? "!bg-emerald-600 scale-95"
+                : ""
+                }`}
             >
               {addedItem === pid ? "✓ Added" : "Add to Cart"}
             </button>
@@ -642,7 +640,7 @@ export default function Shop() {
     const pid = product._id || product.id;
     // ensure modifiers map strictly to what Surge wants: `{ id, name, priceAdjustment }`
     const modifiers = rawModifiers.map(m => ({ id: m.id, name: m.name, priceAdjustment: m.priceAdjustment || 0 }));
-    
+
     // create a unique cart signature by sorting modifier IDs
     const modifierHash = modifiers.map(m => m.id).sort().join('_');
     const cartItemId = modifierHash ? `${pid}_${modifierHash}` : pid;
@@ -658,12 +656,12 @@ export default function Shop() {
           item.cartItemId === cartItemId ? { ...item, quantity: item.quantity + 1 } : item
         );
       }
-      return [...prev, { 
-        cartItemId, 
-        productId: pid, 
-        name: product.name, 
-        sku: product.sku || product.name, 
-        price: unitPrice, 
+      return [...prev, {
+        cartItemId,
+        productId: pid,
+        name: product.name,
+        sku: product.sku || product.name,
+        price: unitPrice,
         basePrice: Number(product.price),
         quantity: 1,
         modifiers,
@@ -892,10 +890,10 @@ export default function Shop() {
     try {
       if (typeof window !== "undefined" && window.gtag) {
         window.gtag('event', 'conversion', {
-            'send_to': 'AW-18072236543/TOJ3CIzm8ZccEP_jwalD',
-            'value': cartTotal,
-            'currency': 'USD',
-            'transaction_id': receiptId
+          'send_to': 'AW-18072236543/TOJ3CIzm8ZccEP_jwalD',
+          'value': cartTotal,
+          'currency': 'USD',
+          'transaction_id': receiptId
         });
       }
     } catch (e) {
@@ -968,146 +966,146 @@ export default function Shop() {
           }}
         />
         <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center mb-20">
-          <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wider uppercase" style={{ backgroundColor: "var(--henna-50)", color: "var(--henna-600)" }}>
-            {isPreorder ? "✦ Limited Launch Special ✦" : "✦ Handcrafted with Love ✦"}
+          <div className="text-center mb-20">
+            <div className="inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-6 tracking-wider uppercase" style={{ backgroundColor: "var(--henna-50)", color: "var(--henna-600)" }}>
+              {isPreorder ? "✦ Limited Launch Special ✦" : "✦ Handcrafted with Love ✦"}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold mb-5" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "The Inaugural Collection" : "Our Collection"}</h1>
+            <div className="section-divider mb-8"></div>
+            <p className="max-w-2xl mx-auto text-lg leading-relaxed" style={{ color: "var(--brown-500)" }}>
+              {isPreorder
+                ? "Welcome to our highly anticipated launch! Enjoy exclusive, limited-time pricing on our premier collection of authentic, handcrafted Indian muslin swaddles."
+                : "Browse our handcrafted collection of authentic Indian baby shawls and swaddles."}
+            </p>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold mb-5" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{isPreorder ? "The Inaugural Collection" : "Our Collection"}</h1>
-          <div className="section-divider mb-8"></div>
-          <p className="max-w-2xl mx-auto text-lg leading-relaxed" style={{ color: "var(--brown-500)" }}>
-            {isPreorder
-              ? "Welcome to our highly anticipated launch! Enjoy exclusive, limited-time pricing on our premier collection of authentic, handcrafted Indian muslin swaddles."
-              : "Browse our handcrafted collection of authentic Indian baby shawls and swaddles."}
-          </p>
+
+          {/* Order Success Banner */}
+          {orderResult && (
+            <div className="mb-10 bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center shadow-lg">
+              <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center">
+                <svg className="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+              </div>
+              <h3 className="text-2xl font-bold text-emerald-900 mb-2">{isPreorder ? "Launch Special Confirmed!" : "Payment Confirmed!"}</h3>
+              <p className="text-emerald-700 mb-1">
+                Your order number is <span className="font-mono font-bold text-lg">{orderResult.orderNumber}</span>
+              </p>
+              {orderResult.receiptId && (
+                <p className="text-emerald-600 text-xs mb-1">
+                  Receipt: <span className="font-mono">{orderResult.receiptId}</span>
+                </p>
+              )}
+              <p className="text-emerald-600 text-sm">
+                A confirmation has been recorded for <span className="font-medium">{orderResult.email}</span>.
+                You can view your order anytime in the{" "}
+                <a href="/portal" className="underline font-bold hover:text-emerald-800">Client Portal</a>.
+              </p>
+              <button onClick={() => setOrderResult(null)} className="mt-4 text-emerald-600 text-sm underline hover:text-emerald-800">
+                Dismiss
+              </button>
+            </div>
+          )}
+
+          {/* Product Grid — Loading */}
+          {loadingProducts && (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse" style={{ border: "1px solid var(--brown-100)" }}>
+                  <div className="aspect-square" style={{ backgroundColor: "var(--brown-100)" }}></div>
+                  <div className="p-5 space-y-3">
+                    <div className="h-3 w-16 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
+                    <div className="h-5 w-3/4 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
+                    <div className="h-4 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
+                    <div className="flex justify-between items-center pt-2">
+                      <div className="h-6 w-14 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
+                      <div className="h-9 w-20 rounded-lg" style={{ backgroundColor: "var(--brown-100)" }}></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Product Grid — Error */}
+          {productError && !loadingProducts && (
+            <div className="text-center py-16">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--terra-50)" }}>
+                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--terra-500)" }}>
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold mb-2" style={{ color: "var(--brown-800)" }}>Unable to load products</h3>
+              <p className="mb-4" style={{ color: "var(--brown-400)" }}>{productError}</p>
+              <button onClick={() => window.location.reload()}
+                className="px-6 py-2 text-white rounded-lg font-bold text-sm transition-colors"
+                style={{ backgroundColor: "var(--brown-800)" }}>
+                Retry
+              </button>
+            </div>
+          )}
+
+          {/* Product Grid — Empty */}
+          {!loadingProducts && !productError && products.length === 0 && (
+            <div className="text-center py-16">
+              <h3 className="text-xl font-bold mb-2" style={{ color: "var(--brown-800)" }}>No products available</h3>
+              <p style={{ color: "var(--brown-400)" }}>Check back soon for new inventory.</p>
+            </div>
+          )}
+
+          {/* Product Grid — Items by Category */}
+          {!loadingProducts && !productError && products.length > 0 && (
+            <div className="space-y-16">
+              {[
+                {
+                  title: "Newborn Essentials",
+                  badge: "For The Little Ones",
+                  description: "Pure, gentle swaddles crafted for your baby's first days.",
+                  items: products.filter(p => !p.category || p.category === "Newborn Essentials")
+                },
+                {
+                  title: "Parenthood Essentials",
+                  badge: "For The Parents",
+                  description: "Mindfully designed essentials to support you through your parenthood journey.",
+                  items: products.filter(p => p.category === "Parenthood Essentials")
+                }
+              ].map((category, idx) => {
+                if (category.items.length === 0) return null;
+                return (
+                  <div key={idx}>
+                    <div className="mb-10 pb-5 relative" style={{ borderBottom: "2px solid var(--brown-100)" }}>
+                      {category.badge && (
+                        <div className="inline-block px-3 py-1 rounded-full text-[10px] font-bold mb-3 tracking-wider uppercase" style={{ backgroundColor: "var(--terra-50)", color: "var(--terra-600)" }}>
+                          {category.badge}
+                        </div>
+                      )}
+                      <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{category.title}</h2>
+                      <p className="text-lg" style={{ color: "var(--brown-500)" }}>{category.description}</p>
+                    </div>
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
+                      {category.items.map((product) => {
+                        const pid = product._id || product.id;
+                        return (
+                          <ProductCard
+                            key={pid}
+                            product={product}
+                            viewProduct={viewProduct}
+                            isPreorder={isPreorder}
+                            addedItem={addedItem}
+                            addToCart={addToCart}
+                          />
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        {/* Order Success Banner */}
-        {orderResult && (
-          <div className="mb-10 bg-emerald-50 border border-emerald-200 rounded-2xl p-8 text-center shadow-lg">
-            <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center">
-              <svg className="w-7 h-7 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-            </div>
-            <h3 className="text-2xl font-bold text-emerald-900 mb-2">{isPreorder ? "Launch Special Confirmed!" : "Payment Confirmed!"}</h3>
-            <p className="text-emerald-700 mb-1">
-              Your order number is <span className="font-mono font-bold text-lg">{orderResult.orderNumber}</span>
-            </p>
-            {orderResult.receiptId && (
-              <p className="text-emerald-600 text-xs mb-1">
-                Receipt: <span className="font-mono">{orderResult.receiptId}</span>
-              </p>
-            )}
-            <p className="text-emerald-600 text-sm">
-              A confirmation has been recorded for <span className="font-medium">{orderResult.email}</span>.
-              You can view your order anytime in the{" "}
-              <a href="/portal" className="underline font-bold hover:text-emerald-800">Client Portal</a>.
-            </p>
-            <button onClick={() => setOrderResult(null)} className="mt-4 text-emerald-600 text-sm underline hover:text-emerald-800">
-              Dismiss
-            </button>
-          </div>
-        )}
-
-        {/* Product Grid — Loading */}
-        {loadingProducts && (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-            {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse" style={{ border: "1px solid var(--brown-100)" }}>
-                <div className="aspect-square" style={{ backgroundColor: "var(--brown-100)" }}></div>
-                <div className="p-5 space-y-3">
-                  <div className="h-3 w-16 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
-                  <div className="h-5 w-3/4 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
-                  <div className="h-4 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
-                  <div className="flex justify-between items-center pt-2">
-                    <div className="h-6 w-14 rounded" style={{ backgroundColor: "var(--brown-100)" }}></div>
-                    <div className="h-9 w-20 rounded-lg" style={{ backgroundColor: "var(--brown-100)" }}></div>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Product Grid — Error */}
-        {productError && !loadingProducts && (
-          <div className="text-center py-16">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style={{ backgroundColor: "var(--terra-50)" }}>
-              <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "var(--terra-500)" }}>
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold mb-2" style={{ color: "var(--brown-800)" }}>Unable to load products</h3>
-            <p className="mb-4" style={{ color: "var(--brown-400)" }}>{productError}</p>
-            <button onClick={() => window.location.reload()}
-              className="px-6 py-2 text-white rounded-lg font-bold text-sm transition-colors"
-              style={{ backgroundColor: "var(--brown-800)" }}>
-              Retry
-            </button>
-          </div>
-        )}
-
-        {/* Product Grid — Empty */}
-        {!loadingProducts && !productError && products.length === 0 && (
-          <div className="text-center py-16">
-            <h3 className="text-xl font-bold mb-2" style={{ color: "var(--brown-800)" }}>No products available</h3>
-            <p style={{ color: "var(--brown-400)" }}>Check back soon for new inventory.</p>
-          </div>
-        )}
-
-        {/* Product Grid — Items by Category */}
-        {!loadingProducts && !productError && products.length > 0 && (
-          <div className="space-y-16">
-            {[
-              {
-                title: "Newborn Essentials",
-                badge: "For The Little Ones",
-                description: "Pure, gentle swaddles crafted for your baby's first days.",
-                items: products.filter(p => !p.category || p.category === "Newborn Essentials")
-              },
-              {
-                title: "Parenthood Essentials",
-                badge: "For The Parents",
-                description: "Mindfully designed essentials to support you through your parenthood journey.",
-                items: products.filter(p => p.category === "Parenthood Essentials")
-              }
-            ].map((category, idx) => {
-              if (category.items.length === 0) return null;
-              return (
-                <div key={idx}>
-                  <div className="mb-10 pb-5 relative" style={{ borderBottom: "2px solid var(--brown-100)" }}>
-                    {category.badge && (
-                      <div className="inline-block px-3 py-1 rounded-full text-[10px] font-bold mb-3 tracking-wider uppercase" style={{ backgroundColor: "var(--terra-50)", color: "var(--terra-600)" }}>
-                        {category.badge}
-                      </div>
-                    )}
-                    <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{category.title}</h2>
-                    <p className="text-lg" style={{ color: "var(--brown-500)" }}>{category.description}</p>
-                  </div>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
-                    {category.items.map((product) => {
-                      const pid = product._id || product.id;
-                      return (
-                        <ProductCard
-                          key={pid}
-                          product={product}
-                          viewProduct={viewProduct}
-                          isPreorder={isPreorder}
-                          addedItem={addedItem}
-                          addToCart={addToCart}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </div>
-
-      {/* CONTACT FORM SECTION */}
-      <CrmContactForm heading="Need Help Choosing?" subtitle="Our team can help you find the perfect swaddle for your little one — or create the ideal gift set." />
+        {/* CONTACT FORM SECTION */}
+        <CrmContactForm heading="Need Help Choosing?" subtitle="Our team can help you find the perfect swaddle for your little one — or create the ideal gift set." />
       </main>
 
       {/* Floating Cart Badge */}
@@ -1289,7 +1287,41 @@ export default function Shop() {
                         <div className="text-[10px] font-bold uppercase tracking-wider text-center mb-3" style={{ color: "var(--brown-400)" }}>Choose Payment Method</div>
                       </div>
 
-                      {/* ── Stripe Button (Primary) ── */}
+                      {/* ── Surge Button (Primary) ── */}
+                      <button
+                        type="button"
+                        disabled={submitting || stripeLoading || !formData.name || !formData.email}
+                        onClick={handleSurgeCheckout}
+                        className="w-full font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-0.5"
+                        style={{ backgroundColor: "#f97316", color: "#fff" }}
+                      >
+                        {submitting ? (
+                          <>
+                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <img src="/Surge.png" alt="Surge Shield" className="h-8 w-auto object-contain my-[-4px] relative -top-0.25" />
+                            <span className="flex flex-col items-center leading-tight">
+                              <span>Pay with Surge — ${surgeTotal.toFixed(2)}</span>
+                              <span className="text-[10px] font-normal opacity-80">Save ${surgeSavings.toFixed(2)} (5% off)</span>
+                            </span>
+                          </>
+                        )}
+                      </button>
+
+                      {/* ── OR Divider ── */}
+                      <div className="flex items-center gap-3">
+                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--brown-400)" }}>or</span>
+                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
+                      </div>
+
+                      {/* ── Stripe Button (Secondary) ── */}
                       <button
                         type="button"
                         disabled={stripeLoading || submitting || !formData.name || !formData.email}
@@ -1307,46 +1339,16 @@ export default function Shop() {
                           </>
                         ) : (
                           <>
-                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                              <path d="M13.976 9.15c-2.172-.806-3.356-1.426-3.356-2.409 0-.831.683-1.305 1.901-1.305 2.227 0 4.515.858 6.09 1.631l.89-5.494C18.252.975 15.697 0 12.165 0 9.667 0 7.589.654 6.104 1.872 4.56 3.147 3.757 4.992 3.757 7.218c0 4.039 2.467 5.76 6.476 7.219 2.585.92 3.445 1.574 3.445 2.583 0 .98-.84 1.545-2.354 1.545-1.875 0-4.965-.921-6.99-2.109l-.9 5.555C5.175 22.99 8.385 24 11.714 24c2.641 0 4.843-.624 6.328-1.813 1.664-1.305 2.525-3.236 2.525-5.732 0-4.128-2.524-5.851-6.591-7.305z"/>
+                            <svg className="h-[22px] w-auto mr-1" viewBox="54 36 360.02 149.84" fill="currentColor">
+                              <path d="M414,113.4c0-25.6-12.4-45.8-36.1-45.8c-23.8,0-38.2,20.2-38.2,45.6c0,30.1,17,45.3,41.4,45.3 c11.9,0,20.9-2.7,27.7-6.5v-20c-6.8,3.4-14.6,5.5-24.5,5.5c-9.7,0-18.3-3.4-19.4-15.2h48.9C413.8,121,414,115.8,414,113.4z M364.6,103.9c0-11.3,6.9-16,13.2-16c6.1,0,12.6,4.7,12.6,16H364.6z" />
+                              <path d="M301.1,67.6c-9.8,0-16.1,4.6-19.6,7.8l-1.3-6.2h-22v116.6l25-5.3l0.1-28.3c3.6,2.6,8.9,6.3,17.7,6.3 c17.9,0,34.2-14.4,34.2-46.1C335.1,83.4,318.6,67.6,301.1,67.6z M295.1,136.5c-5.9,0-9.4-2.1-11.8-4.7l-0.1-37.1 c2.6-2.9,6.2-4.9,11.9-4.9c9.1,0,15.4,10.2,15.4,23.3C310.5,126.5,304.3,136.5,295.1,136.5z" />
+                              <polygon points="223.8,61.7 248.9,56.3 248.9,36 223.8,41.3" />
+                              <rect x="223.8" y="69.3" width="25.1" height="87.5" />
+                              <path d="M196.9,76.7l-1.6-7.4h-21.6v87.5h25V97.5c5.9-7.7,15.9-6.3,19-5.2v-23C214.5,68.1,202.8,65.9,196.9,76.7z" />
+                              <path d="M146.9,47.6l-24.4,5.2l-0.1,80.1c0,14.8,11.1,25.7,25.9,25.7c8.2,0,14.2-1.5,17.5-3.3V135 c-3.2,1.3-19,5.9-19-8.9V90.6h19V69.3h-19L146.9,47.6z" />
+                              <path d="M79.3,94.7c0-3.9,3.2-5.4,8.5-5.4c7.6,0,17.2,2.3,24.8,6.4V72.2c-8.3-3.3-16.5-4.6-24.8-4.6 C67.5,67.6,54,78.2,54,95.9c0,27.6,38,23.2,38,35.1c0,4.6-4,6.1-9.6,6.1c-8.3,0-18.9-3.4-27.3-8v23.8c9.3,4,18.7,5.7,27.3,5.7 c20.8,0,35.1-10.3,35.1-28.2C117.4,100.6,79.3,105.9,79.3,94.7z" />
                             </svg>
                             Pay with Card — ${cartTotal.toFixed(2)}
-                          </>
-                        )}
-                      </button>
-
-                      {/* ── OR Divider ── */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--brown-400)" }}>or</span>
-                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
-                      </div>
-
-                      {/* ── Surge Button (Secondary) ── */}
-                      <button
-                        type="button"
-                        disabled={submitting || stripeLoading || !formData.name || !formData.email}
-                        onClick={handleSurgeCheckout}
-                        className="w-full font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2.5 hover:shadow-lg hover:-translate-y-0.5"
-                        style={{ backgroundColor: "var(--brown-800)", color: "#fff" }}
-                      >
-                        {submitting ? (
-                          <>
-                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                            </svg>
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                            </svg>
-                            <span className="flex flex-col items-center leading-tight">
-                              <span>Pay with Surge — ${surgeTotal.toFixed(2)}</span>
-                              <span className="text-[10px] font-normal opacity-80">Save ${surgeSavings.toFixed(2)} (5% off)</span>
-                            </span>
                           </>
                         )}
                       </button>
