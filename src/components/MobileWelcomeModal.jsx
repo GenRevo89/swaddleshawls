@@ -21,27 +21,44 @@ export default function MobileWelcomeModal() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Only show on mobile / touch devices
+    // Once per session
+    if (sessionStorage.getItem("ss_welcome_shown")) return;
+
+    const trigger = () => {
+      setShow(true);
+      sessionStorage.setItem("ss_welcome_shown", "1");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setVisible(true));
+      });
+    };
+
     const isMobile =
       "ontouchstart" in window ||
       window.innerWidth < 768 ||
       /Mobi|Android|iPhone|iPad/i.test(navigator.userAgent);
-    if (!isMobile) return;
 
-    // Once per session
-    if (sessionStorage.getItem("ss_mobile_welcome_shown")) return;
-
-    // Small delay so the page paints first and the animation feels intentional
-    const timer = setTimeout(() => {
-      setShow(true);
-      sessionStorage.setItem("ss_mobile_welcome_shown", "1");
-      // Trigger entrance animation on next frame
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => setVisible(true));
-      });
-    }, 1800);
-
-    return () => clearTimeout(timer);
+    if (isMobile) {
+      // Mobile: auto-show after a brief delay so the page paints first
+      const timer = setTimeout(trigger, 1800);
+      return () => clearTimeout(timer);
+    } else {
+      // Desktop: show on first scroll or click
+      let fired = false;
+      const onInteract = () => {
+        if (fired) return;
+        fired = true;
+        window.removeEventListener("scroll", onInteract);
+        window.removeEventListener("click", onInteract);
+        // Small delay after interaction so it doesn't feel jarring
+        setTimeout(trigger, 600);
+      };
+      window.addEventListener("scroll", onInteract, { once: true, passive: true });
+      window.addEventListener("click", onInteract, { once: true });
+      return () => {
+        window.removeEventListener("scroll", onInteract);
+        window.removeEventListener("click", onInteract);
+      };
+    }
   }, []);
 
   const handleClose = () => {
@@ -167,7 +184,7 @@ export default function MobileWelcomeModal() {
                 fontFamily: "var(--font-heading)",
               }}
             >
-              Welcome! Here&apos;s{" "}
+              Join the{" "}
               <span
                 style={{
                   background: "linear-gradient(135deg, #cc7750, #974c30)",
@@ -175,18 +192,19 @@ export default function MobileWelcomeModal() {
                   WebkitTextFillColor: "transparent",
                 }}
               >
-                10% Off
-              </span>
+                SwaddleShawls
+              </span>{" "}
+              Family
             </h2>
             <p
               className="text-sm leading-relaxed max-w-xs mx-auto"
               style={{ color: "var(--brown-500, #8a7254)" }}
             >
-              Sign up for our newsletter and get an{" "}
+              Be the first to discover new heritage collections, artisan stories from India, and parenting wisdom passed down through generations — plus enjoy{" "}
               <strong style={{ color: "var(--henna-500, #2a7070)" }}>
-                extra 10% off
+                10% off
               </strong>{" "}
-              your first order — plus early access to new arrivals and heritage artisan stories.
+              your first order as our welcome gift.
             </p>
           </div>
 
@@ -203,21 +221,21 @@ export default function MobileWelcomeModal() {
               <svg className="w-3.5 h-3.5 text-[#3d9895]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
               </svg>
-              10% Off
+              Welcome Gift
             </span>
             <span className="w-px h-3 bg-current opacity-20" />
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-[#3d9895]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
               </svg>
-              Early Access
+              First Look
             </span>
             <span className="w-px h-3 bg-current opacity-20" />
             <span className="flex items-center gap-1">
               <svg className="w-3.5 h-3.5 text-[#3d9895]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7" />
               </svg>
-              Free Tips
+              Artisan Stories
             </span>
           </div>
 
@@ -230,7 +248,7 @@ export default function MobileWelcomeModal() {
             className="block w-full text-center text-[11px] mt-4 transition-colors duration-200"
             style={{ color: "var(--brown-300, #c9b69a)" }}
           >
-            No thanks, I&apos;ll pay full price
+            Maybe next time
           </button>
 
           <p
