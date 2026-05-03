@@ -32,12 +32,12 @@ export default function CrmContactForm({ heading, subtitle }) {
     form.style.cssText = "width:100%;font-family:" + theme.fontFamily + ";background:" + theme.backgroundColor + ";padding:32px;border-radius:" + theme.borderRadius + ";";
     
     const fields = [
-      {"name":"first_name","label":"Full Name","type":"text","required":false,"placeholder":"John Doe"},
-      {"name":"email","label":"Email Address","type":"email","required":false,"placeholder":"you@example.com"},
+      {"name":"first_name","label":"Full Name","type":"text","required":true,"placeholder":"John Doe"},
+      {"name":"email","label":"Email Address","type":"email","required":true,"placeholder":"you@example.com"},
       {"name":"phone","label":"Contact Phone","type":"phone","required":false,"placeholder":"+1 (555) 123-4567"},
       {"name":"company","label":"Company / Organization","type":"text","required":false,"placeholder":"Your Company Name"},
       {"name":"inquiry_type","label":"Inquiry Type","type":"select","required":false,"placeholder":"Select Inquiry Type"},
-      {"name":"message","label":"Detailed Message","type":"textarea","required":false,"placeholder":"How can we help you?"}
+      {"name":"message","label":"Detailed Message","type":"textarea","required":true,"placeholder":"How can we help you?"}
     ];
     
     fields.forEach(function(field) {
