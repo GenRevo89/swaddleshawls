@@ -76,6 +76,33 @@ export default function OurStoryPage() {
             <div className="w-20 h-[3px] mx-auto rounded-full" style={{ background: "linear-gradient(90deg, #cc7750, #dbb55c, #3d9895)" }}></div>
           </div>
 
+          {/* Chandra Photo */}
+          <div className="flex justify-center mb-14">
+            <div className="relative group">
+              {/* Decorative outer glow */}
+              <div className="absolute -inset-3 rounded-[2rem] opacity-40 blur-xl transition-opacity duration-700 group-hover:opacity-60"
+                style={{ background: "linear-gradient(135deg, #cc7750, #dbb55c, #3d9895)" }} />
+              {/* Frame */}
+              <div className="relative p-[3px] rounded-3xl"
+                style={{ background: "linear-gradient(135deg, #cc7750, #dbb55c, #3d9895)" }}>
+                <div className="rounded-[calc(1.5rem-3px)] overflow-hidden bg-[#1a0f09]">
+                  <Image
+                    src="/chandraphoto.jpg"
+                    alt="Chandra — the inspiration behind SwaddleShawls"
+                    width={420}
+                    height={420}
+                    className="w-[280px] h-[280px] sm:w-[340px] sm:h-[340px] md:w-[400px] md:h-[400px] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                  />
+                </div>
+              </div>
+              {/* Caption */}
+              <p className="text-center mt-5 text-sm font-medium tracking-wide"
+                style={{ color: "#dbb55c", fontFamily: "var(--font-heading)" }}>
+                Chandra — our original inspiration
+              </p>
+            </div>
+          </div>
+
           <div className="space-y-8 text-lg leading-relaxed" style={{ color: "rgba(255,255,255,0.80)" }}>
             <p>
               One restless evening, when nothing seemed to soothe little Chandra, Karishma reached for the only thing she hadn&apos;t tried — one of her own traditional Indian shawls. A soft, hand-woven cotton piece her mother had given her, rich with the intricate paisley patterns of her homeland.
