@@ -1,0 +1,439 @@
+[
+  {
+    "id": "inventory:LPS-001",
+    "sku": "LPS-001",
+    "name": "The Lavender Madras Shawl",
+    "price": 32,
+    "category": "Newborn Essentials",
+    "description": "A beautifully soft Indian cotton muslin baby shawl in a rich, medium lavender-lilac color. It features a classic, traditional Madras woven plaid pattern accented with cream, deep purple, and soft grey. Handcrafted with our signature breathable weave, this shawl provides perfect temperature regulation for your little one.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "shawl",
+      "lavender",
+      "lilac",
+      "madras",
+      "plaid",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:WNC-001",
+    "sku": "WNC-001",
+    "name": "The Pure White Bindi Nursing Cover",
+    "price": 35,
+    "category": "Parenthood Essentials",
+    "description": "An elegant, completely opaque pure white cotton nursing cover designed for absolute privacy and comfort. Adorned with a delicate, traditional Indian bindi dot block-print pattern in bright red. The breathable yet thick muslin weave ensures your baby stays cool while providing full coverage for confident nursing anywhere.",
+    "inStock": true,
+    "tags": [
+      "nursing cover",
+      "white",
+      "bindi",
+      "dot",
+      "opaque",
+      "privacy",
+      "parenthood",
+      "cotton",
+      "premium",
+      "block-print",
+      "red"
+    ]
+  },
+  {
+    "id": "inventory:BRH-001",
+    "sku": "BRH-001",
+    "name": "The Agra Brick Rose Swaddle",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the warm, sunlit clay walls of Agra heritage quarters. A rich brick red cotton muslin swaddle adorned with a simple, elegant gold rosebud block-print pattern. Each piece is handcrafted using traditional Indian block-printing techniques passed down through generations. Perfectly sized for swaddling, nursing, or as a stroller cover.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "brick red",
+      "rosebud",
+      "agra",
+      "heritage",
+      "botanical",
+      "newborn",
+      "cotton",
+      "premium",
+      "block-print"
+    ]
+  },
+  {
+    "id": "inventory:DNQ3P5HA6",
+    "sku": "DNQ3P5HA6",
+    "name": "The Heritage Paisley Swaddle",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "Our signature 100% cotton muslin swaddle featuring a hand-block inspired paisley print in Rich Madder Red and Saffron Teal. Breathable, pre-washed for extra softness, and large enough to grow with your baby.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "muslin",
+      "newborn",
+      "cotton",
+      "paisley",
+      "traditional",
+      "red",
+      "teal"
+    ]
+  },
+  {
+    "id": "inventory:SC55JFH9Z",
+    "sku": "SC55JFH9Z",
+    "name": "The Sunrise Heritage Swaddle",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "A radiant take on traditional luxury. This 100% cotton swaddle features our signature paisley motif set against a vibrant 'Sunrise Orange' palette, accented with Golden Turmeric and Madder Red. The fabric is framed by a clean, unbleached cotton border for a modern, balanced aesthetic. Designed for maximum breathability and superior softness to soothe your baby in style.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "muslin",
+      "newborn",
+      "cotton",
+      "orange",
+      "saffron",
+      "paisley",
+      "traditional",
+      "sunrise"
+    ]
+  },
+  {
+    "id": "inventory:RK4RWVUTL",
+    "sku": "RK4RWVUTL",
+    "name": "The Simplicity Heritage Shawl",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the simple, powerful elegance of traditional styles. A plain, unbleached cream cotton swaddle with a deeply saturated traditional blue border. Focusing on the quality of natural cotton fibers and minimal, ancestral design.",
+    "inStock": true,
+    "tags": [
+      "authentic",
+      "traditional",
+      "minimal",
+      "cotton",
+      "cream",
+      "blue"
+    ]
+  },
+  {
+    "id": "inventory:EPU39F8P3",
+    "sku": "EPU39F8P3",
+    "name": "The 'Ancients' Raw Brown Swaddle",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "The most primitive and authentic expression of newborn care. This 100% raw brown cotton swaddle is unbleached and entirely plain, focusing on the inherent beauty and breathability of natural fibers. It offers a deeply textural, ancestral connection for your baby, free from modern dyes or complex prints. Designed specifically for secure, traditional swaddling with a subtle self-fringe finish.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "newborn",
+      "authentic",
+      "traditional",
+      "minimal",
+      "cotton",
+      "raw",
+      "brown",
+      "ancients",
+      "raw fiber"
+    ]
+  },
+  {
+    "id": "inventory:MMS-001",
+    "sku": "MMS-001",
+    "name": "The Midnight Monsoon Swaddle",
+    "price": 35,
+    "category": "Newborn Essentials",
+    "description": "A sophisticated, darker option perfect for evening and night routines. Inspired by the Indian monsoon rains. Deep indigo blue color driven by natural indigo dyes, paired with very delicate, subtle silver/white block-printed motifs that resemble intricate raindrops or night stars.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "indigo",
+      "monsoon",
+      "newborn",
+      "cotton",
+      "bamboo",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:GLS-001",
+    "sku": "GLS-001",
+    "name": "The Golden Lotus Shawl",
+    "price": 35,
+    "category": "Newborn Essentials",
+    "description": "A bright, uplifting swaddle meant to symbolize purity, enlightenment, and warmth. Highly photogenic for 'first weeks' photo shoots. A soft, warm saffron/turmeric golden yellow. It features elegant, intricate white lotus flower block-print patterns.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "yellow",
+      "lotus",
+      "saffron",
+      "newborn",
+      "cotton",
+      "muslin",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:EFW-001",
+    "sku": "EFW-001",
+    "name": "The Emerald Forest Winter Quilt (Reversible)",
+    "price": 45,
+    "category": "Newborn Essentials",
+    "description": "As we approach cooler months, parents look for something slightly thicker than standard muslin, but maintaining the breathable multi-layer weave. Reversible 4-layer quilt. One side is a rich, deep emerald/forest green, and the reverse side is a gentle celadon or sage green. Quilted with subtle geometric lattice stitching.",
+    "inStock": true,
+    "tags": [
+      "quilt",
+      "winter",
+      "emerald",
+      "green",
+      "reversible",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:MBS-001",
+    "sku": "MBS-001",
+    "name": "The Marigold Bloom Summer Swaddle",
+    "price": 28,
+    "category": "Newborn Essentials",
+    "description": "A lightweight summer option featuring bright marigold flowers to represent joy and festivity in Indian culture. An airy cream base with vibrant orange and gold floral block prints, accented with soft sage green leaves. Made of ultra-sheer, single-layer 100% organic cotton muslin for hot summer days.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "summer",
+      "marigold",
+      "orange",
+      "gold",
+      "floral",
+      "newborn",
+      "muslin",
+      "lightweight",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:DSH-001",
+    "sku": "DSH-001",
+    "name": "The Desert Sand Heritage Swaddle",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "A minimalist, highly versatile swaddle inspired by the warm, sun-baked earth of the Thar desert. A soft, warm terracotta/sand background with rich, muted rust and charcoal black traditional tribal geometric block prints. Designed to look beautiful both neatly folded and wrapped around your peacefully sleeping little one.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "earthy",
+      "desert",
+      "sand",
+      "tribal",
+      "geometric",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:JPP-001",
+    "sku": "JPP-001",
+    "name": "The Jaipur Pink Peony Swaddle",
+    "price": 35,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the architectural warmth of the Pink City. A soft blush pink base with vibrant magenta, rich rose, and gold traditional block-printed peony florals. Designed to swaddle your baby in elegant, joyful luxury.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "pink",
+      "jaipur",
+      "peony",
+      "floral",
+      "magenta",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:KMB-001",
+    "sku": "KMB-001",
+    "name": "The Kerala Monsoon Bamboo Swaddle",
+    "price": 38,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the lush tropical landscapes of southern India during the monsoon season. A pale bamboo green base comes alive with deep forest green and light matcha tropical leaf block prints. Woven from an ultra-soft, thermo-regulating premium bamboo-cotton blend.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "green",
+      "bamboo",
+      "kerala",
+      "tropical",
+      "monsoon",
+      "newborn",
+      "organic",
+      "botanical"
+    ]
+  },
+  {
+    "id": "inventory:RPP-001",
+    "sku": "RPP-001",
+    "name": "The Royal Peacock Plum Swaddle",
+    "price": 32,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the national bird of India. A soft pearlescent cream base adorned with deep regal plum, soft lavender, and rich turquoise block prints of peacock feathers. Features the official SwaddleShawls woven tag.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "plum",
+      "peacock",
+      "india",
+      "floral",
+      "turquoise",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:GSS-001",
+    "sku": "GSS-001",
+    "name": "The Goa Sandalwood Sunset Swaddle",
+    "price": 29,
+    "category": "Newborn Essentials",
+    "description": "Inspired by golden hour on the coasts of Goa. A warm, soft sandalwood brown base comes alive with traditional terracotta and sunburst yellow botanical block prints. Features the official SwaddleShawls woven tag.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "brown",
+      "sandalwood",
+      "goa",
+      "sunset",
+      "botanical",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:KVR-001",
+    "sku": "KVR-001",
+    "name": "The Kashmir Valley Rose Swaddle",
+    "price": 34,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the cool, misty dawn of the Kashmir valleys. A soft misty grey base with intricate, sprawling vintage rose and vine block prints in deep burgundy and muted silver. Features the official SwaddleShawls woven tag.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "grey",
+      "rose",
+      "kashmir",
+      "burgundy",
+      "silver",
+      "floral",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:HFS-001",
+    "sku": "HFS-001",
+    "name": "The Himalayan Frost Heritage Swaddle",
+    "price": 30,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the cool, crisp air of the Himalayan mountains. A soft, icy blueish-white base adorned with deep navy blue and bright white block-printed geometric snowflake and star motifs. Features the official SwaddleShawls woven tag.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "blue",
+      "ice",
+      "himalayan",
+      "geometric",
+      "snowflake",
+      "newborn",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:VSS-001",
+    "sku": "VSS-001",
+    "name": "The Varanasi Sunset Silk-Blend Swaddle",
+    "price": 42,
+    "category": "Newborn Essentials",
+    "description": "Inspired by the spiritual, vibrant sunsets over the Ganges in Varanasi. A soft, radiant sunset apricot base with rich vermilion red, soft gold, and deep charcoal gray traditional Indian damask block prints. Woven from a premium 70% Cotton / 30% Silk blend muslin for an exceptionally luxurious sheen and softness.",
+    "inStock": true,
+    "tags": [
+      "swaddle",
+      "apricot",
+      "sunset",
+      "varanasi",
+      "silk",
+      "blend",
+      "damask",
+      "newborn",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:JLS-001",
+    "sku": "JLS-001",
+    "name": "The Royal Jaipur Loungewear Set",
+    "price": 58,
+    "category": "Parenthood Essentials",
+    "description": "A lightweight, breathable, two-piece nursing-friendly button-down loungewear pajama set for mothers. A soft blush pink base with delicate, intricate traditional Indian block-printed vines in magenta and gold. Features the official SwaddleShawls woven tag.",
+    "inStock": true,
+    "tags": [
+      "loungewear",
+      "set",
+      "pajamas",
+      "jaipur",
+      "pink",
+      "adult",
+      "parenthood",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:GLR-001",
+    "sku": "GLR-001",
+    "name": "The Golden Lotus Maternity Robe",
+    "price": 75,
+    "category": "Parenthood Essentials",
+    "description": "A luxurious, lightweight maternity robe tailored for hospital stays, lounging, or nursing. Features a radiant saffron yellow base adorned with vibrant ruby and soft gold traditional Indian lotus floral block prints. Finished with wide, comfortable sleeves and our official SwaddleShawls tag.",
+    "inStock": true,
+    "tags": [
+      "robe",
+      "maternity",
+      "saffron",
+      "lotus",
+      "adult",
+      "parenthood",
+      "cotton",
+      "premium"
+    ]
+  },
+  {
+    "id": "inventory:HNC-001",
+    "sku": "HNC-001",
+    "name": "The Heritage Block-Print Nursing Cover",
+    "price": 45,
+    "category": "Parenthood Essentials",
+    "description": "Our premier essential for adulthood/parenthood. A lightweight, breathable nursing cover for mothers, designed to double gracefully as a stylish scarf or shawl. A deep, rich indigo dyed base featuring traditional white and silver 'Ajrakh' geometric and floral block prints.",
+    "inStock": true,
+    "tags": [
+      "nursing",
+      "cover",
+      "shawl",
+      "indigo",
+      "ajrakh",
+      "adult",
+      "parenthood",
+      "cotton",
+      "premium"
+    ]
+  }
+]

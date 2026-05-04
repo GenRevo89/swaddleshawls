@@ -61,6 +61,23 @@ export default function MobileWelcomeModal() {
     }
   }, []);
 
+  // ── External trigger: Voice assistant can force-show the modal ──
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleVoiceTrigger = () => {
+      // Force-show even if already dismissed or shown this session
+      setDismissed(false);
+      setShow(true);
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => setVisible(true));
+      });
+    };
+
+    window.addEventListener("swaddleshawls:show-welcome", handleVoiceTrigger);
+    return () => window.removeEventListener("swaddleshawls:show-welcome", handleVoiceTrigger);
+  }, []);
+
   const handleClose = () => {
     setVisible(false);
     // Wait for exit animation to finish before unmounting

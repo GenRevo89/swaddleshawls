@@ -15,11 +15,28 @@ async function surgeRequest(path, options = {}) {
         "User-Agent": "SwaddleShawls/1.0 (NextJS; Server-Side)",
     };
 
-    const res = await fetch(`${SURGE_BASE}${path}`, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
-    });
+    let res;
+    let retries = 3;
+    while (retries > 0) {
+        try {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), 4000);
+            
+            res = await fetch(`${SURGE_BASE}${path}`, {
+                method,
+                headers,
+                body: body ? JSON.stringify(body) : undefined,
+                signal: controller.signal,
+            });
+            clearTimeout(id);
+            if (res.ok || res.status < 500) break;
+        } catch (err) {
+            console.warn(`[Surge] Fetch failed, retries left: ${retries - 1}. Error:`, err.message);
+            if (retries === 1) throw err;
+        }
+        retries--;
+        await new Promise(r => setTimeout(r, 500));
+    }
 
     // Some endpoints return empty body on success
     const text = await res.text();

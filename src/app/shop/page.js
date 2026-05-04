@@ -16,6 +16,7 @@ function ProductIcon() {
 
 // CRM Contact Form — imported as shared component
 import CrmContactForm from "@/components/CrmContactForm";
+import VoiceAssistant from "@/components/VoiceAssistant";
 
 const isPreorder = process.env.NEXT_PUBLIC_PREORDER === "TRUE";
 
@@ -40,7 +41,7 @@ function isDisplayable(val) {
 }
 
 // ── Product Detail Modal ──
-function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
+function ProductDetailModal({ product, onClose, onAddToCart, addedItem, agentDrivingMode }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedModifiers, setSelectedModifiers] = useState({});
   const pid = product._id || product.id;
@@ -97,6 +98,15 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem }) {
     window.addEventListener("keydown", handleKey);
     return () => window.removeEventListener("keydown", handleKey);
   }, [onClose, activeImageIndex, allImages.length]);
+
+  // Master Sales Person Auto-Rotate
+  useEffect(() => {
+    if (!agentDrivingMode || allImages.length <= 1) return;
+    const interval = setInterval(() => {
+      setActiveImageIndex((prev) => (prev + 1) % allImages.length);
+    }, 3500); // Rotate every 3.5 seconds
+    return () => clearInterval(interval);
+  }, [agentDrivingMode, allImages.length]);
 
   const productSchema = {
     "@context": "https://schema.org/",
@@ -562,6 +572,7 @@ export default function Shop() {
   const [addedItem, setAddedItem] = useState(null);
   const [paymentModal, setPaymentModal] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null); // Product detail modal
+  const [agentDrivingMode, setAgentDrivingMode] = useState(false); // Master Sales Person Mode
   const [stripeLoading, setStripeLoading] = useState(false);
   const [stripeClientSecret, setStripeClientSecret] = useState(null); // Embedded checkout
   const [appliedCoupon, setAppliedCoupon] = useState(null);
@@ -616,7 +627,6 @@ export default function Shop() {
     } catch (e) { console.error('Meta ViewContent failed:', e); }
   };
 
-  // Fetch products from BasaltSurge on mount
   useEffect(() => {
     async function fetchProducts() {
       try {
@@ -627,7 +637,8 @@ export default function Shop() {
         } else {
           setProductError("Failed to load products");
         }
-      } catch {
+      } catch (err) {
+        console.error("Failed to load products", err);
         setProductError("Failed to connect to server");
       } finally {
         setLoadingProducts(false);
@@ -635,6 +646,27 @@ export default function Shop() {
     }
     fetchProducts();
   }, []);
+
+  const onAgentViewProduct = (sku) => {
+    const product = products.find(p => p.sku === sku);
+    if (product) {
+      setAgentDrivingMode(true);
+      setSelectedProduct(product);
+    }
+  };
+
+  const onAgentCloseModal = () => {
+    setSelectedProduct(null);
+    setAgentDrivingMode(false);
+  };
+
+  const agentAddToCart = (sku, qty) => {
+    const product = products.find(p => p.sku === sku);
+    if (!product) return;
+    for (let i = 0; i < qty; i++) {
+      addToCart(product);
+    }
+  };
 
   const addToCart = (product, rawModifiers = []) => {
     const pid = product._id || product.id;
@@ -941,7 +973,7 @@ export default function Shop() {
 
   return (
     <>
-      <main className="flex-grow pt-36 pb-28 px-6 relative pattern-paisley" style={{ backgroundColor: "var(--warm-cream)" }}>
+      <main className="flex-grow pt-36 pb-28 px-6 relative pattern-paisley" style={{ zIndex: 1 }}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -1124,6 +1156,14 @@ export default function Shop() {
           </span>
         </button>
       )}
+
+      {/* Voice Assistant — Nani */}
+      <VoiceAssistant
+        agentAddToCart={agentAddToCart}
+        onAgentViewProduct={onAgentViewProduct}
+        onAgentCloseModal={onAgentCloseModal}
+        cart={cart}
+      />
 
       {/* Cart Drawer */}
       {cartOpen && (
@@ -1388,9 +1428,10 @@ export default function Shop() {
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
-          onClose={() => setSelectedProduct(null)}
+          onClose={() => { setSelectedProduct(null); setAgentDrivingMode(false); }}
           onAddToCart={addToCart}
           addedItem={addedItem}
+          agentDrivingMode={agentDrivingMode}
         />
       )}
 

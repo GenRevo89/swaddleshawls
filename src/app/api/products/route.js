@@ -4,19 +4,9 @@ import fs from "fs";
 import path from "path";
 
 // ── Server-side Product Cache (Stale-While-Revalidate) ──
-// Products are cached in-memory on the Node process. When a request arrives:
-//   1. If cache exists → return it instantly (zero latency)
-//   2. If cache is stale (past TTL) → still return it, but kick off a background refresh
-//   3. If no cache at all → fetch synchronously, cache, and return
-
-const CACHE_TTL_MS = 60 * 1000; // 60 seconds — stale threshold
-
-let cachedProducts = null;   // { data: [...], timestamp: number }
 let refreshInFlight = false; // Prevents duplicate background refreshes
 
 // ── Resolve local product images by SKU ──
-// Images live in /public/products/{SKU}_1.ext, {SKU}_2.ext
-// We check for .webp first (smaller), then .png
 const PRODUCTS_DIR = path.join(process.cwd(), "public", "products");
 const IMAGE_EXTS = [".webp", ".png"];
 
@@ -29,7 +19,7 @@ function resolveLocalImages(sku) {
             const fullPath = path.join(PRODUCTS_DIR, filename);
             if (fs.existsSync(fullPath)) {
                 images.push(`/products/${filename}`);
-                break; // Found this index, move to next
+                break;
             }
         }
     }
@@ -42,7 +32,6 @@ function normalizeItems(data) {
     return raw.map((item) => {
         const sku = item.sku;
         const localImages = resolveLocalImages(sku);
-        // Use local images if available, otherwise strip any base64 and leave empty
         const images = localImages.length > 0 ? localImages : [];
 
         return {
@@ -66,7 +55,37 @@ async function fetchAndCache() {
     try {
         const data = await listInventory();
         const items = normalizeItems(data);
-        cachedProducts = { data: items, timestamp: Date.now() };
+        
+        // Write full inventory to json
+        const dataDir = path.join(process.cwd(), "src", "data");
+        if (!fs.existsSync(dataDir)) {
+            fs.mkdirSync(dataDir, { recursive: true });
+        }
+        
+        fs.writeFileSync(
+            path.join(dataDir, "inventory.json"),
+            JSON.stringify(items, null, 2),
+            "utf8"
+        );
+        
+        // Write agent inventory
+        const agentItems = items.map((item) => ({
+            id: item.id,
+            sku: item.sku,
+            name: item.name,
+            price: Number(item.price),
+            category: item.category,
+            description: item.description,
+            inStock: item.stockQty > 0 || item.stockQty === -1,
+            tags: item.tags,
+        }));
+        
+        fs.writeFileSync(
+            path.join(dataDir, "agent-inventory.json"),
+            JSON.stringify(agentItems, null, 2),
+            "utf8"
+        );
+        
         return items;
     } catch (error) {
         console.error("[ProductCache] Background refresh failed:", error.message);
@@ -83,48 +102,45 @@ function triggerBackgroundRefresh() {
     fetchAndCache();
 }
 
-// GET — Fetch inventory with SWR caching
+// GET — Fetch inventory statically with background refresh (Stale-While-Revalidate)
 export async function GET() {
     try {
-        // Case 1: Cache exists
-        if (cachedProducts) {
-            const age = Date.now() - cachedProducts.timestamp;
-
-            // Stale — return cached, refresh in background
-            if (age > CACHE_TTL_MS) {
+        const inventoryPath = path.join(process.cwd(), "src", "data", "inventory.json");
+        if (fs.existsSync(inventoryPath)) {
+            const stats = fs.statSync(inventoryPath);
+            const ageMs = Date.now() - stats.mtimeMs;
+            
+            // If file is older than 5 minutes (300,000 ms), trigger background sync
+            if (ageMs > 300000) {
                 triggerBackgroundRefresh();
             }
 
-            return NextResponse.json(
-                { success: true, data: cachedProducts.data, cached: true },
-                {
-                    status: 200,
-                    headers: { "X-Cache": age > CACHE_TTL_MS ? "STALE" : "HIT" },
-                }
-            );
+            const data = fs.readFileSync(inventoryPath, "utf8");
+            return NextResponse.json({ success: true, data: JSON.parse(data), cached: true }, {
+                headers: { "Cache-Control": "public, max-age=60" }
+            });
         }
-
-        // Case 2: No cache — cold start, fetch synchronously
+        
+        // Fallback if not synced yet: Trigger a sync immediately and wait
         const items = await fetchAndCache();
-        if (!items) {
+        if (items) {
             return NextResponse.json(
-                { success: false, error: "Failed to fetch inventory" },
-                { status: 500 }
+                { success: true, data: items, cached: false },
+                { headers: { "Cache-Control": "no-store" } }
             );
         }
-
+        
         return NextResponse.json(
-            { success: true, data: items, cached: false },
-            {
-                status: 200,
-                headers: { "X-Cache": "MISS" },
-            }
+            { success: true, data: [], cached: false },
+            { headers: { "Cache-Control": "no-store" } }
         );
     } catch (error) {
-        console.error("Error fetching Surge inventory:", error);
+        console.error("[api/products] Error reading inventory:", error);
         return NextResponse.json(
-            { success: false, error: "Failed to fetch inventory" },
+            { success: false, error: "Failed to load products" },
             { status: 500 }
         );
     }
 }
+
+// Trigger refresh
