@@ -61,6 +61,7 @@ function createAgentInventory(items) {
     description: item.description,
     inStock: item.stockQty > 0 || item.stockQty === -1,
     tags: item.tags,
+    modifierGroups: item.modifierGroups,
   }));
 }
 

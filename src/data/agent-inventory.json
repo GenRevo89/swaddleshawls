@@ -17,7 +17,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:WNC-001",
@@ -39,7 +40,8 @@
       "premium",
       "block-print",
       "red"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:BRH-001",
@@ -60,7 +62,8 @@
       "cotton",
       "premium",
       "block-print"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:DNQ3P5HA6",
@@ -79,7 +82,8 @@
       "traditional",
       "red",
       "teal"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:SC55JFH9Z",
@@ -99,7 +103,8 @@
       "paisley",
       "traditional",
       "sunrise"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:RK4RWVUTL",
@@ -116,7 +121,8 @@
       "cotton",
       "cream",
       "blue"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:EPU39F8P3",
@@ -137,7 +143,8 @@
       "brown",
       "ancients",
       "raw fiber"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:MMS-001",
@@ -155,7 +162,8 @@
       "cotton",
       "bamboo",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:GLS-001",
@@ -174,7 +182,8 @@
       "cotton",
       "muslin",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:EFW-001",
@@ -193,7 +202,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:MBS-001",
@@ -214,7 +224,8 @@
       "muslin",
       "lightweight",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:DSH-001",
@@ -234,7 +245,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:JPP-001",
@@ -254,7 +266,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:KMB-001",
@@ -274,7 +287,8 @@
       "newborn",
       "organic",
       "botanical"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:RPP-001",
@@ -294,7 +308,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:GSS-001",
@@ -314,7 +329,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:KVR-001",
@@ -335,7 +351,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:HFS-001",
@@ -355,7 +372,8 @@
       "newborn",
       "cotton",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:VSS-001",
@@ -375,7 +393,8 @@
       "damask",
       "newborn",
       "premium"
-    ]
+    ],
+    "modifierGroups": []
   },
   {
     "id": "inventory:JLS-001",
@@ -395,6 +414,46 @@
       "parenthood",
       "cotton",
       "premium"
+    ],
+    "modifierGroups": [
+      {
+        "id": "mg-size-15",
+        "name": "Size",
+        "required": true,
+        "modifiers": [
+          {
+            "id": "mod-15-1",
+            "name": "Small",
+            "priceAdjustment": 0,
+            "sortOrder": 0
+          },
+          {
+            "id": "mod-15-2",
+            "name": "Medium",
+            "priceAdjustment": 0,
+            "sortOrder": 1
+          },
+          {
+            "id": "mod-15-3",
+            "name": "Large",
+            "priceAdjustment": 0,
+            "sortOrder": 2
+          },
+          {
+            "id": "mod-15-4",
+            "name": "X-Large",
+            "priceAdjustment": 0,
+            "sortOrder": 3
+          },
+          {
+            "id": "mod-15-5",
+            "name": "XXL",
+            "priceAdjustment": 8,
+            "sortOrder": 4
+          }
+        ],
+        "sortOrder": 0
+      }
     ]
   },
   {
@@ -414,6 +473,34 @@
       "parenthood",
       "cotton",
       "premium"
+    ],
+    "modifierGroups": [
+      {
+        "id": "mg-size-14",
+        "name": "Size",
+        "required": true,
+        "modifiers": [
+          {
+            "id": "mod-14-1",
+            "name": "Small / Medium",
+            "priceAdjustment": 0,
+            "sortOrder": 0
+          },
+          {
+            "id": "mod-14-2",
+            "name": "Large / X-Large",
+            "priceAdjustment": 0,
+            "sortOrder": 1
+          },
+          {
+            "id": "mod-14-3",
+            "name": "XXL",
+            "priceAdjustment": 5,
+            "sortOrder": 2
+          }
+        ],
+        "sortOrder": 0
+      }
     ]
   },
   {
@@ -434,6 +521,28 @@
       "parenthood",
       "cotton",
       "premium"
+    ],
+    "modifierGroups": [
+      {
+        "id": "mg-size-13",
+        "name": "Size",
+        "required": true,
+        "modifiers": [
+          {
+            "id": "mod-13-1",
+            "name": "Regular (50x50 in)",
+            "priceAdjustment": 0,
+            "sortOrder": 0
+          },
+          {
+            "id": "mod-13-2",
+            "name": "Extra Coverage (60x60 in)",
+            "priceAdjustment": 5,
+            "sortOrder": 1
+          }
+        ],
+        "sortOrder": 0
+      }
     ]
   }
 ]

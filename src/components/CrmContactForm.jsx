@@ -169,7 +169,7 @@ export default function CrmContactForm({ heading, subtitle }) {
   }, []);
 
   return (
-    <section id="contact" className="py-24 border-t" style={{ backgroundColor: "var(--brown-50)", borderColor: "var(--brown-100)" }}>
+    <section id="contact" className="py-24 border-t" style={{ backgroundColor: "transparent", borderColor: "var(--brown-100)" }}>
       <div className="max-w-3xl mx-auto px-6">
         <div className="text-center mb-12">
           <h2 className="text-3xl md:text-5xl font-bold mb-4" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>

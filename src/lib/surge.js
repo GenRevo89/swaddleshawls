@@ -20,7 +20,7 @@ async function surgeRequest(path, options = {}) {
     while (retries > 0) {
         try {
             const controller = new AbortController();
-            const id = setTimeout(() => controller.abort(), 4000);
+            const id = setTimeout(() => controller.abort(), 15000);
             
             res = await fetch(`${SURGE_BASE}${path}`, {
                 method,

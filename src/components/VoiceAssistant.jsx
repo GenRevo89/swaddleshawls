@@ -134,7 +134,7 @@ function VoiceVisualizer({ active, micLevel, agentLevel }) {
 import agentInventory from "@/data/agent-inventory.json";
 
 // ── Inner Component (Requires Provider) ──
-function VoiceAssistantInner({ agentAddToCart, onAgentViewProduct, onAgentCloseModal, cart = [] }) {
+function VoiceAssistantInner({ agentAddToCart, agentRemoveFromCart, onAgentViewProduct, onAgentCloseModal, onAgentOpenCart, onAgentCloseCart, onAgentSetSize, cart = [], cartTotal = 0, appliedCoupon = null }) {
   const [status, setStatus] = useState("idle");
   const [isMuted, setIsMuted] = useState(false);
   const [micLevel, setMicLevel] = useState(0);
@@ -152,55 +152,139 @@ function VoiceAssistantInner({ agentAddToCart, onAgentViewProduct, onAgentCloseM
   const isListeningRef = useRef(false);
   const rafRef = useRef(null);
   const tooltipTimer = useRef(null);
+  
+  // Keep stable references to props to prevent clientTools from changing reference
+  const propsRef = useRef({ cart, cartTotal, appliedCoupon, agentAddToCart, agentRemoveFromCart, onAgentViewProduct, onAgentCloseModal, onAgentOpenCart, onAgentCloseCart, onAgentSetSize });
+  useEffect(() => {
+    propsRef.current = { cart, cartTotal, appliedCoupon, agentAddToCart, agentRemoveFromCart, onAgentViewProduct, onAgentCloseModal, onAgentOpenCart, onAgentCloseCart, onAgentSetSize };
+  }, [cart, cartTotal, appliedCoupon, agentAddToCart, agentRemoveFromCart, onAgentViewProduct, onAgentCloseModal, onAgentOpenCart, onAgentCloseCart, onAgentSetSize]);
 
   // ── Client Tools ──
   const clientTools = useMemo(() => ({
     getAllInventory: async () => {
       return JSON.stringify({ ok: true, data: { totalItems: agentInventory.length, items: agentInventory } });
     },
+    getAvailableCategories: async () => {
+      const categories = [...new Set(agentInventory.map(p => p.category))].filter(Boolean);
+      return JSON.stringify({ ok: true, data: { categories } });
+    },
     closeProductModal: async () => {
-      if (onAgentCloseModal) onAgentCloseModal();
+      console.log("[Nani] Executing closeProductModal client tool!");
+      if (propsRef.current.onAgentCloseModal) propsRef.current.onAgentCloseModal();
       return JSON.stringify({ ok: true, data: { message: "Product modal closed." } });
     },
     getProductDetails: async (params) => {
       const name = String(params?.name || params?.product_name || "");
       const match = fuzzyMatch(agentInventory, name);
-      if (!match) return JSON.stringify({ ok: false, error: `No product found matching "${name}"` });
-      if (onAgentViewProduct) onAgentViewProduct(match.sku);
-      return JSON.stringify({ ok: true, data: match });
+      if (!match) return JSON.stringify({ ok: false, error: `Could not find product matching "${name}"` });
+      if (propsRef.current.onAgentViewProduct) propsRef.current.onAgentViewProduct(match.sku);
+      return JSON.stringify({ ok: true, data: { product: match } });
+    },
+    setProductSize: async (params) => {
+      const sizeParam = params?.size;
+      if (sizeParam && propsRef.current.onAgentSetSize) {
+        propsRef.current.onAgentSetSize(sizeParam);
+        return JSON.stringify({ ok: true, data: { message: `Size set to ${sizeParam}` } });
+      }
+      return JSON.stringify({ ok: false, error: "Size parameter is required" });
     },
     suggestProducts: async (params) => {
       const useCase = String(params?.useCase || params?.use_case || "").toLowerCase();
+      const category = String(params?.category || "").toLowerCase();
       let filtered = agentInventory;
+      if (category) {
+        filtered = filtered.filter((p) => String(p.category).toLowerCase().includes(category));
+      }
       if (useCase) {
-        filtered = agentInventory.filter((p) => {
+        const words = useCase.split(/\s+/).filter(w => w.length > 2);
+        filtered = filtered.map((p) => {
           const text = `${p.name} ${p.description} ${p.category} ${(p.tags || []).join(" ")}`.toLowerCase();
-          return useCase.split(/\s+/).some((word) => word.length > 2 && text.includes(word));
-        });
+          const score = words.reduce((acc, word) => acc + (text.includes(word) ? 1 : 0), 0);
+          return { p, score };
+        })
+        .filter(x => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .map(x => x.p);
       }
-      if (!useCase) {
-        filtered = agentInventory.slice(0, 4);
+      if (!useCase && !category) {
+        filtered = agentInventory;
       }
-      const suggestions = filtered.slice(0, 5);
-      if (suggestions.length > 0 && onAgentViewProduct) {
-        onAgentViewProduct(suggestions[0].sku);
-      }
-      return JSON.stringify({ ok: true, data: { suggestions, count: suggestions.length } });
+      return JSON.stringify({ ok: true, data: { suggestions: filtered, count: filtered.length } });
     },
     addToCart: async (params) => {
       const name = String(params?.name || params?.product_name || "");
       const qty = Math.max(1, Number(params?.qty || params?.quantity || 1));
+      const sizeParam = params?.size;
       const match = fuzzyMatch(agentInventory, name);
       if (!match) return JSON.stringify({ ok: false, error: `No product found matching "${name}"` });
+      
+      const rawModifiers = [];
+      if (sizeParam && match.modifierGroups) {
+        const sizeGroup = match.modifierGroups.find(g => g.name?.toLowerCase().includes("size") || g.title?.toLowerCase().includes("size"));
+        if (sizeGroup && sizeGroup.modifiers) {
+          const sizeMatch = sizeGroup.modifiers.find(m => m.name?.toLowerCase() === sizeParam.toLowerCase());
+          if (sizeMatch) rawModifiers.push(sizeMatch);
+        }
+      }
+      
+      const modifiersPrice = rawModifiers.reduce((sum, mod) => sum + (mod.priceAdjustment || 0), 0);
+      const itemPrice = Number(match.price) + modifiersPrice;
+
       try { 
-        if (agentAddToCart) agentAddToCart(match.sku, qty); 
+        if (propsRef.current.agentAddToCart) propsRef.current.agentAddToCart(match.sku, qty, rawModifiers); 
+        if (propsRef.current.onAgentCloseModal) propsRef.current.onAgentCloseModal();
       } catch (e) { return JSON.stringify({ ok: false, error: e?.message || "Failed to add" }); }
-      return JSON.stringify({ ok: true, data: { added: { name: match.name, price: Number(match.price), qty }, message: `Added ${qty}x ${match.name} ($${Number(match.price).toFixed(2)} each) to your cart.` } });
+      
+      return JSON.stringify({ 
+        ok: true, 
+        data: { 
+          added: { name: match.name, qty, size: sizeParam || null, price: itemPrice }, 
+          message: `Successfully added ${qty}x ${match.name} to the cart. The price before discounts is $${itemPrice.toFixed(2)} each.`
+        } 
+      });
+    },
+    removeFromCart: async (params) => {
+      const name = String(params?.name || params?.product_name || "");
+      const match = fuzzyMatch(agentInventory, name);
+      if (!match) return JSON.stringify({ ok: false, error: `No product found matching "${name}"` });
+      
+      const itemInCart = propsRef.current.cart.find(it => it.sku === match.sku);
+      if (!itemInCart) return JSON.stringify({ ok: false, error: `Product "${match.name}" is not in the cart.` });
+
+      try { 
+        if (propsRef.current.agentRemoveFromCart) propsRef.current.agentRemoveFromCart(match.sku); 
+      } catch (e) { return JSON.stringify({ ok: false, error: e?.message || "Failed to remove" }); }
+      
+      return JSON.stringify({ 
+        ok: true, 
+        data: { 
+          removed: { name: match.name }, 
+          message: `Successfully removed ${match.name} from the cart.`
+        } 
+      });
     },
     getCartSummary: async () => {
-      const items = cart.map((item) => ({ name: item.name, qty: item.quantity, unitPrice: Number(item.price), lineTotal: Number(item.price) * item.quantity }));
-      const subtotal = items.reduce((sum, it) => sum + it.lineTotal, 0);
-      return JSON.stringify({ ok: true, data: { items, subtotal, itemCount: items.length } });
+      const items = propsRef.current.cart.map((item) => {
+        const mods = item.modifiers && item.modifiers.length > 0 ? ` [${item.modifiers.map(m => m.name).join(', ')}]` : "";
+        return { name: item.name + mods, qty: item.quantity };
+      });
+      return JSON.stringify({ 
+        ok: true, 
+        data: { 
+          items, 
+          cartTotal: propsRef.current.cartTotal, 
+          itemCount: items.length,
+          discountApplied: propsRef.current.appliedCoupon ? propsRef.current.appliedCoupon.name : null
+        } 
+      });
+    },
+    openCart: async () => {
+      if (propsRef.current.onAgentOpenCart) propsRef.current.onAgentOpenCart();
+      return JSON.stringify({ ok: true, data: { message: "Cart opened." } });
+    },
+    closeCart: async () => {
+      if (propsRef.current.onAgentCloseCart) propsRef.current.onAgentCloseCart();
+      return JSON.stringify({ ok: true, data: { message: "Cart closed." } });
     },
     changeLanguage: async (params) => {
       const language = String(params?.language || "").toLowerCase().trim();
@@ -217,7 +301,7 @@ function VoiceAssistantInner({ agentAddToCart, onAgentViewProduct, onAgentCloseM
       if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("swaddleshawls:show-welcome"));
       return JSON.stringify({ ok: true, data: { message: "I've opened the newsletter signup! Sign up for a 10% welcome discount code (NWSLTR-10)." } });
     },
-  }), [cart, agentAddToCart, onAgentViewProduct]);
+  }), []);
 
   // ── ElevenLabs Conversation ──
   const conversation = useConversation({
@@ -407,10 +491,10 @@ function VoiceAssistantInner({ agentAddToCart, onAgentViewProduct, onAgentCloseM
 }
 
 // ── Export wrapper that provides the context ──
-export default function VoiceAssistant({ agentAddToCart, onAgentViewProduct, onAgentCloseModal, cart }) {
+export default function VoiceAssistant({ agentAddToCart, agentRemoveFromCart, onAgentViewProduct, onAgentCloseModal, onAgentOpenCart, onAgentCloseCart, onAgentSetSize, cart, cartTotal, appliedCoupon }) {
   return (
     <ConversationProvider>
-      <VoiceAssistantInner agentAddToCart={agentAddToCart} onAgentViewProduct={onAgentViewProduct} onAgentCloseModal={onAgentCloseModal} cart={cart} />
+      <VoiceAssistantInner agentAddToCart={agentAddToCart} agentRemoveFromCart={agentRemoveFromCart} onAgentViewProduct={onAgentViewProduct} onAgentCloseModal={onAgentCloseModal} onAgentOpenCart={onAgentOpenCart} onAgentCloseCart={onAgentCloseCart} onAgentSetSize={onAgentSetSize} cart={cart} cartTotal={cartTotal} appliedCoupon={appliedCoupon} />
     </ConversationProvider>
   );
 }

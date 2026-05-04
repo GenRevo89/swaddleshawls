@@ -41,13 +41,23 @@ function isDisplayable(val) {
 }
 
 // ── Product Detail Modal ──
-function ProductDetailModal({ product, onClose, onAddToCart, addedItem, agentDrivingMode }) {
+function ProductDetailModal({ product, onClose, onAddToCart, addedItem, agentDrivingMode, agentSelectedSize }) {
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const [selectedModifiers, setSelectedModifiers] = useState({});
   const pid = product._id || product.id;
 
   useEffect(() => {
     if (product?.modifierGroups) {
+      if (agentSelectedSize) {
+        const sizeGroup = product.modifierGroups.find(g => g.name?.toLowerCase().includes("size") || g.title?.toLowerCase().includes("size"));
+        if (sizeGroup) {
+          const match = sizeGroup.modifiers.find(m => m.name?.toLowerCase() === agentSelectedSize.toLowerCase());
+          if (match) {
+            setSelectedModifiers(prev => ({ ...prev, [sizeGroup.id]: match }));
+            return;
+          }
+        }
+      }
       const initial = {};
       product.modifierGroups.forEach(mg => {
         if (mg.modifiers && mg.modifiers.length > 0) {
@@ -56,7 +66,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem, agentDri
       });
       setSelectedModifiers(initial);
     }
-  }, [product]);
+  }, [product, agentSelectedSize]);
 
   const basePrice = Number(product.price);
   const modifiersPrice = Object.values(selectedModifiers).reduce((sum, mod) => sum + (mod.priceAdjustment || 0), 0);
@@ -317,7 +327,6 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem, agentDri
                 </div>
               </div>
 
-              {/* Add to Cart */}
               <button
                 onClick={() => onAddToCart(product, Object.values(selectedModifiers))}
                 className={`w-full py-4 rounded-xl font-bold text-sm tracking-wide uppercase transition-all duration-300 shadow-lg ${addedItem === pid
@@ -326,7 +335,7 @@ function ProductDetailModal({ product, onClose, onAddToCart, addedItem, agentDri
                   }`}
                 style={addedItem !== pid ? { backgroundColor: "var(--brown-800)" } : {}}
               >
-                {addedItem === pid ? "✓ Added to Cart" : `Add to Cart — $${currentTotal.toFixed(2)}`}
+                {addedItem === pid ? "✓ Added to Cart" : `Add to Cart — $${(isPreorder ? currentTotal * 0.9 : currentTotal).toFixed(2)}`}
               </button>
             </div>
           </div>
@@ -577,6 +586,7 @@ export default function Shop() {
   const [stripeClientSecret, setStripeClientSecret] = useState(null); // Embedded checkout
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState("");
+  const [agentSelectedSize, setAgentSelectedSize] = useState(null);
 
   const handleApplyCoupon = (e) => {
     e?.preventDefault();
@@ -630,7 +640,7 @@ export default function Shop() {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        const res = await fetch("/api/products");
+        const res = await fetch(`/api/products?t=${Date.now()}`, { cache: "no-store" });
         const data = await res.json();
         if (res.ok && data.success && Array.isArray(data.data)) {
           setProducts(data.data);
@@ -647,28 +657,21 @@ export default function Shop() {
     fetchProducts();
   }, []);
 
-  const onAgentViewProduct = (sku) => {
+  const onAgentViewProduct = useCallback((sku) => {
     const product = products.find(p => p.sku === sku);
     if (product) {
       setAgentDrivingMode(true);
       setSelectedProduct(product);
     }
-  };
+  }, [products]);
 
-  const onAgentCloseModal = () => {
+  const onAgentCloseModal = useCallback(() => {
     setSelectedProduct(null);
     setAgentDrivingMode(false);
-  };
+    setAgentSelectedSize(null);
+  }, []);
 
-  const agentAddToCart = (sku, qty) => {
-    const product = products.find(p => p.sku === sku);
-    if (!product) return;
-    for (let i = 0; i < qty; i++) {
-      addToCart(product);
-    }
-  };
-
-  const addToCart = (product, rawModifiers = []) => {
+  const addToCart = useCallback((product, rawModifiers = []) => {
     const pid = product._id || product.id;
     // ensure modifiers map strictly to what Surge wants: `{ id, name, priceAdjustment }`
     const modifiers = rawModifiers.map(m => ({ id: m.id, name: m.name, priceAdjustment: m.priceAdjustment || 0 }));
@@ -727,7 +730,31 @@ export default function Shop() {
         });
       }
     } catch (e) { console.error('GTM add_to_cart failed:', e); }
-  };
+  }, [cartOpen, selectedProduct]);
+
+  const agentAddToCart = useCallback((sku, qty, rawModifiers = []) => {
+    const product = products.find(p => p.sku === sku);
+    if (!product) return;
+    for (let i = 0; i < qty; i++) {
+      addToCart(product, rawModifiers);
+    }
+  }, [products, addToCart]);
+
+  const agentRemoveFromCart = useCallback((sku) => {
+    setCart((prev) => prev.filter(item => item.sku !== sku));
+  }, []);
+
+  const onAgentOpenCart = useCallback(() => {
+    setCartOpen(true);
+  }, []);
+
+  const onAgentCloseCart = useCallback(() => {
+    setCartOpen(false);
+  }, []);
+
+  const onAgentSetSize = useCallback((size) => {
+    setAgentSelectedSize(size);
+  }, []);
 
   const updateQuantity = (cartItemId, delta) => {
     setCart((prev) =>
@@ -738,7 +765,7 @@ export default function Shop() {
   };
 
   const baseTotal = cart.reduce((sum, item) => {
-    const activePrice = isPreorder ? item.price - (item.basePrice * 0.1) : item.price;
+    const activePrice = isPreorder ? item.price - (item.price * 0.1) : item.price;
     return sum + activePrice * item.quantity;
   }, 0);
 
@@ -762,10 +789,10 @@ export default function Shop() {
           groupId: "discount",
           modifierId: "preorder",
           name: "10% Launch Special Discount",
-          priceAdjustment: -(item.basePrice * 0.1)
+          priceAdjustment: -(item.price * 0.1)
         });
       }
-      let unitPrice = isPreorder ? item.price - (item.basePrice * 0.1) : item.price;
+      let unitPrice = isPreorder ? item.price - (item.price * 0.1) : item.price;
 
       // Apply User Coupon Discount
       if (appliedCoupon && appliedCoupon.type === "percent" && !itemModifiers.find(m => m.id === "user-coupon")) {
@@ -1160,9 +1187,15 @@ export default function Shop() {
       {/* Voice Assistant — Nani */}
       <VoiceAssistant
         agentAddToCart={agentAddToCart}
+        agentRemoveFromCart={agentRemoveFromCart}
         onAgentViewProduct={onAgentViewProduct}
         onAgentCloseModal={onAgentCloseModal}
+        onAgentOpenCart={onAgentOpenCart}
+        onAgentCloseCart={onAgentCloseCart}
+        onAgentSetSize={onAgentSetSize}
         cart={cart}
+        cartTotal={cartTotal}
+        appliedCoupon={appliedCoupon}
       />
 
       {/* Cart Drawer */}
@@ -1227,7 +1260,7 @@ export default function Shop() {
                             {isPreorder ? (
                               <p className="text-sm font-medium mt-1">
                                 <span className="line-through text-xs mr-2" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)}</span>
-                                <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.basePrice * 0.1)).toFixed(2)} each</span>
+                                <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.price * 0.1)).toFixed(2)} each</span>
                               </p>
                             ) : (
                               <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
@@ -1428,10 +1461,11 @@ export default function Shop() {
       {selectedProduct && (
         <ProductDetailModal
           product={selectedProduct}
-          onClose={() => { setSelectedProduct(null); setAgentDrivingMode(false); }}
+          onClose={() => { setSelectedProduct(null); setAgentDrivingMode(false); setAgentSelectedSize(null); }}
           onAddToCart={addToCart}
           addedItem={addedItem}
           agentDrivingMode={agentDrivingMode}
+          agentSelectedSize={agentSelectedSize}
         />
       )}
 
