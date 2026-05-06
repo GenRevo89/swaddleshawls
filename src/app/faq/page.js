@@ -8,7 +8,7 @@ const ALL_FAQS = [
   {
     category: "Products",
     items: [
-      { q: "What materials are used in your shawls?", a: "All SwaddleShawls are made from 100% pure cotton, sourced from India's finest textile regions. Our fabrics are naturally breathable, hypoallergenic, and gentle on even the most sensitive newborn skin. We use no synthetic blends — ever." },
+      { q: "What materials are used in your shawls?", a: "The foundation of our collection is woven from 100% pure, premium cotton, ethically sourced from India's finest textile regions. For an elevated experience, our exclusive Sunset Silk-Blend integrates luxurious mulberry silk with our signature cotton. All our fabrics are naturally breathable, hypoallergenic, and exceptionally gentle on newborn skin. We strictly prohibit the use of synthetic fibers across our entire product line." },
       { q: "What sizes are available?", a: 'Our swaddles measure approximately 47" × 47" (120cm × 120cm), the ideal size for swaddling newborns and wrapping toddlers. Our heritage shawls are larger at 55" × 35" (140cm × 90cm), perfect as a nursing cover or stroller blanket.' },
       { q: "Are your products safe for newborns?", a: "Absolutely. Our products are made from 100% natural cotton with no synthetic dyes or chemicals. They are hypoallergenic and have been tested to meet the highest safety standards for infant products." },
       { q: "What makes SwaddleShawls different from other brands?", a: "Every SwaddleShawl is handcrafted by skilled artisans using traditional Indian textile techniques. Our patterns are inspired by centuries of heritage, and each piece comes with a Certificate of Authenticity. We never use synthetic materials or mass-production methods." },
@@ -17,7 +17,7 @@ const ALL_FAQS = [
   {
     category: "Care & Maintenance",
     items: [
-      { q: "How do I care for my SwaddleShawl?", a: "Machine wash cold on a gentle cycle with mild detergent. Lay flat to dry for best results, or tumble dry on low heat. The colors are set with natural dyes and will soften beautifully with each wash while retaining their vibrancy." },
+      { q: "How do I care for my SwaddleShawl?", a: "To preserve the integrity of our pure cotton shawls, we recommend a cold machine wash on a gentle cycle using a mild, natural detergent. For our delicate Sunset Silk-Blend, we strongly advise hand washing in cold water or utilizing a specialized delicates cycle. Always lay flat to dry to maintain the fabric's structure and softness. Because we utilize traditional natural dyes, your shawl will grow beautifully softer with each wash while retaining its rich vibrancy." },
       { q: "Will the colors fade after washing?", a: "Our natural dyes are set using traditional methods that ensure color longevity. The shawls will soften with each wash but retain their beautiful vibrancy for years. We recommend cold water washing to maintain optimal color." },
       { q: "Can I iron my SwaddleShawl?", a: "Yes! Cotton loves a gentle iron. Use a medium heat setting and iron while slightly damp for best results. This will restore the fabric's smooth finish and make the patterns look crisp." },
     ]

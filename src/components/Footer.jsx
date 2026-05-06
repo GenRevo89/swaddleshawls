@@ -57,6 +57,10 @@ export default function Footer() {
                 <a href="mailto:support@swaddleshawls.com" aria-label="Email us" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-[var(--gold-400)] hover:border-[var(--gold-400)]/40 transition-all duration-300 hover:scale-110">
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 </a>
+                {/* Pinterest */}
+                <a href="https://www.pinterest.com/swaddleshawls/" target="_blank" rel="noopener noreferrer" aria-label="Pinterest" className="w-8 h-8 rounded-full border border-white/10 flex items-center justify-center text-white/40 hover:text-[var(--gold-400)] hover:border-[var(--gold-400)]/40 transition-all duration-300 hover:scale-110">
+                  <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.951-7.252 4.195 0 7.458 2.99 7.458 6.985 0 4.172-2.632 7.534-6.286 7.534-1.226 0-2.38-.636-2.775-1.388l-.756 2.878c-.274 1.042-1.02 2.348-1.523 3.141 1.258.388 2.597.596 3.97.596 6.621 0 11.988-5.367 11.988-11.987C24 5.367 18.638 0 12.017 0z"/></svg>
+                </a>
               </div>
             </div>
 
@@ -89,6 +93,7 @@ export default function Footer() {
                   { href: "/#contact", label: "Contact Us" },
                   { href: "/terms", label: "Terms of Service" },
                   { href: "/privacy", label: "Privacy Policy" },
+                  { href: "/refunds", label: "Return Policy" },
                 ].map((link) => (
                   <li key={link.href}>
                     <Link href={link.href} className="group inline-flex items-center gap-2 hover:text-white transition-all duration-300">
