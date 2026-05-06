@@ -103,6 +103,7 @@ export default function RootLayout({ children }) {
           }}
         />
         <meta name="facebook-domain-verification" content="x2w4a66zexkwpc1wladdmfnz029jel" />
+        <meta name="p:domain_verify" content="6591ef82c16d90eb30e9bbd52b688443" />
         {/* Google tag (gtag.js) */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=AW-18072236543"></script>
         <script
