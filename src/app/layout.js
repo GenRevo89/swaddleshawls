@@ -87,7 +87,13 @@ export default function RootLayout({ children }) {
         {/* Defensive Polyfill to prevent "undefined is not an object" errors from third-party scripts (e.g. Meta Pixel/Clarity) in certain in-app browsers */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `if (typeof window !== 'undefined' && !window.webkit) { window.webkit = { messageHandlers: {} }; }`
+            __html: `
+              if (typeof window !== 'undefined') {
+                window.webkit = window.webkit || {};
+                window.webkit.messageHandlers = window.webkit.messageHandlers || {};
+                window.webkit.messagehandlers = window.webkit.messagehandlers || {};
+              }
+            `
           }}
         />
         <script
