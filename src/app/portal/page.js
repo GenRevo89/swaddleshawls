@@ -46,6 +46,14 @@ export default function Portal() {
     const [syncResult, setSyncResult] = useState({});
     const [expandedOrder, setExpandedOrder] = useState(null);
 
+    // Review state
+    const [reviewingItem, setReviewingItem] = useState(null); // "orderId_sku"
+    const [reviewRating, setReviewRating] = useState(5);
+    const [reviewComment, setReviewComment] = useState("");
+    const [reviewSubmitting, setReviewSubmitting] = useState(false);
+    const [reviewStatus, setReviewStatus] = useState({});
+    const [submittedReviews, setSubmittedReviews] = useState(new Set());
+
     // Fetch debug config
     useEffect(() => {
         fetch("/api/debug/config").then(r => r.json()).then(d => setDebugMode(!!d.debug)).catch(() => {});
@@ -395,6 +403,46 @@ export default function Portal() {
         }
     };
 
+    // ── REVIEW HELPERS ──
+    const isReviewEligible = (order) => {
+        if (order.status !== "delivered" || !order.deliveredAt) return false;
+        const threeDaysMs = 3 * 24 * 60 * 60 * 1000;
+        return Date.now() - new Date(order.deliveredAt).getTime() >= threeDaysMs;
+    };
+
+    const handleSubmitReview = async (order, item) => {
+        const key = `${order._id}_${item.sku || item.productName}`;
+        setReviewSubmitting(true);
+        try {
+            const res = await fetch("/api/reviews", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    email: client.email,
+                    orderId: order._id,
+                    sku: item.sku || item.productName,
+                    productName: item.productName,
+                    rating: reviewRating,
+                    comment: reviewComment,
+                }),
+            });
+            const data = await res.json();
+            if (res.ok && data.success) {
+                setSubmittedReviews(prev => new Set([...prev, key]));
+                setReviewStatus(prev => ({ ...prev, [key]: "success" }));
+                setReviewingItem(null);
+                setReviewComment("");
+                setReviewRating(5);
+            } else {
+                setReviewStatus(prev => ({ ...prev, [key]: data.error || "Failed" }));
+            }
+        } catch {
+            setReviewStatus(prev => ({ ...prev, [key]: "Failed to connect" }));
+        } finally {
+            setReviewSubmitting(false);
+        }
+    };
+
     const initials = (profileForm.name || client?.email || "?")
         .split(" ").map((w) => w[0]).join("").substring(0, 2).toUpperCase();
 
@@ -599,20 +647,80 @@ export default function Portal() {
                                                         <div className="px-6 md:px-8 pb-6 md:pb-8 border-t border-slate-100">
                                                             <div className="bg-slate-50 rounded-xl overflow-hidden mt-5">
                                                                 <div className="divide-y divide-slate-100">
-                                                                    {order.items.map((item, i) => (
-                                                                        <div key={i} className="flex justify-between items-center px-5 py-3.5">
+                                                                    {order.items.map((item, i) => {
+                                                                        const reviewKey = `${order._id}_${item.sku || item.productName}`;
+                                                                        const canReview = isReviewEligible(order) && !submittedReviews.has(reviewKey);
+                                                                        const isReviewing = reviewingItem === reviewKey;
+                                                                        const itemReviewStatus = reviewStatus[reviewKey];
+                                                                        return (
+                                                                        <div key={i}>
+                                                                        <div className="flex justify-between items-center px-5 py-3.5">
                                                                             <div className="flex items-center gap-3">
                                                                                 <div className="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center">
                                                                                     <svg className="w-4 h-4 text-sage-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>
                                                                                 </div>
                                                                                 <div>
                                                                                     <span className="text-slate-900 text-sm font-medium">{item.productName}</span>
-                                                                                    <span className="text-slate-400 text-xs ml-2">× {item.quantity}</span>
+                                                                                    <span className="text-slate-400 text-xs ml-2">&times; {item.quantity}</span>
                                                                                 </div>
                                                                             </div>
-                                                                            <span className="text-slate-700 text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                                                                            <div className="flex items-center gap-3">
+                                                                                <span className="text-slate-700 text-sm font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                                                                                {submittedReviews.has(reviewKey) || itemReviewStatus === "success" ? (
+                                                                                    <span className="text-emerald-600 text-[10px] font-bold flex items-center gap-1">
+                                                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M5 13l4 4L19 7"></path></svg>
+                                                                                        Reviewed
+                                                                                    </span>
+                                                                                ) : canReview ? (
+                                                                                    <button
+                                                                                        onClick={(e) => { e.stopPropagation(); setReviewingItem(isReviewing ? null : reviewKey); setReviewRating(5); setReviewComment(""); }}
+                                                                                        className="text-[10px] font-bold px-2.5 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 transition-colors"
+                                                                                    >
+                                                                                        {isReviewing ? "Cancel" : "★ Review"}
+                                                                                    </button>
+                                                                                ) : null}
+                                                                            </div>
                                                                         </div>
-                                                                    ))}
+                                                                        {/* Inline Review Form */}
+                                                                        {isReviewing && (
+                                                                            <div className="px-5 pb-4 pt-1">
+                                                                                <div className="bg-white rounded-xl border border-slate-200 p-4 space-y-3">
+                                                                                    <div>
+                                                                                        <label className="text-[10px] text-slate-500 uppercase tracking-wider font-bold block mb-1.5">Rating</label>
+                                                                                        <div className="flex gap-1">
+                                                                                            {[1,2,3,4,5].map(s => (
+                                                                                                <button key={s} type="button" onClick={() => setReviewRating(s)}
+                                                                                                    className="transition-transform hover:scale-125">
+                                                                                                    <svg className="w-6 h-6" fill={s <= reviewRating ? "#dbb55c" : "none"} stroke={s <= reviewRating ? "#dbb55c" : "#cbd5e1"} viewBox="0 0 24 24">
+                                                                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                                                                                    </svg>
+                                                                                                </button>
+                                                                                            ))}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div>
+                                                                                        <label className="text-[10px] text-slate-500 uppercase tracking-wider font-bold block mb-1.5">Comment (Optional)</label>
+                                                                                        <textarea rows="2" value={reviewComment} onChange={e => setReviewComment(e.target.value)}
+                                                                                            className="w-full px-3 py-2 rounded-lg bg-slate-50 border border-slate-200 focus:border-sage-500 focus:bg-white focus:ring-2 focus:ring-sage-200 outline-none transition-all text-sm text-slate-900 resize-none"
+                                                                                            placeholder="Share your experience with this product..."
+                                                                                        />
+                                                                                    </div>
+                                                                                    {itemReviewStatus && itemReviewStatus !== "success" && (
+                                                                                        <p className="text-red-500 text-xs font-medium">{itemReviewStatus}</p>
+                                                                                    )}
+                                                                                    <button
+                                                                                        onClick={() => handleSubmitReview(order, item)}
+                                                                                        disabled={reviewSubmitting}
+                                                                                        className="w-full py-2.5 bg-sage-600 text-white font-bold rounded-lg text-xs tracking-wide hover:bg-sage-500 transition-colors disabled:opacity-50"
+                                                                                    >
+                                                                                        {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                                                                                    </button>
+                                                                                </div>
+                                                                            </div>
+                                                                        )}
+                                                                        </div>
+                                                                        );
+                                                                    })}
                                                                 </div>
                                                             </div>
                                                             <div className="flex justify-between items-center mt-5 pt-4 border-t border-slate-100">

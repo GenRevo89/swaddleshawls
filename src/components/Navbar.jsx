@@ -51,7 +51,6 @@ export default function Navbar() {
           animation: "gradientShift 12s ease-in-out infinite",
           backdropFilter: "blur(20px) saturate(1.6)",
           WebkitBackdropFilter: "blur(20px) saturate(1.6)",
-          borderBottom: "1px solid rgba(219,181,92,0.15)",
           boxShadow: scrolled ? "0 8px 32px rgba(0,0,0,0.3)" : "0 4px 16px rgba(0,0,0,0.15)",
         }}
       >
@@ -120,6 +119,16 @@ export default function Navbar() {
             </div>
           </nav>
         </div>
+
+        {/* Animated gradient line — bottom edge */}
+        <div
+          className="absolute bottom-0 left-0 right-0 h-[3px] translate-y-full"
+          style={{
+            background: "linear-gradient(90deg, var(--henna-500), var(--gold-400), var(--saffron-400), var(--terra-500), var(--henna-500))",
+            backgroundSize: "300% 100%",
+            animation: "gradientShift 4s ease-in-out infinite",
+          }}
+        />
       </header>
 
       {/* Full Screen Mobile Menu */}
