@@ -17,6 +17,7 @@ function ProductIcon() {
 // CRM Contact Form — imported as shared component
 import CrmContactForm from "@/components/CrmContactForm";
 import VoiceAssistant from "@/components/VoiceAssistant";
+import CartAbandonmentModal from "@/components/CartAbandonmentModal";
 
 const isPreorder = process.env.NEXT_PUBLIC_PREORDER === "TRUE";
 
@@ -587,6 +588,23 @@ export default function Shop() {
   const [appliedCoupon, setAppliedCoupon] = useState(null);
   const [couponError, setCouponError] = useState("");
   const [agentSelectedSize, setAgentSelectedSize] = useState(null);
+  const [showAbandonModal, setShowAbandonModal] = useState(false);
+
+  // ── Close Cart with Abandonment Intercept ──
+  const closeCart = useCallback(() => {
+    if (checkoutMode && cart.length > 0) {
+      // Only show once per session
+      if (typeof window !== "undefined" && !sessionStorage.getItem("ss_abandon_shown")) {
+        sessionStorage.setItem("ss_abandon_shown", "1");
+        setCartOpen(false);
+        setCheckoutMode(false);
+        setShowAbandonModal(true);
+        return;
+      }
+    }
+    setCartOpen(false);
+    setCheckoutMode(false);
+  }, [checkoutMode, cart.length]);
 
   const handleApplyCoupon = (e) => {
     e?.preventDefault();
@@ -1204,7 +1222,7 @@ export default function Shop() {
           <div
             className="fixed inset-0 bg-black/40 backdrop-blur-sm transition-all"
             style={{ zIndex: 10000 }}
-            onClick={() => { setCartOpen(false); setCheckoutMode(false); }}
+            onClick={closeCart}
           ></div>
 
           <div
@@ -1220,7 +1238,7 @@ export default function Shop() {
                 <span className="text-sm font-normal" style={{ color: "var(--brown-400)" }}>({cartCount} item{cartCount !== 1 ? "s" : ""})</span>
               </h3>
               <button
-                onClick={() => { setCartOpen(false); setCheckoutMode(false); }}
+                onClick={closeCart}
                 className="p-1 transition-colors" style={{ color: "var(--brown-400)" }}
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1490,6 +1508,12 @@ export default function Shop() {
           </div>
         </div>
       )}
+
+      {/* Cart Abandonment Modal */}
+      <CartAbandonmentModal
+        isOpen={showAbandonModal}
+        onClose={() => setShowAbandonModal(false)}
+      />
     </>
   );
 }
