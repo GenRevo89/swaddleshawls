@@ -1137,7 +1137,7 @@ export default function Shop() {
         </div>
       )}
 
-      <main className="flex-grow pt-36 pb-28 px-6 relative pattern-paisley" style={{ zIndex: 1 }}>
+      <main className="flex-grow pt-36 pb-40 px-6 relative pattern-paisley" style={{ zIndex: 1 }}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -1205,7 +1205,7 @@ export default function Shop() {
 
           {/* Product Grid — Loading */}
           {loadingProducts && (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
               {[1, 2, 3, 4].map((i) => (
                 <div key={i} className="bg-white rounded-2xl shadow-lg overflow-hidden animate-pulse" style={{ border: "1px solid var(--brown-100)" }}>
                   <div className="aspect-square" style={{ backgroundColor: "var(--brown-100)" }}></div>
@@ -1278,7 +1278,7 @@ export default function Shop() {
                       <h2 className="text-3xl font-bold mb-2" style={{ color: "var(--brown-800)", fontFamily: "var(--font-heading)" }}>{category.title}</h2>
                       <p className="text-lg" style={{ color: "var(--brown-500)" }}>{category.description}</p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-7">
                       {category.items.map((product) => {
                         const pid = product._id || product.id;
                         return (
@@ -1322,7 +1322,7 @@ export default function Shop() {
       )}
 
       {/* Social Proof Ticker */}
-      <SocialProofTicker />
+      <SocialProofTicker bannerActive={cart.length > 0 && !cartOpen} />
 
       {/* Voice Assistant — Nani */}
       <VoiceAssistant

@@ -40,6 +40,7 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+/scripts
 /src/scripts
 /src/scripts/*.js
 /src/scripts/*.mjs

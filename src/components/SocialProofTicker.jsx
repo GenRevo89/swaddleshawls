@@ -58,7 +58,7 @@ function seededShuffle(arr, rng) {
   return a;
 }
 
-export default function SocialProofTicker() {
+export default function SocialProofTicker({ bannerActive }) {
   const [current, setCurrent] = useState(null);
   const [visible, setVisible] = useState(false);
   const indexRef = useRef(0);
@@ -116,7 +116,7 @@ export default function SocialProofTicker() {
 
   return (
     <div
-      className={`fixed top-24 left-6 z-[9990] max-w-xs transition-all duration-500 ${
+      className={`fixed ${bannerActive ? "top-[132px]" : "top-24"} left-6 z-[9990] max-w-xs transition-all duration-500 ${
         visible
           ? "translate-y-0 opacity-100"
           : "-translate-y-4 opacity-0 pointer-events-none"
