@@ -942,7 +942,7 @@ export default function Shop() {
   // ── Create order in Surge + DB, then open Surge portal ──
   const handleSurgeCheckout = async (e) => {
     e?.preventDefault();
-    if (cart.length === 0 || !formData.name || !formData.email) return;
+    if (cart.length === 0) return;
     setSubmitting(true);
 
     try {
@@ -950,8 +950,8 @@ export default function Shop() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email,
-          customerName: formData.name,
+          email: "pending@checkout.local",
+          customerName: "Pending Customer",
           couponCode: appliedCoupon?.code || undefined,
           paymentMethod: "surge",
           items: buildOrderItems({ surgeDiscount: true }),
@@ -964,7 +964,7 @@ export default function Shop() {
             receiptId: data.data.receiptId,
             paymentUrl: data.data.paymentUrl,
             orderNumber: data.data.orderNumber,
-            email: formData.email,
+            email: "pending@checkout.local",
           });
           setCartOpen(false);
           setCheckoutMode(false);
@@ -973,7 +973,7 @@ export default function Shop() {
           setCart([]);
           clearCartStorage();
           setCheckoutMode(false);
-          setFormData({ name: "", email: "", couponCode: "" });
+          setFormData({ ...formData, couponCode: "" });
         }
       } else {
         alert(data.error || "Order failed. Please try again.");
@@ -988,7 +988,7 @@ export default function Shop() {
   // ── Create order in DB, then redirect to Stripe Checkout ──
   const handleStripeCheckout = async (e) => {
     e?.preventDefault();
-    if (cart.length === 0 || !formData.name || !formData.email) return;
+    if (cart.length === 0) return;
     setStripeLoading(true);
 
     try {
@@ -997,8 +997,8 @@ export default function Shop() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email,
-          customerName: formData.name,
+          email: "pending@checkout.local",
+          customerName: "Pending Customer",
           couponCode: appliedCoupon?.code || undefined,
           paymentMethod: "stripe",
           items: buildOrderItems(),
@@ -1016,8 +1016,8 @@ export default function Shop() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: formData.email,
-          customerName: formData.name,
+          email: undefined,
+          customerName: "Pending Customer",
           orderId: orderData.data._id,
           receiptId: orderData.data.receiptId || "",
           couponCode: appliedCoupon?.code || undefined,
@@ -1369,7 +1369,8 @@ export default function Shop() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6">
+            {/* ── Scrollable cart items ── */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6" style={{ WebkitOverflowScrolling: "touch" }}>
               {cart.length === 0 ? (
                 <div className="text-center py-12" style={{ color: "var(--brown-300)" }}>
                   <svg className="w-16 h-16 mx-auto mb-4 opacity-30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1378,219 +1379,98 @@ export default function Shop() {
                   <p className="font-medium">Your cart is empty</p>
                 </div>
               ) : (
-                <>
-                  <div className="space-y-4 mb-6">
-                    {cart.map((item) => (
-                      <div key={item.cartItemId} className="flex items-center justify-between rounded-xl p-4 gap-4" style={{ backgroundColor: "var(--brown-50)" }}>
-                        <div className="flex items-center gap-4 flex-1">
-                          {item.image && (
-                            <div className="w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-white" style={{ border: "1px solid var(--brown-100)" }}>
-                              <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                <div className="space-y-3 sm:space-y-4">
+                  {cart.map((item) => (
+                    <div key={item.cartItemId} className="flex items-center justify-between rounded-xl p-3 sm:p-4 gap-3 sm:gap-4" style={{ backgroundColor: "var(--brown-50)" }}>
+                      <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                        {item.image && (
+                          <div className="w-14 h-14 sm:w-16 sm:h-16 shrink-0 rounded-lg overflow-hidden bg-white" style={{ border: "1px solid var(--brown-100)" }}>
+                            <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
+                          </div>
+                        )}
+                        <div className="min-w-0">
+                          <h4 className="font-bold text-sm sm:text-base truncate" style={{ color: "var(--brown-800)" }}>{item.name}</h4>
+                          {item.modifiers && item.modifiers.length > 0 && (
+                            <div className="text-xs mb-1 space-y-0.5" style={{ color: "var(--brown-500)" }}>
+                              {item.modifiers.map(m => (
+                                <div key={m.id}>+ {m.name}</div>
+                              ))}
                             </div>
                           )}
-                          <div>
-                            <h4 className="font-bold" style={{ color: "var(--brown-800)" }}>{item.name}</h4>
-                            {item.modifiers && item.modifiers.length > 0 && (
-                              <div className="text-xs mb-1 space-y-0.5" style={{ color: "var(--brown-500)" }}>
-                                {item.modifiers.map(m => (
-                                  <div key={m.id}>+ {m.name}</div>
-                                ))}
-                              </div>
-                            )}
-                            {isPreorder ? (
-                              <p className="text-sm font-medium mt-1">
-                                <span className="line-through text-xs mr-2" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)}</span>
-                                <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.price * 0.1)).toFixed(2)} each</span>
-                              </p>
-                            ) : (
-                              <p className="text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <button
-                            onClick={() => updateQuantity(item.cartItemId, -1)}
-                            className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-bold transition-colors"
-                            style={{ border: "1px solid var(--brown-200)", color: "var(--brown-500)" }}
-                          >
-                            −
-                          </button>
-                          <span className="font-bold w-6 text-center" style={{ color: "var(--brown-800)" }}>{item.quantity}</span>
-                          <button
-                            onClick={() => updateQuantity(item.cartItemId, 1)}
-                            className="w-8 h-8 rounded-lg bg-white flex items-center justify-center font-bold transition-colors"
-                            style={{ border: "1px solid var(--brown-200)", color: "var(--brown-500)" }}
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {checkoutMode && (
-                    <div className="space-y-4 rounded-xl p-5" style={{ backgroundColor: "var(--brown-50)", border: "1px solid var(--brown-100)" }}>
-                      <h4 className="font-bold mb-1" style={{ color: "var(--brown-800)" }}>Checkout Details</h4>
-                      <div>
-                        <label htmlFor="checkout-name" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Full Name</label>
-                        <input
-                          type="text" id="checkout-name" required
-                          value={formData.name}
-                          onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                          placeholder="Your Full Name"
-                          className="w-full px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm"
-                          style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="checkout-email" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Email Address</label>
-                        <input
-                          type="email" id="checkout-email" required
-                          value={formData.email}
-                          onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                          placeholder="you@example.com"
-                          className="w-full px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm"
-                          style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
-                        />
-                      </div>
-                      <div>
-                        <label htmlFor="checkout-coupon" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Coupon Code (Optional)</label>
-                        <div className="flex gap-2">
-                          <input
-                            type="text" id="checkout-coupon"
-                            value={formData.couponCode}
-                            onChange={(e) => setFormData({ ...formData, couponCode: e.target.value.toUpperCase() })}
-                            disabled={appliedCoupon}
-                            placeholder="e.g. WELCOME10"
-                            className="flex-1 px-3 py-2.5 rounded-lg bg-white outline-none transition-all text-sm uppercase disabled:opacity-50"
-                            style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }}
-                          />
-                          {appliedCoupon ? (
-                            <button
-                              type="button"
-                              onClick={() => { setAppliedCoupon(null); setFormData({ ...formData, couponCode: "" }); }}
-                              className="px-4 py-2.5 rounded-lg text-sm font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
-                            >
-                              Remove
-                            </button>
+                          {isPreorder ? (
+                            <p className="text-xs sm:text-sm font-medium mt-1">
+                              <span className="line-through text-xs mr-2" style={{ color: "var(--brown-400)" }}>${Number(item.price).toFixed(2)}</span>
+                              <span style={{ color: "var(--henna-600)" }}>${(Number(item.price) - (item.price * 0.1)).toFixed(2)} each</span>
+                            </p>
                           ) : (
-                            <button
-                              type="button"
-                              onClick={handleApplyCoupon}
-                              disabled={!formData.couponCode}
-                              className="px-4 py-2.5 rounded-lg text-sm font-bold text-white transition-colors disabled:opacity-50"
-                              style={{ backgroundColor: "var(--henna-500)" }}
-                            >
-                              Apply
-                            </button>
+                            <p className="text-xs sm:text-sm font-medium mt-1" style={{ color: "var(--brown-600)" }}>${Number(item.price).toFixed(2)} each</p>
                           )}
                         </div>
-                        {couponError && <div className="text-red-500 text-xs mt-1 font-bold">{couponError}</div>}
-                        {appliedCoupon && <div className="text-emerald-600 text-xs mt-1 font-bold">✓ {appliedCoupon.name} applied!</div>}
                       </div>
-                      <div className="text-[11px] leading-relaxed text-center my-2" style={{ color: "var(--brown-500)" }}>
-                        <svg className="w-3.5 h-3.5 inline mr-1 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        Your email will be used to access the <a href="/portal" className="underline font-bold hover:text-emerald-700 transition-colors">Client Portal</a> to track your order.
-                      </div>
-
-                      {/* ── Divider ── */}
-                      <div className="pt-2">
-                        <div className="text-[10px] font-bold uppercase tracking-wider text-center mb-3" style={{ color: "var(--brown-400)" }}>Choose Payment Method</div>
-                      </div>
-
-                      {/* ── Surge Button (Primary) ── */}
-                      <button
-                        type="button"
-                        disabled={submitting || stripeLoading || !formData.name || !formData.email}
-                        onClick={handleSurgeCheckout}
-                        className="w-full font-bold py-3.5 rounded-xl transition-all duration-300 shadow-md disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-0.5"
-                        style={{ backgroundColor: "#f97316", color: "#fff" }}
-                      >
-                        {submitting ? (
-                          <>
-                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                            </svg>
-                            Processing...
-                          </>
-                        ) : (
-                          <>
-                            <img src="/Surge.png" alt="Surge Shield" className="h-8 w-auto object-contain my-[-4px] relative -top-0.25" />
-                            <span className="flex flex-col items-center leading-tight">
-                              <span>Pay with Surge — ${surgeTotal.toFixed(2)}</span>
-                              <span className="text-[10px] font-normal opacity-80">Save ${surgeSavings.toFixed(2)} (5% off)</span>
-                            </span>
-                          </>
-                        )}
-                      </button>
-
-                      {/* ── OR Divider ── */}
-                      <div className="flex items-center gap-3">
-                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--brown-400)" }}>or</span>
-                        <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
-                      </div>
-
-                      {/* ── Stripe Button (Secondary) ── */}
-                      <button
-                        type="button"
-                        disabled={stripeLoading || submitting || !formData.name || !formData.email}
-                        onClick={handleStripeCheckout}
-                        className="w-full font-bold py-3.5 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2.5 hover:shadow-xl hover:-translate-y-0.5"
-                        style={{ backgroundColor: "#635BFF", color: "#fff" }}
-                      >
-                        {stripeLoading ? (
-                          <>
-                            <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
-                            </svg>
-                            Redirecting to Stripe...
-                          </>
-                        ) : (
-                          <>
-                            <svg className="h-[22px] w-auto mr-1" viewBox="54 36 360.02 149.84" fill="currentColor">
-                              <path d="M414,113.4c0-25.6-12.4-45.8-36.1-45.8c-23.8,0-38.2,20.2-38.2,45.6c0,30.1,17,45.3,41.4,45.3 c11.9,0,20.9-2.7,27.7-6.5v-20c-6.8,3.4-14.6,5.5-24.5,5.5c-9.7,0-18.3-3.4-19.4-15.2h48.9C413.8,121,414,115.8,414,113.4z M364.6,103.9c0-11.3,6.9-16,13.2-16c6.1,0,12.6,4.7,12.6,16H364.6z" />
-                              <path d="M301.1,67.6c-9.8,0-16.1,4.6-19.6,7.8l-1.3-6.2h-22v116.6l25-5.3l0.1-28.3c3.6,2.6,8.9,6.3,17.7,6.3 c17.9,0,34.2-14.4,34.2-46.1C335.1,83.4,318.6,67.6,301.1,67.6z M295.1,136.5c-5.9,0-9.4-2.1-11.8-4.7l-0.1-37.1 c2.6-2.9,6.2-4.9,11.9-4.9c9.1,0,15.4,10.2,15.4,23.3C310.5,126.5,304.3,136.5,295.1,136.5z" />
-                              <polygon points="223.8,61.7 248.9,56.3 248.9,36 223.8,41.3" />
-                              <rect x="223.8" y="69.3" width="25.1" height="87.5" />
-                              <path d="M196.9,76.7l-1.6-7.4h-21.6v87.5h25V97.5c5.9-7.7,15.9-6.3,19-5.2v-23C214.5,68.1,202.8,65.9,196.9,76.7z" />
-                              <path d="M146.9,47.6l-24.4,5.2l-0.1,80.1c0,14.8,11.1,25.7,25.9,25.7c8.2,0,14.2-1.5,17.5-3.3V135 c-3.2,1.3-19,5.9-19-8.9V90.6h19V69.3h-19L146.9,47.6z" />
-                              <path d="M79.3,94.7c0-3.9,3.2-5.4,8.5-5.4c7.6,0,17.2,2.3,24.8,6.4V72.2c-8.3-3.3-16.5-4.6-24.8-4.6 C67.5,67.6,54,78.2,54,95.9c0,27.6,38,23.2,38,35.1c0,4.6-4,6.1-9.6,6.1c-8.3,0-18.9-3.4-27.3-8v23.8c9.3,4,18.7,5.7,27.3,5.7 c20.8,0,35.1-10.3,35.1-28.2C117.4,100.6,79.3,105.9,79.3,94.7z" />
-                            </svg>
-                            Pay with Card — ${cartTotal.toFixed(2)}
-                          </>
-                        )}
-                      </button>
-
-                      <div className="text-[10px] text-center leading-relaxed" style={{ color: "var(--brown-400)" }}>
-                        <svg className="w-3 h-3 inline mr-0.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                        </svg>
-                        Secured by 256-bit SSL encryption
+                      <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+                        <button
+                          onClick={() => updateQuantity(item.cartItemId, -1)}
+                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white flex items-center justify-center font-bold transition-colors text-sm"
+                          style={{ border: "1px solid var(--brown-200)", color: "var(--brown-500)" }}
+                        >
+                          −
+                        </button>
+                        <span className="font-bold w-5 sm:w-6 text-center text-sm" style={{ color: "var(--brown-800)" }}>{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.cartItemId, 1)}
+                          className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white flex items-center justify-center font-bold transition-colors text-sm"
+                          style={{ border: "1px solid var(--brown-200)", color: "var(--brown-500)" }}
+                        >
+                          +
+                        </button>
                       </div>
                     </div>
-                  )}
-                </>
+                  ))}
+                </div>
               )}
             </div>
 
-            {cart.length > 0 && !checkoutMode && (
-              <div className="p-6" style={{ borderTop: "1px solid var(--brown-100)" }}>
-                <div className="flex justify-between items-center mb-4">
-                  <span className="text-lg font-bold" style={{ color: "var(--brown-800)" }}>Subtotal</span>
-                  <span className="text-2xl font-bold" style={{ color: "var(--brown-800)" }}>${cartTotal.toFixed(2)}</span>
+            {/* ── Sticky bottom payment panel ── */}
+            {cart.length > 0 && (
+              <div className="shrink-0 border-t p-4 sm:p-5 space-y-3 bg-white overflow-y-auto" style={{ borderColor: "var(--brown-100)", maxHeight: "60vh" }}>
+                <div className="flex justify-between items-center">
+                  <span className="text-base sm:text-lg font-bold" style={{ color: "var(--brown-800)" }}>Subtotal</span>
+                  <span className="text-xl sm:text-2xl font-bold" style={{ color: "var(--brown-800)" }}>${cartTotal.toFixed(2)}</span>
                 </div>
-                <button
-                  onClick={() => setCheckoutMode(true)}
-                  className="w-full text-white font-bold py-4 rounded-xl transition-all duration-300 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transform tracking-wide"
-                  style={{ backgroundColor: "var(--brown-800)" }}
-                >
-                  Proceed to Checkout
+                <div>
+                  <label htmlFor="checkout-coupon" className="block text-xs font-bold mb-1" style={{ color: "var(--brown-500)" }}>Coupon Code (Optional)</label>
+                  <div className="flex gap-2">
+                    <input type="text" id="checkout-coupon" value={formData.couponCode} onChange={(e) => setFormData({ ...formData, couponCode: e.target.value.toUpperCase() })} disabled={appliedCoupon} placeholder="e.g. WELCOME10" className="flex-1 px-3 py-2 rounded-lg bg-white outline-none transition-all text-sm uppercase disabled:opacity-50" style={{ border: "1px solid var(--brown-200)", color: "var(--brown-800)" }} />
+                    {appliedCoupon ? (
+                      <button type="button" onClick={() => { setAppliedCoupon(null); setFormData({ ...formData, couponCode: "" }); }} className="px-3 py-2 rounded-lg text-sm font-bold bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors">Remove</button>
+                    ) : (
+                      <button type="button" onClick={handleApplyCoupon} disabled={!formData.couponCode} className="px-3 py-2 rounded-lg text-sm font-bold text-white transition-colors disabled:opacity-50" style={{ backgroundColor: "var(--henna-500)" }}>Apply</button>
+                    )}
+                  </div>
+                  {couponError && <div className="text-red-500 text-xs mt-1 font-bold">{couponError}</div>}
+                  {appliedCoupon && <div className="text-emerald-600 text-xs mt-1 font-bold">✓ {appliedCoupon.name} applied!</div>}
+                </div>
+
+                <div className="text-[10px] font-bold uppercase tracking-wider text-center" style={{ color: "var(--brown-400)" }}>Choose Payment Method</div>
+
+                <button type="button" disabled={stripeLoading || submitting} onClick={handleStripeCheckout} className="w-full font-bold py-3 rounded-xl transition-all duration-300 shadow-lg disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2 hover:shadow-xl hover:-translate-y-0.5" style={{ backgroundColor: "#635BFF", color: "#fff" }}>
+                  {stripeLoading ? (<><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>Redirecting to Stripe...</>) : (<><svg className="h-5 w-auto" viewBox="54 36 360.02 149.84" fill="currentColor"><path d="M414,113.4c0-25.6-12.4-45.8-36.1-45.8c-23.8,0-38.2,20.2-38.2,45.6c0,30.1,17,45.3,41.4,45.3 c11.9,0,20.9-2.7,27.7-6.5v-20c-6.8,3.4-14.6,5.5-24.5,5.5c-9.7,0-18.3-3.4-19.4-15.2h48.9C413.8,121,414,115.8,414,113.4z M364.6,103.9c0-11.3,6.9-16,13.2-16c6.1,0,12.6,4.7,12.6,16H364.6z" /><path d="M301.1,67.6c-9.8,0-16.1,4.6-19.6,7.8l-1.3-6.2h-22v116.6l25-5.3l0.1-28.3c3.6,2.6,8.9,6.3,17.7,6.3 c17.9,0,34.2-14.4,34.2-46.1C335.1,83.4,318.6,67.6,301.1,67.6z M295.1,136.5c-5.9,0-9.4-2.1-11.8-4.7l-0.1-37.1 c2.6-2.9,6.2-4.9,11.9-4.9c9.1,0,15.4,10.2,15.4,23.3C310.5,126.5,304.3,136.5,295.1,136.5z" /><polygon points="223.8,61.7 248.9,56.3 248.9,36 223.8,41.3" /><rect x="223.8" y="69.3" width="25.1" height="87.5" /><path d="M196.9,76.7l-1.6-7.4h-21.6v87.5h25V97.5c5.9-7.7,15.9-6.3,19-5.2v-23C214.5,68.1,202.8,65.9,196.9,76.7z" /><path d="M146.9,47.6l-24.4,5.2l-0.1,80.1c0,14.8,11.1,25.7,25.9,25.7c8.2,0,14.2-1.5,17.5-3.3V135 c-3.2,1.3-19,5.9-19-8.9V90.6h19V69.3h-19L146.9,47.6z" /><path d="M79.3,94.7c0-3.9,3.2-5.4,8.5-5.4c7.6,0,17.2,2.3,24.8,6.4V72.2c-8.3-3.3-16.5-4.6-24.8-4.6 C67.5,67.6,54,78.2,54,95.9c0,27.6,38,23.2,38,35.1c0,4.6-4,6.1-9.6,6.1c-8.3,0-18.9-3.4-27.3-8v23.8c9.3,4,18.7,5.7,27.3,5.7 c20.8,0,35.1-10.3,35.1-28.2C117.4,100.6,79.3,105.9,79.3,94.7z" /></svg>Pay with Card — ${cartTotal.toFixed(2)}</>)}
                 </button>
+
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider" style={{ color: "var(--brown-400)" }}>or</span>
+                  <div className="flex-1 h-px" style={{ backgroundColor: "var(--brown-200)" }}></div>
+                </div>
+
+                <button type="button" disabled={submitting || stripeLoading} onClick={handleSurgeCheckout} className="w-full font-bold py-3 rounded-xl transition-all duration-300 shadow-md disabled:opacity-50 text-sm tracking-wide flex items-center justify-center gap-2 hover:shadow-lg hover:-translate-y-0.5" style={{ backgroundColor: "#f97316", color: "#fff" }}>
+                  {submitting ? (<><svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path></svg>Processing...</>) : (<><img src="/Surge.png" alt="Surge Shield" className="h-7 w-auto object-contain my-[-4px]" /><span className="flex flex-col items-center leading-tight"><span>Pay with Surge — ${surgeTotal.toFixed(2)}</span><span className="text-[10px] font-normal opacity-80">Save ${surgeSavings.toFixed(2)} (5% off)</span></span></>)}
+                </button>
+
+                <div className="text-[10px] text-center leading-relaxed" style={{ color: "var(--brown-400)" }}>
+                  <svg className="w-3 h-3 inline mr-0.5 -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                  Secured by 256-bit SSL encryption
+                </div>
               </div>
             )}
           </div>
@@ -1623,7 +1503,16 @@ export default function Shop() {
       {stripeClientSecret && (
         <div className="fixed inset-0 z-[10101] flex items-center justify-center p-4 lg:p-8">
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setStripeClientSecret(null)}></div>
-          <div className="relative w-full md:max-w-2xl lg:max-w-3xl xl:max-w-4xl bg-white rounded-2xl shadow-2xl payment-modal-enter transition-all duration-300 max-h-[90vh] min-h-[400px] overflow-y-auto">
+          <div className="relative w-full max-w-lg md:max-w-2xl bg-white rounded-2xl shadow-2xl payment-modal-enter transition-all duration-300 max-h-[90vh] min-h-[400px] overflow-y-auto" style={{ scrollbarWidth: "none", WebkitOverflowScrolling: "touch" }}>
+            {/* Close button */}
+            <button
+              onClick={() => setStripeClientSecret(null)}
+              className="sticky top-0 right-0 z-10 ml-auto flex items-center gap-1.5 mr-3 mt-3 px-3 py-1.5 rounded-full text-xs font-bold transition-all hover:bg-slate-200"
+              style={{ backgroundColor: "rgba(241,245,249,0.95)", color: "#475569" }}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              Cancel
+            </button>
             <EmbeddedCheckoutProvider stripe={stripePromise} options={{ clientSecret: stripeClientSecret }}>
               <EmbeddedCheckout className="w-full" />
             </EmbeddedCheckoutProvider>

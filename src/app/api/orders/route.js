@@ -10,9 +10,9 @@ export async function POST(req) {
         const body = await req.json();
         const { email, customerName, items, shippingAddress, paymentMethod } = body;
 
-        if (!email || !customerName || !items || !Array.isArray(items) || items.length === 0) {
+        if (!items || !Array.isArray(items) || items.length === 0) {
             return NextResponse.json(
-                { error: "Missing required fields: email, customerName, items[]" },
+                { error: "Missing required fields: items[]" },
                 { status: 400 }
             );
         }
@@ -80,8 +80,8 @@ export async function POST(req) {
         await connectToDatabase();
 
         const order = await Order.create({
-            email: email.toLowerCase().trim(),
-            customerName: customerName.trim(),
+            email: (email || "pending@checkout.local").toLowerCase().trim(),
+            customerName: (customerName || "Pending Customer").trim(),
             items,
             total: roundedTotal,
             status: receiptId ? "awaiting_payment" : "confirmed",
@@ -92,12 +92,14 @@ export async function POST(req) {
             paymentUrl: paymentUrl || null,
         });
 
-        // Auto-create or update client in the clients collection
-        await Client.findOneAndUpdate(
-            { email: email.toLowerCase().trim() },
-            { $setOnInsert: { name: customerName.trim() } },
-            { upsert: true, new: true }
-        );
+        // Auto-create or update client in the clients collection (skip for placeholder emails)
+        if (email && email !== "pending@checkout.local") {
+            await Client.findOneAndUpdate(
+                { email: email.toLowerCase().trim() },
+                { $setOnInsert: { name: (customerName || "Customer").trim() } },
+                { upsert: true, new: true }
+            );
+        }
 
         // NOTE: CRM sync is deferred to /api/orders/confirm (after payment succeeds)
 

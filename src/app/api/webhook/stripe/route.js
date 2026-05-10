@@ -53,6 +53,16 @@ export async function POST(req) {
                 order.stripeSessionId = session.id;
                 order.stripePaymentIntent = session.payment_intent;
 
+                // Backfill real customer details from Stripe session
+                const stripeEmail = session.customer_details?.email || session.customer_email;
+                const stripeName = session.customer_details?.name || customerName;
+                if (stripeEmail && (order.email === "pending@checkout.local" || !order.email)) {
+                    order.email = stripeEmail.toLowerCase().trim();
+                }
+                if (stripeName && (order.customerName === "Pending Customer" || !order.customerName)) {
+                    order.customerName = stripeName.trim();
+                }
+
                 // Extract shipping address from Stripe Checkout
                 const shipping = session.shipping_details || session.shipping;
                 if (shipping?.address) {
@@ -67,7 +77,16 @@ export async function POST(req) {
                 }
 
                 await order.save();
-                console.log(`[Stripe Webhook] Order ${order.orderNumber} confirmed`);
+                console.log(`[Stripe Webhook] Order ${order.orderNumber} confirmed — email: ${order.email}, name: ${order.customerName}`);
+
+                // Upsert client record with real details
+                if (order.email && order.email !== "pending@checkout.local") {
+                    await Client.findOneAndUpdate(
+                        { email: order.email },
+                        { $setOnInsert: { name: order.customerName || "Customer" } },
+                        { upsert: true, new: true }
+                    );
+                }
 
                 // ── CRM SYNC (same logic as /api/orders/confirm) ──
                 const client = await Client.findOne({ email: order.email });

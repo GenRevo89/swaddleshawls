@@ -633,7 +633,25 @@ h1, h2, h3, h4 {
 }
 .cart-drawer-enter {
   animation: cartSlideIn 0.4s var(--ease-out-expo) both;
+  overflow: hidden; /* masks scrollbar within rounded corners */
 }
+
+/* Cart scrollable area — thin scrollbar, hidden on mobile */
+.cart-drawer-enter .flex-1 {
+  scrollbar-width: thin;
+  scrollbar-color: var(--brown-200) transparent;
+}
+.cart-drawer-enter .flex-1::-webkit-scrollbar { width: 4px; }
+.cart-drawer-enter .flex-1::-webkit-scrollbar-track { background: transparent; }
+.cart-drawer-enter .flex-1::-webkit-scrollbar-thumb { background: var(--brown-200); border-radius: 4px; }
+@media (max-width: 640px) {
+  .cart-drawer-enter .flex-1::-webkit-scrollbar { display: none; }
+  .cart-drawer-enter .flex-1 { scrollbar-width: none; }
+}
+
+/* Stripe payment modal — hide scrollbar, keep scrollable */
+.payment-modal-enter::-webkit-scrollbar { display: none; }
+.payment-modal-enter { scrollbar-width: none; }
 
 @keyframes slideDown {
   from { transform: translateY(-100%); opacity: 0; }

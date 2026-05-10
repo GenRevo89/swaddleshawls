@@ -111,7 +111,6 @@ export async function POST(req) {
             ui_mode: "embedded_page",
             payment_method_types: ["card"],
             line_items,
-            customer_email: email || undefined,
             // Stripe-native shipping address collection
             shipping_address_collection: {
                 allowed_countries: [
