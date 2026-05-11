@@ -702,6 +702,31 @@ export default function Shop() {
         email: "Your confirmation email is on the way.",
         stripeSessionId: sessionId,
       });
+
+      // Trigger CRM sync via /api/orders/confirm (mirrors Surge flow)
+      // The webhook may also fire, but /confirm is idempotent so this is safe
+      (async () => {
+        try {
+          // Retrieve session metadata to get the receiptId
+          const res = await fetch(`/api/checkout/stripe/session?session_id=${sessionId}`);
+          const data = await res.json();
+          if (data?.receiptId) {
+            await fetch("/api/orders/confirm", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ receiptId: data.receiptId }),
+            });
+          }
+        } catch (e) {
+          console.error("Post-Stripe CRM confirm failed:", e);
+        }
+      })();
+
+      // Clear cart on successful payment
+      setCart([]);
+      clearCartStorage();
+      setStripeClientSecret(null);
+
       // Clean URL
       window.history.replaceState({}, "", "/shop");
     } else if (payment === "cancelled") {

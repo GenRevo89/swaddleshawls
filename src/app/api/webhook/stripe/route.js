@@ -94,39 +94,37 @@ export async function POST(req) {
                 const firstName = nameParts[0] || "";
                 const lastName = nameParts.slice(1).join(" ") || nameParts[0] || "Customer";
 
-                (async () => {
-                    try {
-                        const contact = await upsertContact({
-                            email: order.email,
-                            first_name: firstName,
-                            last_name: lastName,
-                            mobile_phone: client?.phone || undefined,
-                            tags: ["ecommerce", "stripe", process.env.BRAND_CRM_TAG || "surgeshop"],
-                        });
-                        const contactId = contact?.id || null;
+                try {
+                    const contact = await upsertContact({
+                        email: order.email,
+                        first_name: firstName,
+                        last_name: lastName,
+                        mobile_phone: client?.phone || undefined,
+                        tags: ["ecommerce", "stripe", process.env.BRAND_CRM_TAG || "surgeshop"],
+                    });
+                    const contactId = contact?.id || null;
 
-                        const account = await upsertAccount({
-                            name: order.customerName,
-                            email: order.email,
-                            type: "Customer",
-                        });
-                        const accountId = account?.id || null;
+                    const account = await upsertAccount({
+                        name: order.customerName,
+                        email: order.email,
+                        type: "Customer",
+                    });
+                    const accountId = account?.id || null;
 
-                        await createOpportunity({
-                            name: `Order ${order.orderNumber} - ${order.customerName}`,
-                            description: `Stripe order: ${order.items.map(i => i.productName).join(", ")}`,
-                            budget: Math.round(Number(order.total)),
-                            expected_revenue: Math.round(Number(order.total)),
-                            close_date: new Date().toISOString().split("T")[0],
-                            lead_source: "Website",
-                            ...(contactId && { contactId }),
-                            ...(accountId && { accountId }),
-                        });
-                        console.log("[Stripe Webhook] CRM sync complete");
-                    } catch (err) {
-                        console.error("[Stripe Webhook] CRM sync failed:", err);
-                    }
-                })();
+                    await createOpportunity({
+                        name: `Order ${order.orderNumber} - ${order.customerName}`,
+                        description: `Stripe order: ${order.items.map(i => i.productName).join(", ")}`,
+                        budget: Math.round(Number(order.total)),
+                        expected_revenue: Math.round(Number(order.total)),
+                        close_date: new Date().toISOString().split("T")[0],
+                        lead_source: "Website",
+                        ...(contactId && { contactId }),
+                        ...(accountId && { accountId }),
+                    });
+                    console.log("[Stripe Webhook] CRM sync complete");
+                } catch (err) {
+                    console.error("[Stripe Webhook] CRM sync failed:", err);
+                }
             } else {
                 console.warn(`[Stripe Webhook] No matching order found for receipt: ${receiptId}, orderId: ${orderId}`);
             }
