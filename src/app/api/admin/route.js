@@ -300,6 +300,33 @@ export async function POST(req) {
         return NextResponse.json({ success: true, data: order });
     }
 
+    // ── RESEND CONFIRMATION EMAIL ──
+    if (action === "resend_confirmation") {
+        const { orderId } = body;
+        const order = await Order.findById(orderId);
+        if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+        if (!order.email || order.email === "pending@checkout.local") {
+            return NextResponse.json({ error: "No valid email to send to" }, { status: 400 });
+        }
+
+        try {
+            const { generateOrderConfirmationEmail } = require("@/lib/email-templates");
+            const htmlBody = generateOrderConfirmationEmail(order);
+            await sendMessage({
+                to: { email: order.email },
+                from: { email: process.env.OUTREACH_EMAIL || "support@swaddleshawls.com", name: "SwaddleShawls" },
+                subject: `Your SwaddleShawls Receipt — ${order.orderNumber}`,
+                body: htmlBody,
+                isHtml: true,
+                channel: "email"
+            });
+            return NextResponse.json({ success: true, message: "Confirmation email resent" });
+        } catch (err) {
+            console.error("[Admin] Resending confirmation failed:", err);
+            return NextResponse.json({ error: "Failed to resend confirmation: " + err.message }, { status: 500 });
+        }
+    }
+
     // ── SYNC STRIPE (Backfill missing orders) ──
     if (action === "sync_stripe") {
         try {

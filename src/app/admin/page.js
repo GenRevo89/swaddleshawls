@@ -179,6 +179,12 @@ export default function AdminPage() {
     else { showToast(data.error || "Sync failed", "error"); setLoading(false); }
   };
 
+  const handleResendConfirmation = async (orderId) => {
+    const data = await apiFetch("/api/admin", { method: "POST", body: { action: "resend_confirmation", orderId } });
+    if (data.success) showToast("Receipt resent successfully");
+    else showToast(data.error || "Failed to resend receipt", "error");
+  };
+
   // ── Auth Gate ──
   if (!authed) {
     const isSetup = authMode === "setup";
@@ -446,6 +452,11 @@ export default function AdminPage() {
                             className="px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-xl bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-50 flex items-center gap-2">
                             {syncingId === o._id ? <RefreshCcw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCcw className="w-3.5 h-3.5" />}
                             Sync CRM
+                          </button>
+                          
+                          <button onClick={() => handleResendConfirmation(o._id)}
+                            className="px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-xl bg-stone-100 border border-stone-200 text-stone-600 hover:bg-stone-200 transition-colors">
+                            Resend Receipt
                           </button>
                           
                           {o.status === "confirmed" && (
