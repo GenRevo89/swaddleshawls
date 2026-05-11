@@ -107,13 +107,15 @@ export async function getMessages({ contactId, email, conversation_id }) {
 }
 
 // POST /api/v1/messages — send outbound
-export async function sendMessage({ to, subject, body, channel }) {
+export async function sendMessage({ to, from, subject, body, channel, isHtml = true }) {
     return crmFetch("/api/v1/messages", {
         method: "POST",
         body: {
-            to,
+            to: typeof to === "string" ? { email: to } : to,
+            from: from || { email: "support@swaddleshawls.com", name: "SwaddleShawls" },
             subject,
             body,
+            isHtml,
             channel: channel || "email",
         },
     });

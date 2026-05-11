@@ -1,18 +1,38 @@
 "use client";
 import React, { useState, useEffect, useCallback } from "react";
+import {
+  LayoutDashboard,
+  PackageSearch,
+  UsersRound,
+  LogOut,
+  ChevronDown,
+  Search,
+  Filter,
+  CheckCircle2,
+  Clock,
+  Truck,
+  CreditCard,
+  DollarSign,
+  TrendingUp,
+  RefreshCcw,
+  ShieldCheck,
+  AlertCircle,
+  Lock,
+  ArrowRight
+} from "lucide-react";
 
 const ADMIN_TOKEN_KEY = "ss_admin_token";
 
 function StatusBadge({ status }) {
-  const colors = {
-    awaiting_payment: "bg-gray-100 text-gray-600",
-    confirmed: "bg-blue-50 text-blue-700",
-    processing: "bg-amber-50 text-amber-700",
-    shipped: "bg-purple-50 text-purple-700",
-    delivered: "bg-emerald-50 text-emerald-700",
+  const styles = {
+    awaiting_payment: "bg-stone-100 text-stone-500 border border-stone-200",
+    confirmed: "bg-blue-50 text-blue-700 border border-blue-100",
+    processing: "bg-amber-50 text-amber-700 border border-amber-100",
+    shipped: "bg-stone-800 text-stone-50 border border-stone-900",
+    delivered: "bg-emerald-50 text-emerald-700 border border-emerald-100",
   };
   return (
-    <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wider ${colors[status] || colors.confirmed}`}>
+    <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest ${styles[status] || styles.confirmed}`}>
       <span className="w-1.5 h-1.5 rounded-full bg-current" />
       {status?.replace("_", " ")}
     </span>
@@ -21,14 +41,14 @@ function StatusBadge({ status }) {
 
 function Stat({ label, value, icon, accent }) {
   return (
-    <div className="bg-white rounded-xl border border-slate-200 p-5 hover:shadow-md transition-shadow">
-      <div className="flex items-center gap-3 mb-3">
-        <div className={`w-9 h-9 rounded-lg flex items-center justify-center text-white ${accent || "bg-slate-700"}`}>
-          <span className="text-sm">{icon}</span>
+    <div className="bg-white border border-stone-200 rounded-xl p-6 hover:shadow-md transition-shadow">
+      <div className="flex items-center justify-between mb-4">
+        <span className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{label}</span>
+        <div className={`w-10 h-10 rounded-full flex items-center justify-center ${accent}`}>
+          {icon}
         </div>
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</span>
       </div>
-      <p className="text-2xl font-bold text-slate-900 tracking-tight">{value}</p>
+      <p className="text-3xl font-bold text-stone-800 tracking-tight">{value}</p>
     </div>
   );
 }
@@ -144,7 +164,7 @@ export default function AdminPage() {
     const t = trackingForm[orderId];
     if (!t?.trackingNumber) return;
     const data = await apiFetch("/api/admin", { method: "POST", body: { action: "update_tracking", orderId, ...t } });
-    if (data.success) { showToast("Tracking saved"); fetchTab("orders"); setTrackingForm(p => ({ ...p, [orderId]: {} })); }
+    if (data.success) { showToast("Tracking saved & Email sent"); fetchTab("orders"); setTrackingForm(p => ({ ...p, [orderId]: {} })); }
   };
 
   const handleMarkDelivered = async (orderId) => {
@@ -152,49 +172,55 @@ export default function AdminPage() {
     if (data.success) { showToast("Marked as delivered"); fetchTab("orders"); }
   };
 
+  const handleSyncStripe = async () => {
+    setLoading(true);
+    const data = await apiFetch("/api/admin", { method: "POST", body: { action: "sync_stripe" } });
+    if (data.success) { showToast(data.message || "Stripe sync complete"); fetchTab("orders"); }
+    else { showToast(data.error || "Sync failed", "error"); setLoading(false); }
+  };
+
   // ── Auth Gate ──
   if (!authed) {
     const isSetup = authMode === "setup";
     return (
-      <main className="min-h-screen bg-slate-50 flex items-center justify-center px-4">
-        <form onSubmit={handleAuth} className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-slate-200 p-8">
-          <div className="text-center mb-6">
-            <div className={`w-12 h-12 mx-auto mb-3 rounded-xl flex items-center justify-center ${isSetup ? "bg-emerald-600" : "bg-slate-900"}`}>
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                {isSetup
-                  ? <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                  : <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                }
-              </svg>
+      <main className="min-h-screen bg-[#FAF7F2] flex items-center justify-center p-4 font-sans text-stone-800">
+        <form onSubmit={handleAuth} className="w-full max-w-md bg-white rounded-[2rem] shadow-xl shadow-stone-200/50 border border-stone-200 p-10">
+          <div className="text-center mb-10">
+            <div className={`w-16 h-16 mx-auto mb-6 rounded-full flex items-center justify-center ${isSetup ? "bg-stone-800 text-white" : "bg-stone-100 text-stone-800"}`}>
+              {isSetup ? <ShieldCheck className="w-8 h-8" /> : <Lock className="w-8 h-8" />}
             </div>
-            <h1 className="text-lg font-bold text-slate-900">
-              {isSetup ? "Create Admin Account" : "SwaddleShawls Admin"}
+            <h1 className="text-2xl font-serif text-stone-900">
+              {isSetup ? "Initialize Vault" : "SwaddleShawls"}
             </h1>
-            <p className="text-sm text-slate-500">
-              {isSetup ? "Set up your credentials for the first time" : "Sign in to manage your store"}
+            <p className="text-sm text-stone-500 mt-2 uppercase tracking-widest font-semibold">
+              {isSetup ? "Create the master administrative identity." : "Admin Portal"}
             </p>
           </div>
+          
           {authError && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3 mb-4">
-              <p className="text-red-700 text-sm text-center font-medium">{authError}</p>
+            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-6 flex items-center gap-3">
+              <AlertCircle className="w-5 h-5 text-red-600 shrink-0" />
+              <p className="text-red-700 text-sm font-medium">{authError}</p>
             </div>
           )}
-          {isSetup && (
-            <input type="text" value={authForm.name} onChange={e => setAuthForm(p => ({ ...p, name: e.target.value }))}
-              placeholder="Your Name" className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-sm mb-3" />
-          )}
-          <input type="email" value={authForm.email} onChange={e => setAuthForm(p => ({ ...p, email: e.target.value }))}
-            placeholder="Email" required className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-sm mb-3" />
-          <input type="password" value={authForm.password} onChange={e => setAuthForm(p => ({ ...p, password: e.target.value }))}
-            placeholder={isSetup ? "Choose a password (min. 6 chars)" : "Password"} required minLength={6}
-            className="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:border-slate-500 focus:ring-2 focus:ring-slate-200 outline-none text-sm mb-4" />
-          <button type="submit" disabled={authLoading}
-            className={`w-full py-3 text-white font-bold rounded-xl transition-colors text-sm disabled:opacity-50 ${isSetup ? "bg-emerald-600 hover:bg-emerald-500" : "bg-slate-900 hover:bg-slate-800"}`}>
-            {authLoading ? "Please wait..." : isSetup ? "Create Admin Account" : "Sign In"}
-          </button>
-          {authMode === null && (
-            <div className="flex justify-center mt-4"><div className="w-5 h-5 border-2 border-slate-200 border-t-slate-900 rounded-full animate-spin" /></div>
-          )}
+          
+          <div className="space-y-4">
+            {isSetup && (
+              <input type="text" value={authForm.name} onChange={e => setAuthForm(p => ({ ...p, name: e.target.value }))}
+                placeholder="Operator Name" className="w-full px-5 py-4 rounded-xl bg-stone-50 border border-stone-200 focus:border-stone-400 focus:bg-white outline-none text-sm transition-all placeholder:text-stone-400" />
+            )}
+            <input type="email" value={authForm.email} onChange={e => setAuthForm(p => ({ ...p, email: e.target.value }))}
+              placeholder="Email Address" required className="w-full px-5 py-4 rounded-xl bg-stone-50 border border-stone-200 focus:border-stone-400 focus:bg-white outline-none text-sm transition-all placeholder:text-stone-400" />
+            <input type="password" value={authForm.password} onChange={e => setAuthForm(p => ({ ...p, password: e.target.value }))}
+              placeholder={isSetup ? "Master Password" : "Password"} required minLength={6}
+              className="w-full px-5 py-4 rounded-xl bg-stone-50 border border-stone-200 focus:border-stone-400 focus:bg-white outline-none text-sm transition-all placeholder:text-stone-400" />
+            
+            <button type="submit" disabled={authLoading || authMode === null}
+              className="w-full py-4 mt-4 text-white font-bold tracking-widest uppercase rounded-xl transition-all text-xs disabled:opacity-50 bg-stone-800 hover:bg-stone-900 shadow-md hover:shadow-lg flex items-center justify-center gap-2">
+              {authLoading ? <RefreshCcw className="w-4 h-4 animate-spin" /> : null}
+              {isSetup ? "Secure & Initialize" : "Sign In"}
+            </button>
+          </div>
         </form>
       </main>
     );
@@ -202,234 +228,341 @@ export default function AdminPage() {
 
   // ── Main Admin UI ──
   const tabs = [
-    { id: "overview", label: "Overview", icon: "📊" },
-    { id: "orders", label: "Orders", icon: "📦" },
-    { id: "clients", label: "Clients", icon: "👤" },
+    { id: "overview", label: "Overview", icon: <LayoutDashboard className="w-4 h-4" /> },
+    { id: "orders", label: "Orders", icon: <PackageSearch className="w-4 h-4" /> },
+    { id: "clients", label: "Clients", icon: <UsersRound className="w-4 h-4" /> },
   ];
 
   return (
-    <main className="min-h-screen bg-slate-50">
+    <main className="min-h-screen bg-[#FAF7F2] text-stone-800 font-sans flex flex-col selection:bg-stone-200">
       {/* Toast */}
       {toast && (
-        <div className={`fixed top-4 right-4 z-50 px-4 py-3 rounded-xl shadow-lg text-sm font-semibold border ${toast.type === "error" ? "bg-red-50 text-red-700 border-red-200" : "bg-emerald-50 text-emerald-700 border-emerald-200"}`}>
-          {toast.msg}
+        <div className="fixed bottom-6 right-6 z-50 animate-in slide-in-from-bottom-5">
+          <div className={`px-5 py-4 rounded-2xl shadow-xl border text-sm font-bold flex items-center gap-3 ${toast.type === "error" ? "bg-red-50 text-red-700 border-red-200" : "bg-stone-800 text-stone-50 border-stone-900"}`}>
+            {toast.type === "error" ? <AlertCircle className="w-5 h-5" /> : <CheckCircle2 className="w-5 h-5 text-stone-300" />}
+            {toast.msg}
+          </div>
         </div>
       )}
 
       {/* Header */}
-      <header className="bg-white border-b border-slate-200 sticky top-0 z-40">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center">
-              <span className="text-white text-xs font-bold">SS</span>
+      <header className="bg-white border-b border-stone-200 sticky top-0 z-40 shadow-sm">
+        <div className="max-w-[1600px] mx-auto px-6 lg:px-10 h-20 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src="/SwaddleShawlsSymbolLogo.png" alt="SwaddleShawls Logo" className="w-10 h-10 object-contain drop-shadow-sm" />
+            <div>
+              <h1 className="text-xl font-serif text-stone-900 tracking-tight font-bold">SwaddleShawls</h1>
+              <p className="text-[10px] uppercase tracking-widest text-stone-400 font-bold">Admin Portal</p>
             </div>
-            <h1 className="text-lg font-bold text-slate-900 tracking-tight">Admin</h1>
           </div>
-          <button onClick={() => { sessionStorage.removeItem(ADMIN_TOKEN_KEY); setAuthed(false); setToken(""); setAuthMode("login"); }}
-            className="text-xs text-slate-400 hover:text-slate-600 font-medium">Sign Out</button>
+          
+          <button onClick={() => { sessionStorage.removeItem(ADMIN_TOKEN_KEY); window.location.href = "/"; }}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-widest bg-stone-100 text-stone-600 hover:text-stone-900 hover:bg-stone-200 transition-all">
+            <span>Sign Out</span>
+            <LogOut className="w-3.5 h-3.5" />
+          </button>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Tabs */}
-        <div className="flex gap-1 mb-8 bg-white rounded-xl p-1 shadow-sm border border-slate-100 w-fit">
+      <div className="flex-grow max-w-[1600px] w-full mx-auto px-6 lg:px-10 py-10">
+        {/* Navigation Tabs */}
+        <div className="flex gap-2 mb-10 bg-white p-1.5 rounded-2xl border border-stone-200 shadow-sm w-fit">
           {tabs.map(t => (
             <button key={t.id} onClick={() => { setTab(t.id); setSearch(""); setStatusFilter(""); }}
-              className={`px-5 py-2.5 rounded-lg text-sm font-semibold transition-all ${tab === t.id ? "bg-slate-900 text-white shadow" : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"}`}>
-              <span className="mr-1.5">{t.icon}</span>{t.label}
+              className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${tab === t.id ? "bg-stone-800 text-white shadow-md" : "text-stone-500 hover:text-stone-800 hover:bg-stone-50"}`}>
+              {t.icon}
+              {t.label}
             </button>
           ))}
         </div>
 
         {/* ── OVERVIEW ── */}
         {tab === "overview" && overview && (
-          <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-              <Stat label="Total Orders" value={overview.totalOrders} icon="📦" accent="bg-blue-600" />
-              <Stat label="Revenue" value={`$${overview.totalRevenue.toFixed(2)}`} icon="💰" accent="bg-emerald-600" />
-              <Stat label="Clients" value={overview.totalClients} icon="👤" accent="bg-purple-600" />
-              <Stat label="Confirmed" value={overview.statusCounts?.confirmed || 0} icon="✓" accent="bg-amber-600" />
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+              <Stat label="Total Orders" value={overview.totalOrders} icon={<PackageSearch className="w-5 h-5 text-blue-600" />} accent="bg-blue-50" />
+              <Stat label="Gross Revenue" value={`$${overview.totalRevenue.toFixed(2)}`} icon={<DollarSign className="w-5 h-5 text-emerald-600" />} accent="bg-emerald-50" />
+              <Stat label="Total Clients" value={overview.totalClients} icon={<UsersRound className="w-5 h-5 text-purple-600" />} accent="bg-purple-50" />
+              <Stat label="Pending Fulfillment" value={overview.statusCounts?.confirmed || 0} icon={<Clock className="w-5 h-5 text-amber-600" />} accent="bg-amber-50" />
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-8">
-              {Object.entries(overview.statusCounts || {}).map(([s, c]) => (
-                <div key={s} className="bg-white rounded-lg border border-slate-100 px-4 py-3 text-center">
-                  <p className="text-xs text-slate-400 uppercase mb-1">{s.replace("_"," ")}</p>
-                  <p className="text-xl font-bold text-slate-900">{c}</p>
+            
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Status Breakdown */}
+              <div className="lg:col-span-1 bg-white rounded-2xl border border-stone-200 p-6 h-fit shadow-sm">
+                <h3 className="font-bold text-stone-800 text-base mb-6 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-stone-400" /> Pipeline Status
+                </h3>
+                <div className="space-y-4">
+                  {Object.entries(overview.statusCounts || {}).map(([s, c]) => (
+                    <div key={s} className="flex items-center justify-between group">
+                      <div className="flex items-center gap-3">
+                        <div className="w-1.5 h-1.5 rounded-full bg-stone-300 group-hover:bg-stone-800 transition-colors" />
+                        <p className="text-sm text-stone-500 font-medium capitalize">{s.replace("_"," ")}</p>
+                      </div>
+                      <p className="text-base font-bold text-stone-800">{c}</p>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <div className="px-5 py-4 border-b border-slate-100"><h3 className="font-semibold text-slate-900 text-sm">Recent Orders</h3></div>
-              {(overview.recentOrders || []).map(o => (
-                <div key={o._id} className="px-5 py-3 border-b border-slate-50 flex items-center justify-between hover:bg-slate-50 transition-colors">
-                  <div>
-                    <span className="font-mono text-sm font-bold text-slate-800">{o.orderNumber}</span>
-                    <span className="text-slate-400 text-xs ml-3">{o.customerName}</span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-semibold text-slate-700">${o.total?.toFixed(2)}</span>
-                    <StatusBadge status={o.status} />
-                  </div>
+              </div>
+
+              {/* Recent Orders List */}
+              <div className="lg:col-span-2 bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+                <div className="px-6 py-5 border-b border-stone-100 bg-stone-50/50">
+                  <h3 className="font-bold text-stone-800 text-base flex items-center gap-2">
+                    <CreditCard className="w-5 h-5 text-stone-400" /> Recent Transactions
+                  </h3>
                 </div>
-              ))}
+                <div className="divide-y divide-stone-100">
+                  {(overview.recentOrders || []).map(o => (
+                    <div key={o._id} className="px-6 py-4 flex items-center justify-between hover:bg-stone-50 transition-colors">
+                      <div className="flex flex-col gap-1">
+                        <span className="font-mono text-sm font-bold text-stone-800">{o.orderNumber}</span>
+                        <span className="text-stone-500 text-xs font-medium">{o.customerName}</span>
+                      </div>
+                      <div className="flex items-center gap-4">
+                        <StatusBadge status={o.status} />
+                        <span className="text-sm font-bold text-stone-800 w-20 text-right">${o.total?.toFixed(2)}</span>
+                      </div>
+                    </div>
+                  ))}
+                  {(!overview.recentOrders || overview.recentOrders.length === 0) && (
+                    <div className="px-6 py-12 text-center text-stone-400 text-sm">No recent orders.</div>
+                  )}
+                </div>
+              </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* ── ORDERS ── */}
         {tab === "orders" && (
-          <>
-            <div className="flex flex-wrap gap-3 mb-6">
-              <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === "Enter" && fetchTab("orders")}
-                placeholder="Search orders..." className="px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-sm w-64 focus:ring-2 focus:ring-slate-200 outline-none" />
-              <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setTimeout(() => fetchTab("orders"), 0); }}
-                className="px-3 py-2.5 rounded-lg bg-white border border-slate-200 text-sm">
-                <option value="">All Statuses</option>
-                {["awaiting_payment","confirmed","processing","shipped","delivered"].map(s => <option key={s} value={s}>{s.replace("_"," ")}</option>)}
-              </select>
-              <button onClick={() => fetchTab("orders")} className="px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800">
-                {loading ? "Loading..." : "Search"}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-8 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+              <div className="relative flex-grow max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === "Enter" && fetchTab("orders")}
+                  placeholder="Search order number or email..." 
+                  className="w-full pl-11 pr-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm text-stone-800 focus:border-stone-400 focus:bg-white outline-none transition-all placeholder:text-stone-400" />
+              </div>
+              <div className="relative">
+                <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <select value={statusFilter} onChange={e => { setStatusFilter(e.target.value); setTimeout(() => fetchTab("orders"), 0); }}
+                  className="pl-11 pr-10 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm text-stone-800 appearance-none cursor-pointer focus:border-stone-400 focus:bg-white outline-none transition-all">
+                  <option value="">All Statuses</option>
+                  {["awaiting_payment","confirmed","processing","shipped","delivered"].map(s => <option key={s} value={s}>{s.replace("_"," ")}</option>)}
+                </select>
+                <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
+              </div>
+              <button onClick={() => fetchTab("orders")} 
+                className="px-8 py-3 bg-stone-800 text-white rounded-xl text-sm font-bold hover:bg-stone-900 transition-colors flex items-center justify-center gap-2 min-w-[120px] shadow-sm">
+                {loading ? <RefreshCcw className="w-4 h-4 animate-spin" /> : "Search"}
+              </button>
+              <button onClick={handleSyncStripe} disabled={loading}
+                className="px-6 py-3 ml-auto bg-stone-100 text-stone-700 border border-stone-200 rounded-xl text-sm font-bold hover:bg-stone-200 transition-colors flex items-center justify-center gap-2 shadow-sm">
+                <RefreshCcw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} /> Sync Stripe
               </button>
             </div>
-            <div className="text-xs text-slate-400 mb-3 font-medium">{orders.total} orders · Page {orders.page}/{orders.pages}</div>
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden divide-y divide-slate-100">
-              {(orders.orders || []).map(o => (
-                <div key={o._id}>
-                  <button onClick={() => setExpandedOrder(expandedOrder === o._id ? null : o._id)}
-                    className="w-full px-5 py-4 flex items-center justify-between hover:bg-slate-50 transition-colors text-left">
-                    <div className="flex items-center gap-4 min-w-0">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm font-bold text-slate-800">{o.orderNumber}</span>
-                          <span className="text-xs px-1.5 py-0.5 rounded bg-slate-100 text-slate-500">{o.paymentMethod}</span>
+
+            <div className="flex items-center justify-between mb-4 px-2">
+              <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{orders.total} Orders Found</p>
+              <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">Page {orders.page} of {orders.pages}</p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+              <div className="divide-y divide-stone-100">
+                {(orders.orders || []).map(o => (
+                  <div key={o._id} className="group">
+                    <button onClick={() => setExpandedOrder(expandedOrder === o._id ? null : o._id)}
+                      className="w-full px-6 py-5 flex flex-col sm:flex-row sm:items-center justify-between hover:bg-stone-50 transition-all text-left gap-4">
+                      <div className="flex items-center gap-5 min-w-0">
+                        <div className="w-12 h-12 rounded-2xl bg-stone-50 border border-stone-100 flex items-center justify-center shrink-0">
+                          <PackageSearch className="w-5 h-5 text-stone-400" />
                         </div>
-                        <p className="text-xs text-slate-400 mt-0.5 truncate">{o.customerName} · {o.email}</p>
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-3 mb-1">
+                            <span className="font-mono text-base font-bold text-stone-800">{o.orderNumber}</span>
+                            <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-stone-100 text-stone-500">{o.paymentMethod}</span>
+                          </div>
+                          <p className="text-sm text-stone-500 truncate font-medium">{o.customerName} <span className="mx-2 text-stone-300">|</span> {o.email}</p>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3 flex-shrink-0">
-                      <span className="text-sm font-semibold text-slate-700">${o.total?.toFixed(2)}</span>
-                      <StatusBadge status={o.status} />
-                      {syncResults[o._id] === "synced" && <span className="text-emerald-500 text-xs font-bold">✓ CRM</span>}
-                      <svg className={`w-4 h-4 text-slate-400 transition-transform ${expandedOrder === o._id ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                      </svg>
-                    </div>
-                  </button>
-                  {expandedOrder === o._id && (
-                    <div className="px-5 pb-5 border-t border-slate-100 bg-slate-50">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                        {/* Items */}
-                        <div>
-                          <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">Items</h4>
-                          {o.items?.map((item, i) => (
-                            <div key={i} className="flex justify-between text-sm py-1">
-                              <span className="text-slate-700">{item.productName} × {item.quantity}</span>
-                              <span className="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                      <div className="flex items-center gap-4 shrink-0 pl-17 sm:pl-0">
+                        <span className="text-base font-bold text-stone-800 w-24 sm:text-right">${o.total?.toFixed(2)}</span>
+                        <div className="w-32 flex justify-end"><StatusBadge status={o.status} /></div>
+                        {syncResults[o._id] === "synced" && <span className="text-emerald-700 text-[10px] font-bold px-2 py-1 rounded-full bg-emerald-50 border border-emerald-100 uppercase tracking-wider">✓ CRM</span>}
+                        <div className="w-8 h-8 rounded-full bg-stone-50 flex items-center justify-center text-stone-400 group-hover:bg-stone-100 group-hover:text-stone-800 transition-colors">
+                          <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${expandedOrder === o._id ? "rotate-180" : ""}`} />
+                        </div>
+                      </div>
+                    </button>
+                    
+                    {expandedOrder === o._id && (
+                      <div className="px-6 pb-6 border-t border-stone-100 bg-stone-50/50">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-6">
+                          {/* Items */}
+                          <div className="bg-white rounded-2xl p-5 border border-stone-200 shadow-sm">
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-stone-400 mb-4 flex items-center gap-2">
+                              <PackageSearch className="w-4 h-4" /> Line Items
+                            </h4>
+                            <div className="space-y-3">
+                              {o.items?.map((item, i) => (
+                                <div key={i} className="flex justify-between items-center text-sm">
+                                  <div className="flex gap-3 items-center">
+                                    <span className="w-6 h-6 rounded bg-stone-100 flex items-center justify-center text-[11px] font-bold text-stone-600">{item.quantity}</span>
+                                    <span className="text-stone-700 font-medium">{item.productName}</span>
+                                  </div>
+                                  <span className="font-bold text-stone-800">${(item.price * item.quantity).toFixed(2)}</span>
+                                </div>
+                              ))}
                             </div>
-                          ))}
-                        </div>
-                        {/* Shipping */}
-                        <div>
-                          <h4 className="text-xs font-bold uppercase text-slate-400 mb-2">Shipping</h4>
-                          {o.shippingAddress ? (
-                            <p className="text-sm text-slate-600">
-                              {[o.shippingAddress.street, o.shippingAddress.city, o.shippingAddress.state, o.shippingAddress.zip, o.shippingAddress.country].filter(Boolean).join(", ") || "—"}
+                          </div>
+                          {/* Shipping Details */}
+                          <div className="bg-white rounded-2xl p-5 border border-stone-200 relative overflow-hidden shadow-sm">
+                            <Truck className="absolute -right-4 -bottom-4 w-32 h-32 text-stone-50 pointer-events-none" />
+                            <h4 className="text-[11px] font-bold uppercase tracking-widest text-stone-400 mb-4 flex items-center gap-2">
+                              <Truck className="w-4 h-4" /> Shipping Info
+                            </h4>
+                            {o.shippingAddress ? (
+                              <p className="text-sm text-stone-600 leading-relaxed font-medium">
+                                {[o.shippingAddress.street, o.shippingAddress.city, o.shippingAddress.state, o.shippingAddress.zip, o.shippingAddress.country].filter(Boolean).join(", ") || "No structured address provided."}
+                              </p>
+                            ) : <p className="text-sm text-stone-400 italic">No address provided</p>}
+                            
+                            {o.trackingNumber && (
+                              <div className="mt-4 p-3 rounded-xl bg-stone-50 border border-stone-100 inline-block relative z-10">
+                                <p className="text-[10px] font-bold text-stone-400 uppercase tracking-widest mb-1">{o.trackingCarrier}</p>
+                                <p className="text-sm font-mono text-stone-800">{o.trackingNumber}</p>
+                              </div>
+                            )}
+                            <p className="text-[10px] text-stone-400 mt-4 font-bold uppercase tracking-widest relative z-10">
+                              Placed: {new Date(o.createdAt).toLocaleString()}
                             </p>
-                          ) : <p className="text-sm text-slate-400">No address</p>}
-                          {o.trackingNumber && <p className="text-sm text-purple-600 mt-1 font-mono">{o.trackingCarrier}: {o.trackingNumber}</p>}
-                          <p className="text-xs text-slate-400 mt-1">Created: {new Date(o.createdAt).toLocaleString()}</p>
+                          </div>
                         </div>
-                      </div>
-                      {/* Actions */}
-                      <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-slate-200">
-                        <button onClick={() => handleCrmSync(o._id)} disabled={syncingId === o._id}
-                          className="px-3 py-2 text-xs font-bold rounded-lg bg-blue-50 border border-blue-200 text-blue-700 hover:bg-blue-100 disabled:opacity-50">
-                          {syncingId === o._id ? "Syncing..." : "↑ Sync CRM"}
-                        </button>
-                        {o.status === "confirmed" && (
-                          <button onClick={() => handleStatusUpdate(o._id, "processing")} disabled={statusUpdating === o._id}
-                            className="px-3 py-2 text-xs font-bold rounded-lg bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100">
-                            → Processing
+                        
+                        {/* Action Bar */}
+                        <div className="flex flex-wrap items-center gap-3 mt-6 pt-6 border-t border-stone-200">
+                          <button onClick={() => handleCrmSync(o._id)} disabled={syncingId === o._id}
+                            className="px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-xl bg-blue-50 border border-blue-100 text-blue-700 hover:bg-blue-100 transition-colors disabled:opacity-50 flex items-center gap-2">
+                            {syncingId === o._id ? <RefreshCcw className="w-3.5 h-3.5 animate-spin" /> : <RefreshCcw className="w-3.5 h-3.5" />}
+                            Sync CRM
                           </button>
-                        )}
-                        {(o.status === "processing" || o.status === "confirmed") && (
-                          <div className="flex items-center gap-1.5">
-                            <input placeholder="Carrier" value={trackingForm[o._id]?.trackingCarrier || ""} onChange={e => setTrackingForm(p => ({ ...p, [o._id]: { ...p[o._id], trackingCarrier: e.target.value } }))}
-                              className="px-2 py-1.5 rounded border border-slate-200 text-xs w-20" />
-                            <input placeholder="Tracking #" value={trackingForm[o._id]?.trackingNumber || ""} onChange={e => setTrackingForm(p => ({ ...p, [o._id]: { ...p[o._id], trackingNumber: e.target.value } }))}
-                              className="px-2 py-1.5 rounded border border-slate-200 text-xs w-32" />
-                            <button onClick={() => handleTracking(o._id)} className="px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-50 border border-purple-200 text-purple-700 hover:bg-purple-100">
-                              Ship
+                          
+                          {o.status === "confirmed" && (
+                            <button onClick={() => handleStatusUpdate(o._id, "processing")} disabled={statusUpdating === o._id}
+                              className="px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-xl bg-amber-50 border border-amber-100 text-amber-700 hover:bg-amber-100 transition-colors">
+                              Begin Processing
                             </button>
+                          )}
+                          
+                          {(o.status === "processing" || o.status === "confirmed") && (
+                            <div className="flex items-center gap-2 bg-white p-1.5 rounded-xl border border-stone-200 ml-auto flex-wrap shadow-sm">
+                              <input placeholder="Carrier (UPS, USPS)" value={trackingForm[o._id]?.trackingCarrier || ""} onChange={e => setTrackingForm(p => ({ ...p, [o._id]: { ...p[o._id], trackingCarrier: e.target.value } }))}
+                                className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-100 text-xs text-stone-800 w-32 focus:border-stone-300 focus:bg-white outline-none placeholder:text-stone-400" />
+                              <input placeholder="Tracking Number" value={trackingForm[o._id]?.trackingNumber || ""} onChange={e => setTrackingForm(p => ({ ...p, [o._id]: { ...p[o._id], trackingNumber: e.target.value } }))}
+                                className="px-3 py-2 rounded-lg bg-stone-50 border border-stone-100 text-xs text-stone-800 w-48 font-mono focus:border-stone-300 focus:bg-white outline-none placeholder:text-stone-400" />
+                              <button onClick={() => handleTracking(o._id)} 
+                                className="px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-lg bg-stone-800 text-white hover:bg-stone-900 transition-colors flex items-center gap-2 shadow-sm">
+                                <Truck className="w-3.5 h-3.5" /> Dispatch
+                              </button>
+                            </div>
+                          )}
+                          
+                          {o.status === "shipped" && (
+                            <button onClick={() => handleMarkDelivered(o._id)}
+                              className="px-4 py-2 text-xs font-bold uppercase tracking-widest rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-700 hover:bg-emerald-100 transition-colors ml-auto flex items-center gap-2">
+                              <CheckCircle2 className="w-3.5 h-3.5" /> Mark Delivered
+                            </button>
+                          )}
+                        </div>
+                        
+                        {syncResults[o._id] && syncResults[o._id] !== "synced" && (
+                          <div className="mt-4 p-3 bg-red-50 border border-red-100 rounded-xl">
+                            <p className="text-xs text-red-700 font-bold flex items-center gap-2">
+                              <AlertCircle className="w-4 h-4" /> CRM Error: {syncResults[o._id]}
+                            </p>
                           </div>
                         )}
-                        {o.status === "shipped" && (
-                          <button onClick={() => handleMarkDelivered(o._id)}
-                            className="px-3 py-2 text-xs font-bold rounded-lg bg-emerald-50 border border-emerald-200 text-emerald-700 hover:bg-emerald-100">
-                            ✓ Mark Delivered
-                          </button>
-                        )}
                       </div>
-                      {syncResults[o._id] && syncResults[o._id] !== "synced" && (
-                        <p className="text-xs text-red-500 mt-2 font-medium">Error: {syncResults[o._id]}</p>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ))}
-              {(!orders.orders || orders.orders.length === 0) && !loading && (
-                <div className="px-5 py-12 text-center text-slate-400 text-sm">No orders found</div>
-              )}
+                    )}
+                  </div>
+                ))}
+                {(!orders.orders || orders.orders.length === 0) && !loading && (
+                  <div className="px-6 py-20 flex flex-col items-center justify-center text-stone-400 gap-4">
+                    <PackageSearch className="w-12 h-12 opacity-20" />
+                    <p className="text-sm font-medium">No orders found matching criteria.</p>
+                  </div>
+                )}
+              </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* ── CLIENTS ── */}
         {tab === "clients" && (
-          <>
-            <div className="flex gap-3 mb-6">
-              <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === "Enter" && fetchTab("clients")}
-                placeholder="Search clients..." className="px-4 py-2.5 rounded-lg bg-white border border-slate-200 text-sm w-64 focus:ring-2 focus:ring-slate-200 outline-none" />
-              <button onClick={() => fetchTab("clients")} className="px-4 py-2.5 bg-slate-900 text-white rounded-lg text-sm font-semibold hover:bg-slate-800">
-                {loading ? "Loading..." : "Search"}
+          <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="flex flex-col sm:flex-row flex-wrap gap-4 mb-8 bg-white p-4 rounded-2xl border border-stone-200 shadow-sm">
+              <div className="relative flex-grow max-w-md">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+                <input value={search} onChange={e => setSearch(e.target.value)} onKeyDown={e => e.key === "Enter" && fetchTab("clients")}
+                  placeholder="Search client email..." 
+                  className="w-full pl-11 pr-4 py-3 rounded-xl bg-stone-50 border border-stone-200 text-sm text-stone-800 focus:border-stone-400 focus:bg-white outline-none transition-all placeholder:text-stone-400" />
+              </div>
+              <button onClick={() => fetchTab("clients")} 
+                className="px-8 py-3 bg-stone-800 text-white rounded-xl text-sm font-bold hover:bg-stone-900 transition-colors flex items-center justify-center gap-2 min-w-[120px] shadow-sm">
+                {loading ? <RefreshCcw className="w-4 h-4 animate-spin" /> : "Search"}
               </button>
             </div>
-            <div className="text-xs text-slate-400 mb-3 font-medium">{clients.total} clients</div>
-            <div className="bg-white rounded-xl border border-slate-200 overflow-hidden">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="bg-slate-50 border-b border-slate-200">
-                    <th className="text-left px-5 py-3 text-xs font-bold uppercase text-slate-400">Name</th>
-                    <th className="text-left px-5 py-3 text-xs font-bold uppercase text-slate-400">Email</th>
-                    <th className="text-left px-5 py-3 text-xs font-bold uppercase text-slate-400">Phone</th>
-                    <th className="text-right px-5 py-3 text-xs font-bold uppercase text-slate-400">Orders</th>
-                    <th className="text-right px-5 py-3 text-xs font-bold uppercase text-slate-400">Total Spend</th>
-                    <th className="text-left px-5 py-3 text-xs font-bold uppercase text-slate-400">Joined</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100">
-                  {(clients.clients || []).map(c => (
-                    <tr key={c._id} className="hover:bg-slate-50 transition-colors">
-                      <td className="px-5 py-3 font-medium text-slate-900">{c.name}</td>
-                      <td className="px-5 py-3 text-slate-500">{c.email}</td>
-                      <td className="px-5 py-3 text-slate-500">{c.phone || "—"}</td>
-                      <td className="px-5 py-3 text-right font-semibold">{c.orderCount}</td>
-                      <td className="px-5 py-3 text-right font-semibold text-emerald-600">${c.totalSpend?.toFixed(2)}</td>
-                      <td className="px-5 py-3 text-slate-400 text-xs">{new Date(c.createdAt).toLocaleDateString()}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              {(!clients.clients || clients.clients.length === 0) && !loading && (
-                <div className="px-5 py-12 text-center text-slate-400 text-sm">No clients found</div>
-              )}
-            </div>
-          </>
-        )}
 
-        {loading && (
-          <div className="flex justify-center py-12">
-            <div className="w-8 h-8 border-3 border-slate-200 border-t-slate-900 rounded-full animate-spin" />
+            <div className="flex items-center justify-between mb-4 px-2">
+              <p className="text-[11px] font-bold text-stone-400 uppercase tracking-widest">{clients.total} Clients Found</p>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-sm">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm text-left whitespace-nowrap">
+                  <thead className="bg-stone-50 border-b border-stone-100 text-[10px] uppercase tracking-widest text-stone-500 font-bold">
+                    <tr>
+                      <th className="px-6 py-5">Email / Identity</th>
+                      <th className="px-6 py-5">Phone</th>
+                      <th className="px-6 py-5 text-center">Orders</th>
+                      <th className="px-6 py-5 text-right">Total Spend</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-stone-100">
+                    {(clients.clients || []).map(c => (
+                      <tr key={c._id} className="hover:bg-stone-50 transition-colors group">
+                        <td className="px-6 py-5 font-medium text-stone-800 flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-stone-100 flex items-center justify-center text-stone-400 group-hover:bg-stone-800 group-hover:text-white transition-colors">
+                            <UsersRound className="w-4 h-4" />
+                          </div>
+                          {c.email}
+                        </td>
+                        <td className="px-6 py-5 text-stone-500">{c.phone || "—"}</td>
+                        <td className="px-6 py-5 text-center">
+                          <span className="inline-flex items-center justify-center min-w-[2rem] px-2 py-1 rounded-lg bg-stone-100 text-stone-600 font-bold border border-stone-200">
+                            {c.orderCount}
+                          </span>
+                        </td>
+                        <td className="px-6 py-5 text-right font-bold text-stone-800 tracking-tight">
+                          ${c.totalSpend?.toFixed(2)}
+                        </td>
+                      </tr>
+                    ))}
+                    {(!clients.clients || clients.clients.length === 0) && !loading && (
+                      <tr>
+                        <td colSpan={4} className="px-6 py-20 text-center text-stone-400">
+                          <div className="flex flex-col items-center gap-4">
+                            <UsersRound className="w-12 h-12 opacity-20" />
+                            <p className="text-sm font-medium">No clients found in the database.</p>
+                          </div>
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
           </div>
         )}
       </div>

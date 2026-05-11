@@ -40,6 +40,8 @@ export default function Navbar() {
     return pathname.startsWith(href);
   };
 
+  if (pathname && pathname.startsWith("/admin")) return null;
+
   return (
     <>
       <header

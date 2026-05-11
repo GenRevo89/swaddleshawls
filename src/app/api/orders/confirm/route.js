@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Client from "@/models/Client";
-import { upsertContact, upsertAccount, createOpportunity } from "@/lib/crm";
+import { upsertContact, upsertAccount, createOpportunity, sendMessage } from "@/lib/crm";
 import { getReceipt } from "@/lib/surge";
+import { generateOrderConfirmationEmail } from "@/lib/email-templates";
 
 // POST — Confirm order after successful payment (triggers CRM sync)
 export async function POST(req) {
@@ -124,6 +125,20 @@ export async function POST(req) {
                         ...(accountId && { accountId }),
                     });
                     console.log("[CRM] Opportunity synced:", opp?.id || opp);
+
+                    // 4. Send order confirmation email via CRM
+                    try {
+                        const emailHtml = generateOrderConfirmationEmail(order);
+                        await sendMessage({
+                            to: order.email,
+                            subject: `Your SwaddleShawls Receipt — ${order.orderNumber}`,
+                            body: emailHtml,
+                            channel: "email",
+                        });
+                        console.log("[CRM] Confirmation email sent to:", order.email);
+                    } catch (emailErr) {
+                        console.error("[CRM] Confirmation email failed:", emailErr.message);
+                    }
                 } catch (err) {
                     console.error("[CRM] Sync chain failed:", err);
                 }

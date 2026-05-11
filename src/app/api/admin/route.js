@@ -3,7 +3,8 @@ import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
 import Client from "@/models/Client";
 import AdminUser from "@/models/AdminUser";
-import { upsertContact, upsertAccount, createOpportunity, getContactByEmail } from "@/lib/crm";
+import { upsertContact, upsertAccount, createOpportunity, getContactByEmail, sendMessage } from "@/lib/crm";
+import { generateShippingEmail } from "@/lib/email-templates";
 
 function unauthorized() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -272,6 +273,22 @@ export async function POST(req) {
 
         const order = await Order.findByIdAndUpdate(orderId, update, { new: true });
         if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
+
+        // Non-blocking email dispatch
+        try {
+            const htmlBody = generateShippingEmail(order);
+            sendMessage({
+                to: { email: order.email },
+                from: { email: process.env.OUTREACH_EMAIL || "support@swaddleshawls.com", name: "SwaddleShawls" },
+                subject: `Your Order Has Shipped! (${order.orderNumber})`,
+                body: htmlBody,
+                isHtml: true,
+                channel: "email"
+            }).catch(err => console.error("[Admin] Shipping email dispatch failed:", err));
+        } catch (err) {
+            console.error("[Admin] Shipping email generation failed:", err);
+        }
+
         return NextResponse.json({ success: true, data: order });
     }
 
@@ -281,6 +298,87 @@ export async function POST(req) {
         const order = await Order.findByIdAndUpdate(orderId, { status: "delivered", deliveredAt: new Date() }, { new: true });
         if (!order) return NextResponse.json({ error: "Order not found" }, { status: 404 });
         return NextResponse.json({ success: true, data: order });
+    }
+
+    // ── SYNC STRIPE (Backfill missing orders) ──
+    if (action === "sync_stripe") {
+        try {
+            const Stripe = require("stripe");
+            const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+            
+            // Fetch recent successful checkout sessions
+            const sessions = await stripe.checkout.sessions.list({ limit: 50 });
+            let updatedCount = 0;
+
+            for (const session of sessions.data) {
+                if (session.payment_status === "paid" || session.status === "complete") {
+                    const { orderId, receiptId, customerName } = session.metadata || {};
+                    
+                    // Find matching order
+                    let order = null;
+                    if (receiptId) order = await Order.findOne({ receiptId });
+                    if (!order && orderId) order = await Order.findById(orderId);
+                    
+                    // If order exists but is stuck in awaiting_payment, or lacks Stripe data
+                    if (order && (order.status === "awaiting_payment" || !order.stripeSessionId)) {
+                        order.status = "confirmed";
+                        order.surgeStatus = "paid_stripe";
+                        order.paymentMethod = "stripe";
+                        order.stripeSessionId = session.id;
+                        order.stripePaymentIntent = session.payment_intent;
+
+                        const stripeEmail = session.customer_details?.email || session.customer_email;
+                        const stripeName = session.customer_details?.name || customerName;
+                        if (stripeEmail && (order.email === "pending@checkout.local" || !order.email)) {
+                            order.email = stripeEmail.toLowerCase().trim();
+                        }
+                        if (stripeName && (order.customerName === "Pending Customer" || !order.customerName)) {
+                            order.customerName = stripeName.trim();
+                        }
+
+                        const shipping = session.shipping_details || session.shipping;
+                        if (shipping?.address) {
+                            order.shippingAddress = {
+                                street: [shipping.address.line1, shipping.address.line2].filter(Boolean).join(", "),
+                                city: shipping.address.city || "",
+                                state: shipping.address.state || "",
+                                zip: shipping.address.postal_code || "",
+                                country: shipping.address.country || "",
+                            };
+                        }
+
+                        await order.save();
+                        updatedCount++;
+
+                        // Basic CRM Upsert
+                        if (order.email && order.email !== "pending@checkout.local") {
+                            await Client.findOneAndUpdate(
+                                { email: order.email },
+                                { $setOnInsert: { name: order.customerName || "Customer" } },
+                                { upsert: true }
+                            );
+                            
+                            // Non-blocking full CRM sync
+                            try {
+                                const nameParts = (order.customerName || "").trim().split(/\s+/);
+                                const firstName = nameParts[0] || "";
+                                const lastName = nameParts.slice(1).join(" ") || nameParts[0] || "Customer";
+                                upsertContact({
+                                    email: order.email,
+                                    first_name: firstName,
+                                    last_name: lastName,
+                                    tags: ["ecommerce", "stripe", process.env.BRAND_CRM_TAG || "surgeshop"],
+                                }).catch(() => {});
+                            } catch (e) {}
+                        }
+                    }
+                }
+            }
+            return NextResponse.json({ success: true, message: `Stripe sync complete. Updated ${updatedCount} stuck orders.` });
+        } catch (err) {
+            console.error("[Admin] Stripe sync failed:", err);
+            return NextResponse.json({ error: "Stripe sync failed: " + err.message }, { status: 500 });
+        }
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });

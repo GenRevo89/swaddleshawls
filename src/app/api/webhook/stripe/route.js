@@ -2,8 +2,9 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import connectToDatabase from "@/lib/mongodb";
 import Order from "@/models/Order";
-import { upsertContact, upsertAccount, createOpportunity } from "@/lib/crm";
+import { upsertContact, upsertAccount, createOpportunity, sendMessage } from "@/lib/crm";
 import Client from "@/models/Client";
+import { generateOrderConfirmationEmail } from "@/lib/email-templates";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -122,6 +123,20 @@ export async function POST(req) {
                         ...(accountId && { accountId }),
                     });
                     console.log("[Stripe Webhook] CRM sync complete");
+
+                    // Send order confirmation email via CRM
+                    try {
+                        const emailHtml = generateOrderConfirmationEmail(order);
+                        await sendMessage({
+                            to: order.email,
+                            subject: `Your SwaddleShawls Receipt — ${order.orderNumber}`,
+                            body: emailHtml,
+                            channel: "email",
+                        });
+                        console.log("[Stripe Webhook] Confirmation email sent to:", order.email);
+                    } catch (emailErr) {
+                        console.error("[Stripe Webhook] Confirmation email failed:", emailErr.message);
+                    }
                 } catch (err) {
                     console.error("[Stripe Webhook] CRM sync failed:", err);
                 }
