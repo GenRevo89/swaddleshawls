@@ -46,3 +46,7 @@ next-env.d.ts
 /src/scripts/*.mjs
 
 /biostack-template
+
+/to_print
+/tech_packs
+/patterns_only

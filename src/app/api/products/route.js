@@ -3,6 +3,12 @@ import { listInventory } from "@/lib/surge";
 import fs from "fs";
 import path from "path";
 
+// ── Static Fallback ──
+// This import is always bundled by Vercel's file tracer, guaranteeing
+// product data is available even when the filesystem cache is missing
+// and the Surge API is unreachable.
+import staticInventory from "@/data/inventory.json";
+
 // ── Server-side Product Cache (Stale-While-Revalidate) ──
 let refreshInFlight = false; // Prevents duplicate background refreshes
 
@@ -56,35 +62,40 @@ async function fetchAndCache() {
         const data = await listInventory();
         const items = normalizeItems(data);
         
-        // Write full inventory to json
-        const dataDir = path.join(process.cwd(), "src", "data");
-        if (!fs.existsSync(dataDir)) {
-            fs.mkdirSync(dataDir, { recursive: true });
+        // Write full inventory to json (may fail on read-only filesystems like Vercel)
+        try {
+            const dataDir = path.join(process.cwd(), "src", "data");
+            if (!fs.existsSync(dataDir)) {
+                fs.mkdirSync(dataDir, { recursive: true });
+            }
+            
+            fs.writeFileSync(
+                path.join(dataDir, "inventory.json"),
+                JSON.stringify(items, null, 2),
+                "utf8"
+            );
+            
+            // Write agent inventory
+            const agentItems = items.map((item) => ({
+                id: item.id,
+                sku: item.sku,
+                name: item.name,
+                price: Number(item.price),
+                category: item.category,
+                description: item.description,
+                inStock: item.stockQty > 0 || item.stockQty === -1,
+                tags: item.tags,
+            }));
+            
+            fs.writeFileSync(
+                path.join(dataDir, "agent-inventory.json"),
+                JSON.stringify(agentItems, null, 2),
+                "utf8"
+            );
+        } catch (writeErr) {
+            // Read-only filesystem (Vercel) — cache write is non-critical
+            console.warn("[ProductCache] Cache write skipped (read-only fs):", writeErr.message);
         }
-        
-        fs.writeFileSync(
-            path.join(dataDir, "inventory.json"),
-            JSON.stringify(items, null, 2),
-            "utf8"
-        );
-        
-        // Write agent inventory
-        const agentItems = items.map((item) => ({
-            id: item.id,
-            sku: item.sku,
-            name: item.name,
-            price: Number(item.price),
-            category: item.category,
-            description: item.description,
-            inStock: item.stockQty > 0 || item.stockQty === -1,
-            tags: item.tags,
-        }));
-        
-        fs.writeFileSync(
-            path.join(dataDir, "agent-inventory.json"),
-            JSON.stringify(agentItems, null, 2),
-            "utf8"
-        );
         
         return items;
     } catch (error) {
@@ -102,9 +113,13 @@ function triggerBackgroundRefresh() {
     fetchAndCache();
 }
 
-// GET — Fetch inventory statically with background refresh (Stale-While-Revalidate)
+// GET — Fetch inventory with triple-fallback:
+//   1. Filesystem cache (src/data/inventory.json via fs)
+//   2. Live Surge API fetch
+//   3. Static bundled import (always available, build-time snapshot)
 export async function GET() {
     try {
+        // ── Layer 1: Filesystem cache ──
         const inventoryPath = path.join(process.cwd(), "src", "data", "inventory.json");
         if (fs.existsSync(inventoryPath)) {
             const stats = fs.statSync(inventoryPath);
@@ -121,21 +136,40 @@ export async function GET() {
             });
         }
         
-        // Fallback if not synced yet: Trigger a sync immediately and wait
+        // ── Layer 2: Live Surge API fetch ──
         const items = await fetchAndCache();
-        if (items) {
+        if (items && items.length > 0) {
             return NextResponse.json(
                 { success: true, data: items, cached: false },
                 { headers: { "Cache-Control": "no-store" } }
             );
         }
         
+        // ── Layer 3: Static bundled fallback (build-time snapshot) ──
+        if (Array.isArray(staticInventory) && staticInventory.length > 0) {
+            console.warn("[api/products] Serving from static bundled fallback");
+            return NextResponse.json(
+                { success: true, data: staticInventory, cached: true, static: true },
+                { headers: { "Cache-Control": "public, max-age=120" } }
+            );
+        }
+
         return NextResponse.json(
             { success: true, data: [], cached: false },
             { headers: { "Cache-Control": "no-store" } }
         );
     } catch (error) {
         console.error("[api/products] Error reading inventory:", error);
+
+        // Even on total failure, serve the static fallback
+        if (Array.isArray(staticInventory) && staticInventory.length > 0) {
+            console.warn("[api/products] Error recovery — serving static fallback");
+            return NextResponse.json(
+                { success: true, data: staticInventory, cached: true, static: true },
+                { headers: { "Cache-Control": "public, max-age=120" } }
+            );
+        }
+
         return NextResponse.json(
             { success: false, error: "Failed to load products" },
             { status: 500 }
